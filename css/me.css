@@ -755,7 +755,7 @@ html[lang="en"] .mo-text p { line-height: 1.7; font-size: 16px; }
 /* —— 城镇图标 —— */
 .st-h3 .ic2 { filter: drop-shadow(0 1px .6px rgba(0, 0, 0, .5)); transform: scale(calc(var(--icz, 1) * .74)); }
 .st-h3 .pl:hover .ic2 { transform: scale(calc(var(--icz, 1) * .9)); }
-.st-h3 .pl .pl-n { transform: translateX(calc(12px * var(--icz, 1))); }
+.st-h3 .pl .pl-n { transform: translateX(calc(12px * var(--icz, 1))); } .st-h3 .pl .pl-n.lf { transform: translateX(calc(-12px * var(--icz, 1))); }
 .st-h3 .pl.ruin .ic2 { filter: grayscale(.85) brightness(.85); }
 .st-h3 .pl.dk .ic2 { filter: hue-rotate(-30deg) saturate(.6) brightness(.6) drop-shadow(0 0 2px rgba(255, 60, 20, .7)); }
 .h3flag { transform-box: fill-box; transform-origin: left center; animation: h3flag 1.6s ease-in-out infinite; }
@@ -890,7 +890,7 @@ body[data-era="trees"] .advo { display: none; }
 /* 城镇小画 */
 .st-paint .ic2 { filter: drop-shadow(0 1px .6px rgba(0, 0, 0, .55)) saturate(.75) sepia(.15); transform: scale(calc(var(--icz, 1) * .72)); }
 .st-paint .pl:hover .ic2 { transform: scale(calc(var(--icz, 1) * .9)); }
-.st-paint .pl .pl-n { transform: translateX(calc(12px * var(--icz, 1))); }
+.st-paint .pl .pl-n { transform: translateX(calc(12px * var(--icz, 1))); } .st-paint .pl .pl-n.lf { transform: translateX(calc(-12px * var(--icz, 1))); }
 .st-paint .pl.ruin .ic2 { filter: grayscale(.85) brightness(.85); }
 .st-paint .pl.dk .ic2 { filter: hue-rotate(-30deg) saturate(.6) brightness(.6) drop-shadow(0 0 2px rgba(255, 60, 20, .7)); }
 .st-paint .h3flag { display: none; }
