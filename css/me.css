@@ -997,3 +997,10 @@ body[data-era="trees"] .advo { display: none; }
   .k-hint, .k-go { padding: 7px 14px; font-size: 14.5px; } .k-row { margin: 4px 0 6px; }
   .k-top { margin-bottom: 4px; } .k-stars { font-size: 16px; }
 }
+/* 主要地标立体模型 */
+.st-paint .ic2:has(.mdl) { filter: drop-shadow(0 .6px .4px rgba(20, 10, 0, .45)); transform: scale(calc(var(--icz, 1) * .95)); }
+.st-paint .pl.mdlp .pl-n { transform: translateX(calc(17px * var(--icz, 1))); }
+.st-paint .pl.mdlp .pl-n.lf { transform: translateX(calc(-17px * var(--icz, 1))); }
+.st-paint .mdl .mglow { mix-blend-mode: screen; animation: mglow 3.2s ease-in-out infinite; }
+.st-paint .mdl .meye { animation: mglow 2.2s ease-in-out infinite; }
+@keyframes mglow { 50% { opacity: .6; } }

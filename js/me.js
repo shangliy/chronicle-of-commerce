@@ -401,7 +401,7 @@
     D.PLACES.forEach((p) => {
       const g = el("g", { class: `pl k-${p.k}${p.minor ? " minor" : ""}`, transform: `translate(${p.x},${p.y})`, "data-id": p.id }, L.pl);
       const s = el("g", { class: "sc" }, g);
-      const ic = el("g", { class: "ic2" }, s); ic.innerHTML = window.ME_ICON ? window.ME_ICON(p) : `<circle r="3" class="ic"/>`;
+      const ic = el("g", { class: "ic2" }, s); ic.innerHTML = window.ME_ICON ? window.ME_ICON(p) : `<circle r="3" class="ic"/>`; if (ic.querySelector(".mdl")) g.classList.add("mdlp");
       el("path", { d: "M-5,-5L5,5", class: "ruinx" }, s);
       p.tx = el("text", { y: 3.5, class: "pl-n" + (p.k === "site" ? " st" : "") }, s); p.tx.textContent = p.n;
       p.g = g;
@@ -593,7 +593,7 @@
     const inView = (r) => r.width >= 1 && r.right > 0 && r.left < vw && r.bottom > 0 && r.top < vh;
     const hits = (r) => placed.some((q) => r.left < q.right - pad && r.right > q.left + pad && r.top < q.bottom - pad && r.bottom > q.top + pad);
     // 地点图标本身也是障碍
-    svg.querySelectorAll(".pl:not(.off) .ic2").forEach((ic) => { const r = ic.getBoundingClientRect(); if (inView(r)) placed.push(r); });
+    svg.querySelectorAll(".pl:not(.off) .ic2").forEach((ic) => { const r = (ic.querySelector(".mbox") || ic).getBoundingClientRect(); if (inView(r)) placed.push(r); });
     U.forEach((u) => {
       u.r = u.n.closest(".off,.gone,.realm:not(.on),.veiled") ? null : u.n.getBoundingClientRect();
       if (u.r && !inView(u.r)) u.r = null;
