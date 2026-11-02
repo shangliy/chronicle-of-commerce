@@ -1004,3 +1004,93 @@ body[data-era="trees"] .advo { display: none; }
 .st-paint .mdl .mglow { mix-blend-mode: screen; animation: mglow 3.2s ease-in-out infinite; }
 .st-paint .mdl .meye { animation: mglow 2.2s ease-in-out infinite; }
 @keyframes mglow { 50% { opacity: .6; } }
+
+/* =====================================================================
+ * 界面打磨：顶栏、侧栏、浮动卡片、时间轴、封面、战场（英雄无敌风格有自己的石框，不改）
+ * ===================================================================== */
+:root { --gold2: #e8c466; --paper3: #faf3e0; }
+/* 顶栏：皮革渐变 + 三层金线 + 金色标题 */
+:root:not(.st-h3) .top { background: linear-gradient(180deg, #3b2a1c, #2a1a12 55%, #221410); border-bottom: 0; box-shadow: 0 1px 0 #8a6a2a, 0 2px 0 var(--gold), 0 3px 0 #6a4a14, 0 6px 16px rgba(0, 0, 0, .35); }
+:root:not(.st-h3) .top::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 50%; background: linear-gradient(rgba(255, 230, 170, .07), transparent); pointer-events: none; }
+:root:not(.st-h3) .top .ttl { background: linear-gradient(180deg, #fbe7a6, #d5a63a 55%, #a67a1e); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .55)); }
+:root:not(.st-h3) .top .ttl small { color: #cdbb92; }
+.top nav a { position: relative; padding: 4px 1px; letter-spacing: .08em; transition: color .2s; }
+.top nav a::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 1px; background: var(--gold2); transform: scaleX(0); transition: transform .25s; }
+.top nav a:hover::after { transform: scaleX(1); }
+:root:not(.st-h3) .lang { border-color: #9a7a3a; background: linear-gradient(180deg, rgba(255, 230, 170, .08), rgba(0, 0, 0, .22)); box-shadow: inset 0 1px 0 rgba(255, 230, 170, .15), 0 1px 2px rgba(0, 0, 0, .4); transition: border-color .2s, box-shadow .2s, color .2s; }
+:root:not(.st-h3) .lang:hover { border-color: var(--gold2); color: #fff8e0; box-shadow: 0 0 0 1px rgba(232, 196, 102, .25), 0 0 10px rgba(232, 196, 102, .3); }
+/* 侧栏：纸纹 + 页签 */
+:root:not(.st-h3) .panel { background: radial-gradient(ellipse at 20% 0%, rgba(255, 250, 235, .75), transparent 55%), var(--paper); box-shadow: inset -1px 0 0 rgba(255, 250, 230, .6), 4px 0 18px rgba(60, 40, 10, .18); }
+:root:not(.st-h3) .tabs { background: linear-gradient(180deg, #e7d9b4, var(--paper)); border-bottom: 1px solid #a88f63; box-shadow: inset 0 -1px 0 rgba(255, 250, 235, .6); }
+:root:not(.st-h3) .tabs button { position: relative; padding: 13px 0 10px; border-bottom: 0; transition: color .2s; }
+:root:not(.st-h3) .tabs button::after { content: ""; position: absolute; left: 50%; bottom: -1px; width: 0; height: 3px; border-radius: 2px; background: linear-gradient(90deg, transparent, var(--red) 30% 70%, transparent); transform: translateX(-50%); transition: width .3s; }
+:root:not(.st-h3) .tabs button.on::after { width: 72%; }
+:root:not(.st-h3) .tabs button:hover { color: var(--ink); }
+.pane { scrollbar-color: #b9a37a transparent; }
+.hint { font-style: italic; border-left: 2px solid #d9c9a4; padding-left: 10px; }
+.chron li { margin: 0 -4px; padding-left: 20px; border-radius: 4px; transition: background .2s; }
+.chron li::before { left: 6px; }
+.chron li:hover { background: rgba(155, 42, 29, .05); }
+.chron li.cur { background: linear-gradient(90deg, rgba(155, 42, 29, .14), rgba(155, 42, 29, .03)); box-shadow: inset 3px 0 0 var(--red); }
+.chron li.cur::before { box-shadow: 0 0 0 3px rgba(155, 42, 29, .18); }
+.chron li .d { font-family: var(--fell); font-size: 11.5px; }
+.mini { border-radius: 10px; padding: 0 8px; transition: background .15s, color .15s; }
+.lg-card, .bt-card { box-shadow: inset 0 0 0 1px rgba(255, 250, 235, .55); }
+.lg-card { background: linear-gradient(160deg, var(--paper3), #f1e6cc); }
+.lg-card:hover, .bt-card:hover { transform: translateY(-2px); box-shadow: inset 0 0 0 1px rgba(255, 250, 235, .55), 0 8px 18px rgba(60, 40, 10, .2); }
+.bt-card { box-shadow: inset 0 0 0 1px rgba(255, 230, 170, .08); }
+.bt-card:hover { box-shadow: inset 0 0 0 1px rgba(255, 230, 170, .15), 0 8px 18px rgba(0, 0, 0, .35); border-color: #e0a85a; }
+.cbtn { transition: background .2s, border-color .2s; }
+/* 地图上的浮动卡片：双线纸边 */
+:root:not(.st-h3) .toast, :root:not(.st-h3) .card { border-radius: 6px; background: linear-gradient(160deg, var(--paper3), #f1e6cc); box-shadow: 0 0 0 3px rgba(250, 243, 224, .55), 0 0 0 4px rgba(168, 143, 99, .5), 0 14px 34px rgba(40, 20, 0, .3); }
+:root:not(.st-h3) .toast b { letter-spacing: .02em; }
+.card { max-height: calc(100% - 64px); padding-bottom: 10px; scrollbar-width: thin; scrollbar-color: #b9a37a transparent; }
+.card::after { content: ""; position: sticky; bottom: -10px; display: block; height: 14px; margin: -2px -16px -10px; background: linear-gradient(rgba(241, 230, 204, 0), #f1e6cc); pointer-events: none; }
+.card .x { width: 28px; height: 28px; top: 8px; right: 8px; border-radius: 50%; display: grid; place-items: center; font-size: 18px; line-height: 1; transition: background .2s, color .2s; }
+.card .x:hover { background: var(--red); color: #fff; }
+.card h3 { font-size: 21px; letter-spacing: .03em; padding: 0 28px 7px 0; margin: 2px 0 8px; border-bottom: 1px solid #d9c9a4; }
+.pc-k { letter-spacing: .14em; }
+.pc-ev li { padding: 7px 6px; margin: 0 -6px; border-radius: 4px; transition: background .15s; }
+.pc-ev li:hover { background: rgba(155, 42, 29, .06); }
+/* 卡片打开时，人物登场卡挪到左下，不再和卡片叠在一起 */
+.mapwrap:has(#card:not([hidden])) .debut-box { top: auto; bottom: 46px; right: auto; left: 18px; }
+.follow { background: linear-gradient(160deg, var(--paper3), #ecdfc0); box-shadow: 0 0 0 2px rgba(250, 243, 224, .6), 0 0 0 3px rgba(168, 143, 99, .45), 0 6px 16px rgba(40, 20, 0, .25); }
+/* 地图角件 */
+:root:not(.st-h3) .zoom { gap: 6px; }
+:root:not(.st-h3) .zoom button { width: 34px; height: 34px; border-radius: 50%; border: 1px solid #8a7353; background: radial-gradient(circle at 35% 30%, #fbf4e2, #e6d6b2); box-shadow: 0 0 0 2px rgba(250, 243, 224, .6), 0 2px 6px rgba(40, 20, 0, .35); color: var(--ink2); font-weight: 700; transition: transform .15s, box-shadow .15s, color .15s; }
+:root:not(.st-h3) .zoom button:hover { transform: scale(1.08); color: var(--red); box-shadow: 0 0 0 2px rgba(250, 243, 224, .85), 0 4px 10px rgba(40, 20, 0, .4); }
+:root:not(.st-h3) .legend-key { border-radius: 14px; padding: 5px 13px; gap: 12px; background: rgba(246, 238, 219, .92); box-shadow: 0 0 0 2px rgba(250, 243, 224, .5), 0 3px 10px rgba(40, 20, 0, .22); }
+:root:not(.st-h3) .scalebar { border-radius: 4px; box-shadow: 0 2px 6px rgba(40, 20, 0, .2); }
+/* 时间轴：皮革底 + 金色圆钮 */
+:root:not(.st-h3) .tm { background: linear-gradient(180deg, #2f2016, #1d120c 70%, #170e09); border-top: 0; box-shadow: 0 -1px 0 #8a6a2a, 0 -2px 0 var(--gold), 0 -3px 0 #6a4a14, 0 -8px 18px rgba(0, 0, 0, .35); }
+:root:not(.st-h3) .tm-ctl button { background: linear-gradient(180deg, rgba(255, 230, 170, .08), rgba(0, 0, 0, .25)); border-color: #7a5a30; box-shadow: inset 0 1px 0 rgba(255, 230, 170, .12); transition: border-color .15s, color .15s, box-shadow .15s; }
+:root:not(.st-h3) .tm-ctl button:hover { border-color: var(--gold2); color: #fff; }
+:root:not(.st-h3) .tm-ctl .play { background: radial-gradient(circle at 40% 30%, #4a3620, #221510); box-shadow: 0 0 0 2px rgba(201, 154, 46, .25), 0 0 14px rgba(201, 154, 46, .25); }
+:root:not(.st-h3) .tm-ctl .play.on { animation: playglow 2.2s ease-in-out infinite; }
+@keyframes playglow { 0%, 100% { box-shadow: 0 0 0 2px rgba(201, 154, 46, .45), 0 0 18px rgba(201, 154, 46, .55); } 50% { box-shadow: 0 0 0 3px rgba(201, 154, 46, .2), 0 0 8px rgba(201, 154, 46, .25); } }
+.tm-date b { font-size: 17px; letter-spacing: .02em; text-shadow: 0 1px 0 rgba(0, 0, 0, .6); }
+.tm-date span { letter-spacing: .08em; }
+:root:not(.st-h3) .tm-rail { height: 5px; top: 30px; background: linear-gradient(#2a1c12, #4a3a28); box-shadow: inset 0 1px 2px rgba(0, 0, 0, .6), 0 1px 0 rgba(255, 230, 170, .08); }
+:root:not(.st-h3) .tm-fill { background: linear-gradient(90deg, #7a5a1a, var(--gold), #ffe08a); box-shadow: 0 0 8px rgba(201, 154, 46, .5); }
+:root:not(.st-h3) .tm-thumb { width: 14px; height: 14px; top: 25.5px; margin-left: -7px; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #fff8d8, #e8c466 45%, #a67a1e); box-shadow: 0 0 0 2px #1d120c, 0 0 0 3px rgba(232, 196, 102, .6), 0 0 12px rgba(232, 196, 102, .7); }
+.band { border-radius: 3px 3px 0 0; line-height: 18px; letter-spacing: .12em; text-shadow: 0 1px 0 rgba(0, 0, 0, .6); }
+.band.cur { box-shadow: inset 0 -2px 0 rgba(255, 255, 255, .35); }
+.tick { border-radius: 1px; transition: transform .15s, background .15s; }
+.tm-hover { bottom: -5px; padding: 1px 8px; border-radius: 3px; background: rgba(20, 12, 8, .88); border: 1px solid #6a4a14; color: #f0d48a; }
+/* 封面：同心圆纹 + 按钮浮起 */
+.intro::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(circle at 50% 42%, rgba(201, 154, 46, .14), transparent 38%), repeating-radial-gradient(circle at 50% 42%, transparent 0 44px, rgba(201, 154, 46, .045) 44px 45px); }
+.intro-ring { box-shadow: 0 0 40px rgba(255, 190, 70, .5), inset 0 0 20px rgba(255, 190, 70, .4), inset 0 0 0 12px #150c06, inset 0 0 0 13px rgba(201, 154, 46, .45); }
+.intro-btns button { transition: background .2s, transform .2s, box-shadow .2s, border-color .2s; }
+.intro-btns button:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(0, 0, 0, .4); border-color: var(--gold2); }
+/* 战场 */
+.b-top { background: linear-gradient(180deg, #2a1c12, #160e08); border-bottom: 0; box-shadow: 0 1px 0 #6a4a14, 0 2px 8px rgba(0, 0, 0, .4); }
+.b-side { box-shadow: inset 1px 0 0 rgba(255, 230, 170, .06); }
+.b-ph h3 { position: relative; padding-bottom: 8px; letter-spacing: .04em; }
+.b-ph h3::after { content: ""; position: absolute; left: 0; bottom: 0; width: 52px; height: 2px; background: linear-gradient(90deg, #e0a85a, transparent); }
+.b-ctl button, .b-nav button { transition: border-color .15s, color .15s; }
+.b-ctl button:hover, .b-nav button:hover { border-color: #e0a85a; color: #ffe08a; }
+.b-you { border-radius: 0 6px 6px 0; }
+@media (max-width: 600px) { .top .ttl { white-space: nowrap; font-size: 16px; letter-spacing: .06em; } .top .ttl small { display: none; } }
+.b-forces { grid-template-columns: minmax(0, 1fr); gap: 2px 0; padding: 10px 12px; border-radius: 6px; background: rgba(255, 230, 170, .04); box-shadow: inset 0 0 0 1px rgba(255, 230, 170, .08); }
+.b-forces dt { padding-top: 6px; } .b-forces dt:first-child { padding-top: 0; }
+.b-forces dd { padding-bottom: 6px; border-bottom: 1px dashed rgba(255, 230, 170, .14); } .b-forces dd:last-child { padding-bottom: 0; border-bottom: 0; }
