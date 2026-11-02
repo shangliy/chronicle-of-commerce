@@ -392,6 +392,7 @@
       const tf = `translate(${((col - (cnt - 1) / 2) * 17).toFixed(1)},${-6 - row * 28})`;
       if (r.tf !== tf) { r.inner.setAttribute("transform", tf); r.tf = tf; }
     }));
+    debutCheck(t, away);
     const rr = t >= RING[0].t && t < RING_END ? at(RING, t) : null;
     L.ring.style.display = rr ? "" : "none";
     if (rr) L.ring.setAttribute("transform", `translate(${rr.pos[0].toFixed(1)},${(rr.pos[1] - 1).toFixed(1)})`);
@@ -498,12 +499,59 @@
   }
   function flash(s) { const f = $("#eraFlash"); f.textContent = s; f.classList.remove("on"); void f.offsetWidth; f.classList.add("on"); }
   let playing = false, speed = 1, raf = 0, last = 0;
+  /* ——人物走得慢一点：任何一支队伍在屏幕上每秒最多走约 5% 宽—— */
+  function capMove(t, nt, dt) {
+    if (nt <= t) return nt;
+    let m = 0;
+    for (const j of JR) {
+      const a = j.P[0].t, b = j.P[j.P.length - 1].t; if (nt < a || t > b) continue;
+      const t0 = Math.max(t, a), t1 = Math.min(nt, b);
+      if (j.P.some((q) => q.gap && q.t > t0 && q.t <= t1)) continue;
+      const r0 = at(j.P, t0), r1 = at(j.P, t1); if (!r0 || !r1 || r0.hidden || r1.hidden) continue;
+      m = Math.max(m, Math.hypot(r1.pos[0] - r0.pos[0], r1.pos[1] - r0.pos[1]));
+    }
+    const lim = cam.w * 0.05 * dt * speed;
+    return m > lim ? t + ((nt - t) * lim) / m : nt;
+  }
+  /* ——人物登场：第一次出现时弹出插画，几秒后淡去—— */
+  let FIRST = null;
+  function firstTimes() {
+    FIRST = {};
+    RES.forEach((r) => { if (FIRST[r.c.id] == null || r.from < FIRST[r.c.id]) FIRST[r.c.id] = r.from; });
+    JR.forEach((j) => [...(j.who || []), ...(j.whoAt || []).flatMap(([, l]) => l)].forEach((id) => { const jt = joinT(j, id); if (FIRST[id] == null || jt < FIRST[id]) FIRST[id] = jt; }));
+  }
+  const seen = new Set(); let debutQ = [], debutOn = 0;
+  const slowK = () => (debutOn ? 0.35 : 1);
+  function debutCheck(t, away) {
+    const vis = new Set(); RES.forEach((r) => r.vis && vis.add(r.c.id)); away.forEach((id) => vis.add(id));
+    if (!FIRST) firstTimes();
+    for (const id in FIRST) if (t < FIRST[id] - 1e-6) seen.delete(id);
+    vis.forEach((id) => {
+      if (seen.has(id)) return; seen.add(id);
+      if ((playing || follow) && !debutQ.includes(id)) debutQ.push(id);
+    });
+    if (debutQ.length > 6) debutQ = debutQ.slice(-6);
+    pumpDebut();
+  }
+  function pumpDebut() {
+    const box = $("#debut"); if (!box) return;
+    while (debutQ.length && box.children.length < (innerWidth <= 860 ? 1 : 2)) {
+      const id = debutQ.shift(), c = CI[id]; if (!c) continue;
+      const w = whereIs(id); if (w) pulse(w[0], w[1], "k-" + (c.r === "dark" ? "dark" : "ring"));
+      const d = document.createElement("button"); d.className = "debut r-" + c.r; d.dataset.c = id;
+      d.innerHTML = `<span class="db-pt">${PT(c)}</span><span class="db-tx"><small>登场 · ${esc(RACE[c.r] || "")}</small><b>${esc(c.n)}</b><i>${esc(c.en)}</i><em>${esc((c.bio || "").split("。")[0])}。</em></span>`;
+      box.appendChild(d); debutOn++;
+      const hold = debutQ.length > 2 ? 3200 : 4600;
+      setTimeout(() => d.classList.add("out"), hold);
+      setTimeout(() => { d.remove(); debutOn = Math.max(0, debutOn - 1); pumpDebut(); }, hold + 1300);
+    }
+  }
   const DUR = 240; // 1× 下整条时间轴约 4 分钟
   function play() {
     endFollow();
     if (T >= T1 - 0.01) setT(T0);
     playing = true; $("#tmPlay").classList.add("on"); $("#tmPlay").setAttribute("aria-label", "暂停"); last = performance.now();
-    const step = (now) => { if (!playing) return; const dt = Math.min(0.1, (now - last) / 1000); last = now; const p = posOf(T) + (dt * speed) / DUR; if (p >= 1) { setT(T1 - 0.001); return pause(); } setT(tAt(p)); raf = requestAnimationFrame(step); };
+    const step = (now) => { if (!playing) return; const dt = Math.min(0.1, (now - last) / 1000); last = now; const p = posOf(T) + (dt * speed * slowK()) / DUR; if (p >= 1) { setT(T1 - 0.001); return pause(); } setT(capMove(T, tAt(p), dt)); raf = requestAnimationFrame(step); };
     raf = requestAnimationFrame(step);
   }
   function pause() { endFollow(); playing = false; cancelAnimationFrame(raf); $("#tmPlay").classList.remove("on"); $("#tmPlay").setAttribute("aria-label", "播放"); }
@@ -520,7 +568,7 @@
     pause(); $("#card").hidden = true;
     const t0 = j.P[0].t, t1 = j.P[j.P.length - 1].t, xs = j.P.map((p) => p.x), ys = j.P.map((p) => p.y);
     const bw = Math.max(...xs) - Math.min(...xs), bh = Math.max(...ys) - Math.min(...ys);
-    const f = { j, t1, rate: (t1 - t0) / clamp(j.P.length * 2.2, 12, 28), w: clamp(Math.max(bw, (bh * cw) / ch) * 0.6, 320, 900) };
+    const f = { j, t1, rate: (t1 - t0) / clamp(j.P.length * 3.6, 22, 54), w: clamp(Math.max(bw, (bh * cw) / ch) * 0.6, 320, 900) };
     setT(t0 + 1e-6); flyTo(j.P[0].x, j.P[0].y, f.w, 900); f.mv = userMoved = Date.now(); follow = f;
     $("#tmPlay").classList.add("on"); document.body.classList.add("following");
     const fb = $("#follow"); fb.hidden = false; fb.innerHTML = `<span>跟随</span><b style="color:${j.c}">${esc(j.n)}</b><button aria-label="停止跟随">×</button>`;
@@ -529,7 +577,7 @@
   function fstep(now) {
     const f = follow; if (!f) return;
     const dt = Math.min(0.1, (now - last) / 1000); last = now;
-    const nt = T + dt * f.rate * speed;
+    const nt = capMove(T, T + dt * f.rate * speed * slowK(), dt);
     if (nt >= f.t1) { setT(f.t1 - 1e-6); return pause(); }
     setT(nt);
     const r = at(f.j.P, T);
@@ -541,6 +589,7 @@
   function endFollow() { if (!follow) return; follow = null; cancelAnimationFrame(raf); document.body.classList.remove("following"); $("#follow").hidden = true; $("#tmPlay").classList.remove("on"); }
 
   /* ——人物卡 / 旅程卡—— */
+  const PT = (c) => (window.PORTRAIT ? window.PORTRAIT(c) : "");
   const chSvg = (id, cls = "") => `<svg class="${cls}" viewBox="-24 -68 48 74" aria-hidden="true"><use href="#chb-${id}"/></svg>`;
   function charJourneys(id) { return JR.filter((j) => (j.who || []).includes(id) || (j.whoAt || []).some(([, l]) => l.includes(id))); }
   function whereIs(id) {
@@ -560,7 +609,7 @@
     const inB = (b) => b.units.some((u) => [...(CH.HEROES[b.id + "." + u.id] || []), ...((CH.TROOPS || {})[b.id + "." + u.id]?.lead || [])].includes(id));
     const bs = BATTLES.filter(inB).sort((a, b) => a.t - b.t);
     const homes = (c.homes || []).map(([at, from, to, hn]) => `<li data-home="${from}" data-at="${Array.isArray(at) ? at.join(",") : at}"><b>${esc(fmt(from))} — ${esc(fmt(to))}</b>${esc(hn || placeName(at))}</li>`).join("");
-    openCard(`<div class="cc">${chSvg(id, "cc-big")}<div><div class="pc-k">${esc(RACE[c.r] || "")} · ${esc(c.en)}</div><h3>${esc(c.n)}</h3></div></div><p class="cc-bio">${esc(c.bio)}</p>` +
+    openCard(`<div class="cc"><div class="cc-pt">${PT(c)}</div><div><div class="pc-k">${esc(RACE[c.r] || "")} · ${esc(c.en)}</div><h3>${esc(c.n)}</h3></div></div><p class="cc-bio">${esc(c.bio)}</p>` +
       (homes ? `<h5 class="cc-h">居所</h5><ul class="pc-ev">${homes}</ul>` : "") +
       (bs.length ? `<h5 class="cc-h">参战</h5><div class="cc-js">${bs.map((x) => `<button class="go-b" data-b="${x.id}" style="--c:#8a2a1a">⚔ ${esc(x.n)}<small>${esc(x.age)}</small></button>`).join("")}</div>` : "") +
       (js.length ? `<h5 class="cc-h">足迹 · 点一下跟着走</h5><div class="cc-js">${js.map((j) => `<button data-follow="${j.id}" style="--c:${j.c}">▶ ${esc(j.n)}<small>${esc(fmt(j.P[0].t, hasDay(j.P[0].t)))}</small></button>`).join("")}</div>` : ""));
@@ -604,7 +653,7 @@
     $("#legends").innerHTML = `<p class="hint">每个传说是一段引导式阅读：点“下一段”，地图会飞到故事发生的地方，时间也会拨到那一年。</p>` + D.LEGENDS.map((l) => `<button class="lg-card" data-l="${l.id}"><span class="lg-y">${esc(fmt(l.beats[0].t).replace(/ \d+ 年$/, ""))}</span><b>${esc(l.n)}</b><i>${esc(l.en)}</i><span class="lg-s">${esc(l.sub)}</span><span class="lg-n">${l.beats.length} 段</span></button>`).join("");
     // 人物
     $("#chars").innerHTML = `<p class="hint">中洲的 ${CH.CHARS.length} 位人物。点一个人，地图会跳到他出现的年代和地点；在人物卡里点“足迹”，就能跟着他走完那段路。地图上走动的小队就是正在旅行的人。</p>` +
-      CH.RACES.map(([r, n]) => `<h4 class="ch-race">${esc(n)}</h4><div class="cgrid">${CH.CHARS.filter((c) => c.r === r).map((c) => `<button class="cbtn" data-c="${c.id}" data-jump="1">${chSvg(c.id)}<b>${esc(c.n)}</b></button>`).join("")}</div>`).join("");
+      CH.RACES.map(([r, n]) => `<h4 class="ch-race">${esc(n)}</h4><div class="cgrid">${CH.CHARS.filter((c) => c.r === r).map((c) => `<button class="cbtn" data-c="${c.id}" data-jump="1"><span class="cb-pt">${PT(c)}</span><b>${esc(c.n)}</b></button>`).join("")}</div>`).join("");
     // 战役
     $("#battles").innerHTML = `<p class="hint">选一场战役进入战场：分阶段推演兵力移动，你会以一个普通人的视角经历它。</p>` + [...BATTLES].sort((a, b) => a.t - b.t).map((b) => `<button class="bt-card" data-b="${b.id}"><span class="bt-y">${esc(b.age)}</span><b>${esc(b.n)}</b><i>${esc(b.en)}</i><span class="bt-s"><em class="w">${esc(b.sides.w)}</em> 对 <em class="e">${esc(b.sides.e)}</em></span><span class="bt-go">进入战场 ▸</span></button>`).join("");
     document.addEventListener("click", (e) => {
