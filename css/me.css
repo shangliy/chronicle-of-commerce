@@ -389,3 +389,23 @@ svg.far .res .sc, svg.far .jmk .sc { transform: scale(calc(var(--k, 1) * .72)); 
   .follow { top: 8px; font-size: 12px; }
   .cgrid { grid-template-columns: repeat(auto-fill, minmax(58px, 1fr)); }
 }
+
+/* —— 阿门洲 —— */
+.aman { transition: opacity 1.4s ease, filter 1.4s ease; }
+.aman-land { fill: #f3ead0; }
+.aman.veiled { opacity: .32; filter: blur(.6px) saturate(.4); }
+.aman .veil-l { opacity: 0; transition: opacity 1s; }
+.aman.veiled .veil-l { opacity: 1; }
+.veil-n { font-family: var(--serif); font-size: 12px; fill: #3e5560; font-style: italic; text-anchor: middle; }
+.veil-en { font-size: 8px; letter-spacing: .14em; fill: #5b7078; text-anchor: middle; }
+.pl.veiled { opacity: .45; }
+.ice { fill: #eef3f4; stroke: #9fb4ba; stroke-width: 1; stroke-dasharray: 3 2; }
+.ice-h { stroke: #a9bfc5; stroke-width: .8; fill: none; }
+.tglow { opacity: .55; filter: url(#blur6); transition: opacity 1.2s; }
+.tglow.tel, .tcrown.tel { fill: #cfd8e6; } .tglow.tla, .tcrown.tla { fill: #f0c85a; }
+.tcrown { stroke: #6b5a3a; stroke-width: .6; transition: fill 1.2s; }
+.ttrunk { stroke: #6b5a3a; stroke-width: 2; }
+.trees2 { animation: tpulse 6s ease-in-out infinite; }
+@keyframes tpulse { 50% { opacity: .82; } }
+.trees2.dead { animation: none; }
+.trees2.dead .tglow { opacity: 0; } .trees2.dead .tcrown { fill: #5a5148; }

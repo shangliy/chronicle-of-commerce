@@ -113,6 +113,21 @@
     const nuD = cr(star, true);
     [12, 6].forEach((w, i) => el("path", { d: nuD, class: "ripple r" + (i + 1), "stroke-width": w }, L.nu));
     el("path", { d: nuD, class: "land coastline" }, L.nu);
+    // 阿门洲（不死之地）
+    L.aman = el("g", { class: "aman era-layer" }, svg);
+    const amD = cr(W.land.aman, true), erD = cr(W.land.eressea, true);
+    [16, 10, 5].forEach((w, i) => { el("path", { d: amD, class: "ripple r" + i, "stroke-width": w }, L.aman); el("path", { d: erD, class: "ripple r" + i, "stroke-width": w * 0.7 }, L.aman); });
+    el("path", { d: amD, class: "land aman-land coastline" }, L.aman);
+    el("path", { d: erD, class: "land aman-land coastline" }, L.aman);
+    // 冰峡（赫尔卡拉克瑟）
+    el("path", { d: cr(W.land.ice, true), class: "ice" }, L.bel);
+    { let d = ""; seed = 41; for (let i = 0; i < 60; i++) { const x = lerp(-900, -695, rnd()), y = lerp(-118, -72, rnd()); if (inPoly(x, y, W.land.ice)) d += `M${x.toFixed(1)},${y.toFixed(1)}l${(4 + rnd() * 5).toFixed(1)},${(-2 - rnd() * 3).toFixed(1)}`; } el("path", { d, class: "ice-h" }, L.bel); }
+    // 双圣树
+    { const tp = D.PLACES.find((q) => q.id === "twotrees"); L.trees = el("g", { class: "trees2", transform: `translate(${tp.x},${tp.y - 4}) scale(1.6)` }, L.aman);
+      el("circle", { cx: -14, cy: -6, r: 26, class: "tglow tel" }, L.trees); el("circle", { cx: 14, cy: -6, r: 26, class: "tglow tla" }, L.trees);
+      [[-12, "tel"], [12, "tla"]].forEach(([x, c]) => { el("path", { d: `M${x},4L${x},-10`, class: "ttrunk" }, L.trees); el("circle", { cx: x, cy: -14, r: 7, class: "tcrown " + c }, L.trees); }); }
+    L.veil = el("g", { class: "veil-l", transform: "translate(-1060,560)" }, L.aman);
+    { const s2 = el("g", { class: "sc" }, L.veil); el("text", { class: "veil-n" }, s2).textContent = "已移出世界之圈 · 唯有精灵的船走笔直航道"; el("text", { class: "veil-en", y: 13 }, s2).textContent = "REMOVED FROM THE CIRCLES OF THE WORLD · SA 3319"; }
     el("rect", { x: BX, y: BY, width: BW, height: BH, filter: "url(#paper)", class: "paper", "pointer-events": "none" }, svg);
     // 湖
     L.ter = el("g", { class: "terrain" }, svg);
@@ -131,7 +146,7 @@
     W.rivers.forEach((r) => el("path", { d: cr(r.pts), class: "river", "stroke-width": r.w }, r.fa ? L.bel : L.ter));
     // 山
     W.mountains.forEach((m) => {
-      const g = el("g", { class: "mts" + (m.dark ? " dark" : "") }, m.fa ? L.bel : L.ter); seed = m.pts.length * 977 + Math.round(m.h * 13);
+      const g = el("g", { class: "mts" + (m.dark ? " dark" : "") }, m.fa ? L.bel : m.aman ? L.aman : L.ter); seed = m.pts.length * 977 + Math.round(m.h * 13);
       const sp = sample(m.pts, m.h * 0.62);
       const peaks = [];
       sp.forEach(([x, y]) => { for (let k = 0; k < (m.h > 11 ? 2 : 1); k++) { const ox = (rnd() - 0.5) * m.h * 0.6, oy = (rnd() - 0.5) * m.h * 0.7 + k * m.h * 0.35; peaks.push([x + ox, y + oy, m.h * (0.75 + rnd() * 0.5)]); } });
@@ -142,7 +157,7 @@
       });
     });
     W.peaks.forEach((p) => {
-      const g = el("g", { class: "peak" + (p.fire ? " fire" : "") }, p.nu ? L.nu : L.ter), w = p.h * 0.7;
+      const g = el("g", { class: "peak" + (p.fire ? " fire" : "") }, p.nu ? L.nu : p.aman ? L.aman : L.ter), w = p.h * 0.7;
       el("path", { d: `M${p.x - w},${p.y}L${p.x - 2},${p.y - p.h}L${p.x + 2},${p.y - p.h}L${p.x + w},${p.y}Z`, class: "mt big" }, g);
       if (p.fire) el("circle", { cx: p.x, cy: p.y - p.h, r: 3, class: "ember" }, g);
     });
@@ -157,7 +172,7 @@
     // 区域名
     L.labels = el("g", { class: "labels" }, svg);
     W.labels.forEach((lb) => {
-      const g = el("g", { class: "lbl" + (lb.sea ? " sea-l" : ""), transform: `translate(${lb.x},${lb.y})` }, lb.fa ? L.bel : L.labels);
+      const g = el("g", { class: "lbl" + (lb.sea ? " sea-l" : ""), transform: `translate(${lb.x},${lb.y})` }, lb.fa ? L.bel : lb.aman ? L.aman : L.labels);
       const s = el("g", { class: "sc" }, g); s.style.setProperty("--fs", lb.s);
       const t1 = el("text", { class: "lbl-n" }, s); t1.textContent = lb.n;
       const t2 = el("text", { class: "lbl-en", y: 1.05 * lb.s }, s); t2.textContent = lb.en;
@@ -165,7 +180,7 @@
     });
     W.mountains.filter((m) => m.n).forEach((m) => {
       const mid = m.pts[Math.floor(m.pts.length / 2)];
-      const g = el("g", { class: "lbl mt-l", transform: `translate(${mid[0] + 16},${mid[1] + 4})` }, m.fa ? L.bel : L.labels);
+      const g = el("g", { class: "lbl mt-l", transform: `translate(${mid[0] + 16},${mid[1] + 4})` }, m.fa ? L.bel : m.aman ? L.aman : L.labels);
       const s = el("g", { class: "sc" }, g); s.style.setProperty("--fs", 9);
       el("text", { class: "lbl-n it" }, s).textContent = m.n;
     });
@@ -267,10 +282,13 @@
     const t = T;
     L.bel.classList.toggle("gone", t >= 587.5);
     L.nu.classList.toggle("gone", t < 622 || t >= 3909.3);
+    const veiled = t >= 3909.3; L.aman.classList.toggle("veiled", veiled);
+    L.trees.classList.toggle("dead", t >= -40);
     W.labels.forEach((lb) => lb.g && lb.g.classList.toggle("off", (lb.from != null && t < lb.from) || (lb.ta && t < 591)));
     D.REALMS.forEach((r) => r.g.classList.toggle("on", t >= r.from && t < r.to));
     D.PLACES.forEach((p) => {
       const v = visible(p, t); p.g.classList.toggle("off", !v);
+      if (p.aman) p.g.classList.toggle("veiled", veiled);
       if (!v) return;
       const ruin = p.ruin != null && t >= p.ruin && !(p.rebuilt && t >= p.rebuilt);
       const dark = p.darkAt != null && t >= p.darkAt && !(p.lightAt && t >= p.lightAt);

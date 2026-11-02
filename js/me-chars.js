@@ -34,12 +34,14 @@
 
     /* ——精灵—— */
     { id: "finwe", n: "芬威", en: "Finwë", r: "elf", look: C({ h: "#2a2a3a", hat: "circlet", hc: "#e0b440", c: "#3a4a7a", t: "#c8c0e0" }, ELF),
-      bio: "诺多族的第一位王，率族人从库维因恩西行到阿门洲。后来死在魔苟斯手里，这是一切仇恨的开始。" },
+      bio: "诺多族的第一位王，率族人从库维因恩西行到阿门洲。后来死在魔苟斯手里，这是一切仇恨的开始。",
+      homes: [["tirion", -385, -60], ["formenos", -60, -40]] },
     { id: "feanor", n: "费艾诺", en: "Fëanor", r: "elf", look: C({ h: "#151515", hat: "circlet", hc: "#e0b440", c: "#9a2a1a", t: "#3a1a1a", it: "star", ic: "#fffbe0" }, ELF),
-      bio: "最伟大的精灵工匠，精灵宝钻是他造的。立下可怕的誓言，烧掉了船，踏上中洲没多久就战死了。" },
+      bio: "最伟大的精灵工匠，精灵宝钻是他造的。立下可怕的誓言，烧掉了船，踏上中洲没多久就战死了。",
+      homes: [["tirion", -300, -60], ["formenos", -60, -10]] },
     { id: "fingolfin", n: "芬国昐", en: "Fingolfin", r: "elf", look: C({ h: "#151515", hat: "helm", hc: "#d8dde2", c: "#2a4a8a", t: "#c0c8e0", it: "sword" }, ELF),
       bio: "被费艾诺抛在对岸，带族人硬是走过了冰峡。最后一个人骑马到安格班门前，单挑魔苟斯。",
-      homes: [["eithel", FA(1), FA(456)]] },
+      homes: [["tirion", -385, -7.5], ["eithel", FA(1), FA(456)]] },
     { id: "maedhros", n: "梅斯罗斯", en: "Maedhros", r: "elf", look: C({ h: "#b0402a", c: "#7a2a2a", t: "#d8b0a0", it: "sword" }, ELF),
       bio: "费艾诺的长子，被吊在桑戈洛锥姆的悬崖上，被芬巩救下，从此只剩一只手。守着希姆凛的东方防线。",
       homes: [["himring", FA(60), FA(472)]] },
@@ -63,7 +65,7 @@
       homes: [["gondolin", FA(116), FA(510)]] },
     { id: "earendil", n: "埃雅仁迪尔", en: "Eärendil", r: "elf", look: C({ h: "#e8c860", hs: "short", c: "#2a5a8a", t: "#d8e0e8", it: "star", ic: "#fffbe0" }, ELF),
       bio: "图奥与伊缀尔的儿子，半精灵的航海家。带着宝钻驶到西方，替中洲求来援军，后来成了天上的晨星。",
-      homes: [["sirionhavens", FA(511), FA(542)]] },
+      homes: [["sirionhavens", FA(511), FA(542)], ["tirion", FA(543), FA(560)]] },
     { id: "elwing", n: "埃尔汶", en: "Elwing", r: "elf", look: C({ h: "#2a1a1a", hs: "long", c: "#d8e4ec", t: "#a8c0d0" }, ELF),
       bio: "迪奥的女儿，露西恩的孙女。宁愿抱着宝钻投海也不交出去，化作白鸟飞到丈夫的船上。",
       homes: [["sirionhavens", FA(511), FA(542)]] },
@@ -78,7 +80,7 @@
       homes: [["rivendell", 2287, TA(3021, 9, 20)]] },
     { id: "galadriel", n: "凯兰崔尔", en: "Galadriel", r: "elf", look: C({ h: "#f0d070", c: "#f2f2f6", t: "#e0e4ee", it: "star", ic: "#e8f4ff" }, ELF),
       bio: "罗斯洛立安的夫人，经历过双圣树之光的最后几位精灵之一。拒绝了至尊戒，于是“甘愿衰减，西渡而去”。",
-      homes: [["lorien", TA(1981), TA(3021, 9, 15)]] },
+      homes: [["tirion", -385, -10], ["lorien", TA(1981), TA(3021, 9, 15)], ["avallone", TA(3021, 10, 12), FO(123)]] },
     { id: "thranduil", n: "瑟兰迪尔", en: "Thranduil", r: "elf", look: C({ h: "#f0e0a0", hat: "crown", hc: "#a0602a", c: "#8a4a2a", t: "#e0c890" }, ELF),
       bio: "黑森林北部的林地王国之王，莱戈拉斯的父亲。抓过索林一行，也在五军之战并肩作战。",
       homes: [["thranduil", TA(1), FO(123)]] },
@@ -182,7 +184,7 @@
     /* ——黑暗势力—— */
     { id: "morgoth", n: "魔苟斯", en: "Morgoth", r: "dark", look: { sp: "morgoth" },
       bio: "原名米尔寇，最强大的维拉，也是第一个黑暗魔君。偷走精灵宝钻，在安格班盘踞了一整个纪元。",
-      homes: [["angband", -6, 587]] },
+      homes: [["twotrees", -300, -40], ["angband", -6, 587]] },
     { id: "sauron", n: "索隆", en: "Sauron", r: "dark", look: { sp: "sauron" },
       bio: "魔苟斯的副手，后来的黑暗魔君。化名“赠礼之主”骗精灵铸戒，又暗中铸了统御一切的至尊戒。",
       homes: [["baraddur", SA(1000), SA(3262)], ["armenelos", SA(3262), SA(3319)], ["baraddur", SA(3320), SA(3441)], ["dolguldur", TA(1050), TA(2941)]] },
@@ -212,15 +214,15 @@
   /* ——迁徙与新增旅程（pts 第三项："ship" 乘船、"ride" 骑马、"gap" 不可见）—— */
   const MORE = [
     { id: "greatjourney", n: "精灵大迁徙", c: "#3f6d8c", mig: 1, who: ["finwe", "thingol"], whoAt: [[-419, ["finwe"]]],
-      pts: [[[990, 300], -470], [[760, 250], -455], [[580, 210], -445], [[340, 250], -432], ["nanelmoth", -420], [[-300, 300], -405], [[-600, 300], -392], [[-740, 300], -385, "ship"]] },
-    { id: "feanor", n: "费艾诺渡海", c: "#9a2a1a", who: ["feanor"], pts: [[[-740, 140], -9], ["losgar", -8, "ship"], [[-470, 40], -4]] },
+      pts: [[[990, 300], -470], [[760, 250], -455], [[580, 210], -445], [[340, 250], -432], ["nanelmoth", -420], [[-300, 300], -405], [[-600, 300], -392], [[-760, 330], -388, "ship"], ["alqualonde", -385, "ship"]] },
+    { id: "feanor", n: "费艾诺渡海", c: "#9a2a1a", who: ["feanor"], pts: [["alqualonde", -10], [[-880, 110], -9, "ship"], ["losgar", -8, "ship"], [[-470, 40], -4]] },
     { id: "edain", n: "比奥一族东来", c: "#7a5a3a", mig: 1, who: ["beor"], pts: [[[260, 140], FA(305)], [[170, 190], FA(308)], [[40, 250], FA(310)], [[-120, 200], FA(313)], [[-230, 110], FA(316)]] },
     { id: "beren", n: "贝伦的远征", c: "#4a6a3a", who: ["beren"], whoAt: [[FA(465.4), ["beren", "luthien"]]],
       pts: [[[-230, 110], FA(460)], [[-220, 175], FA(464)], ["menegroth", FA(464.5)], ["nargothrond", FA(465)], [[-352, 60], FA(465.4)], [[-300, 0], FA(465.7)], ["angband", FA(466)], ["menegroth", FA(466.5)]] },
     { id: "turin", n: "图林的流浪", c: "#3a3a3a", who: ["turin"], pts: [[[-520, 90], FA(473)], ["menegroth", FA(474)], [[-380, 260], FA(486)], ["nargothrond", FA(490)], [[-520, 90], FA(496)], ["cabed", FA(499)], ["cabed", FA(501)]] },
     { id: "tuor", n: "图奥寻找刚多林", c: "#3a5a7a", who: ["tuor"], pts: [[[-560, 110], FA(495)], [[-620, 240], FA(495.6)], ["gondolin", FA(496)]] },
     { id: "gondolinfall", n: "刚多林的逃亡", c: "#8a8aa8", mig: 1, who: ["tuor", "idril", "earendil"], pts: [["gondolin", FA(510)], [[-330, 300], FA(510.4)], ["sirionhavens", FA(511)]] },
-    { id: "earendilsail", n: "埃雅仁迪尔西航", c: "#2a5a8a", who: ["earendil", "elwing"], pts: [["sirionhavens", FA(542)], [[-600, 480], FA(542.4), "ship"], [[-740, 350], FA(543), "ship"]] },
+    { id: "earendilsail", n: "埃雅仁迪尔西航", c: "#2a5a8a", who: ["earendil", "elwing"], pts: [["sirionhavens", FA(542)], [[-600, 480], FA(542.4), "ship"], [[-820, 380], FA(542.8), "ship"], ["tirion", FA(543)]] },
     { id: "tonumenor", n: "伊甸人航向努门诺尔", c: "#2e5a7a", mig: 1, who: ["elros"], pts: [[[150, 320], SA(31)], [[-150, 520], SA(31.5), "ship"], ["armenelos", SA(32), "ship"]] },
     { id: "hobbitswest", n: "霍比特人西迁", c: "#5f7a33", mig: 1, who: ["marcho"], pts: [[[600, 262], TA(1050)], [[540, 240], TA(1100)], [[480, 232], TA(1150)], [[420, 252], TA(1300)], ["bree", TA(1350)], ["hobbiton", TA(1601)]] },
     { id: "durinfolk", n: "都林子民流亡", c: "#6a5a3c", mig: 1, who: ["thrain", "thorin"], pts: [["erebor", TA(2770.1)], [[700, 200], TA(2775)], [[600, 240], TA(2790)], ["azanulbizar", TA(2799)], [[470, 420], TA(2800)], [[230, 170], TA(2802)]] },
@@ -230,15 +232,15 @@
       pts: [["minasmorgul", TA(3018, 6, 20)], [[640, 430], TA(3018, 7, 10)], ["isengard", TA(3018, 9, 18)], [[400, 320], TA(3018, 9, 21)], ["hobbiton", TA(3018, 9, 23)], ["bree", TA(3018, 9, 30)], ["weathertop", TA(3018, 10, 6)], [[498, 252], TA(3018, 10, 20)]] },
     { id: "ents", n: "树人进军", c: "#5a6a2a", mig: 1, who: ["treebeard"], pts: [[[552, 438], TA(3019, 3, 2)], ["isengard", TA(3019, 3, 3)]] },
     { id: "westward", n: "西渡", c: "#6a8aa8", who: ["frodo", "sam"], whoAt: [[TA(3021, 9, 25), ["frodo", "sam", "bilbo", "elrond", "galadriel"]], [TA(3021, 9, 29.5), ["frodo", "bilbo", "gandalfw", "elrond", "galadriel"]]],
-      pts: [["hobbiton", TA(3021, 9, 22)], [[252, 248], TA(3021, 9, 27)], ["mithlond", TA(3021, 9, 29)], [[-200, 300], TA(3021, 10, 6), "ship"], [[-740, 280], TA(3021, 10, 12), "ship"]] },
-    { id: "samwest", n: "山姆西去", c: "#7a5a3a", who: ["sam"], pts: [["hobbiton", FO(61.7)], ["mithlond", FO(61.75)], [[-740, 300], FO(62), "ship"]] },
-    { id: "lastship", n: "莱戈拉斯与金雳出海", c: "#4a6a3a", who: ["legolas", "gimli"], pts: [[[704, 560], FO(120)], ["pelargir", FO(120.3), "ship"], [[300, 700], FO(120.6), "ship"], [[-740, 350], FO(121), "ship"]] }
+      pts: [["hobbiton", TA(3021, 9, 22)], [[252, 248], TA(3021, 9, 27)], ["mithlond", TA(3021, 9, 29)], [[-200, 300], TA(3021, 10, 6), "ship"], ["avallone", TA(3021, 10, 12), "ship"]] },
+    { id: "samwest", n: "山姆西去", c: "#7a5a3a", who: ["sam"], pts: [["hobbiton", FO(61.7)], ["mithlond", FO(61.75)], ["avallone", FO(62), "ship"]] },
+    { id: "lastship", n: "莱戈拉斯与金雳出海", c: "#4a6a3a", who: ["legolas", "gimli"], pts: [[[704, 560], FO(120)], ["pelargir", FO(120.3), "ship"], [[300, 700], FO(120.6), "ship"], ["avallone", FO(121), "ship"]] }
   ];
 
   /* ——给已有旅程配上人物—— */
   const J = (id) => D.JOURNEYS.find((j) => j.id === id);
   const set = (id, o) => Object.assign(J(id), o);
-  set("fingolfin", { who: ["fingolfin"], mig: 1 });
+  set("fingolfin", { who: ["fingolfin"], mig: 1, pts: [[[-930, -30], -7.5], [[-860, -96], -6], [[-760, -100], -4.5], [[-700, -96], -3.5], [[-660, -40], -2], [[-610, 10], FA(1)]] });
   set("elendil", { who: ["elendil"], mode: "ship" });
   set("isildur", { who: ["isildur", "anarion"], mode: "ship" });
   set("alliance", { who: ["gilgalad", "elendil", "elrond", "isildur"], mig: 1 });
@@ -264,6 +266,7 @@
   /* ——新增事件—— */
   D.EVENTS.push(
     { t: -470, h: "精灵大迁徙", at: [760, 250], k: "elf", p: "维拉召唤精灵前往西方。凡雅、诺多和帖勒瑞三支精灵从库维因恩出发，走了很多年才到达大海；有的半路留下，有的始终没有出发。" },
+    { t: SA(3319.05), h: "世界变圆", at: "twotrees", k: "elf", p: "努门诺尔的舰队踏上不死之地，一如维把阿门洲从世界里移走，海面合拢成一个球。从此凡人往西航行，只会绕回原地；只有精灵的船还能找到那条笔直的航道。" },
     { t: TA(1050), h: "霍比特人翻越迷雾山脉", at: [540, 240], k: "hob", p: "绿林蒙上阴影的那些年，安都因河谷的霍比特人开始向西迁移，翻过迷雾山脉，先到布理，几百年后才在夏尔定居。" },
     { t: TA(3018, 6, 20), h: "九骑手出动", at: "minasmorgul", k: "dark", p: "索隆从咕噜嘴里问出了“夏尔”和“巴金斯”。九个黑骑手出了米那斯魔古尔，一路向北，打听一个霍比特人的下落。" }
   );
