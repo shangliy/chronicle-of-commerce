@@ -272,7 +272,7 @@
       el("text", { class: "edge-n", "text-anchor": e.side === "w" ? "start" : "end" }, s).textContent = e.n;
       el("text", { class: "edge-en", y: 13, "text-anchor": e.side === "w" ? "start" : "end" }, s).textContent = e.en;
     });
-    lifeDeco();
+    lifeDeco(); momentDeco();
     // 旅程
     L.jr = el("g", { class: "journeys" }, svg);
     JR.forEach((j) => {
@@ -329,6 +329,21 @@
     if (o.from != null || o.to != null) { g.dataset.from = o.from ?? -1e9; g.dataset.to = o.to ?? 1e9; L.tw.push(g); }
     if (o.n) el("title", {}, g).textContent = o.n;
     return g;
+  }
+  /* ——关键时刻—— */
+  const MO = (window.ME_MOMENTS || []).slice().sort((a, b) => a.t - b.t);
+  const MOI = {}; MO.forEach((m, i) => (MOI[m.id] = i));
+  const moSpan = (m) => (m.t > 6900 ? 0.12 : m.t > 4000 ? 40 : 60); // 地图上的✦标记持续多久
+  function momentDeco() {
+    L.mo = el("g", { class: "moments" }, svg);
+    MO.forEach((m) => {
+      const [x, y] = xy(m.at);
+      const g = el("g", { class: "mo-mk off", transform: `translate(${x},${y - 4})` }, L.mo); m.g = g;
+      const sc = el("g", { class: "sc" }, g);
+      sc.innerHTML = `<circle class="mo-halo" r="13"/><path d="M0-11L2.6-2.6L11 0L2.6 2.6L0 11L-2.6 2.6L-11 0L-2.6-2.6Z"/><circle r="2.2" fill="#fff8d8"/>`;
+      el("title", {}, g).textContent = "✦ " + m.h;
+      g.addEventListener("click", (ev) => { ev.stopPropagation(); openMoment(m.id); });
+    });
   }
   function lifeDeco() {
     L.life = el("g", { class: "life" }, svg);
@@ -427,6 +442,7 @@
       if (r.tf !== tf) { r.inner.setAttribute("transform", tf); r.tf = tf; }
     }));
     debutCheck(t, away);
+    MO.forEach((m) => m.g && m.g.classList.toggle("off", !(t >= m.t - 1e-6 && t < m.t + moSpan(m))));
     const rr = t >= RING[0].t && t < RING_END ? at(RING, t) : null;
     L.ring.style.display = rr ? "" : "none";
     if (rr) L.ring.setAttribute("transform", `translate(${rr.pos[0].toFixed(1)},${(rr.pos[1] - 1).toFixed(1)})`);
@@ -520,7 +536,8 @@
   }
   let lastEra = null, lastEvIdx = -1;
   function setT(t, user) {
-    T = clamp(t, T0, T1 - 0.001);
+    const T_ = T; T = clamp(t, T0, T1 - 0.001);
+    if (playing && !user && moAuto && !follow) { const m = MO.find((x) => x.t > T_ + 1e-9 && x.t <= T + 1e-9); if (m) { T = m.t; setTimeout(() => openMoment(m.id, true), 0); } }
     thumb.style.left = posOf(T) * 100 + "%"; $("#tmFill").style.width = posOf(T) * 100 + "%";
     const e = eraOf(T);
     $("#tmDate").textContent = fmt(T, fine(T)); $("#tmEra").textContent = dot(e.n, e.en);
@@ -698,21 +715,23 @@
     D.EVENTS.forEach((e, i) => {
       const er = eraOf(e.t);
       if (er.id !== cur) { html += `${cur ? "</ul>" : ""}<h4 class="ch-era" style="--c:${er.col}">${esc(er.n)}<small>${esc(er.en)}</small></h4><ul>`; cur = er.id; }
-      html += `<li class="k-${e.k}" data-i="${i}"><span class="d">${esc(fmt(e.t, hasDay(e.t)).replace(/^(第.纪元|FA|SA|TA|FoA) /, ""))}</span><b>${esc(e.h)}</b>${e.b ? `<button class="mini go-b" data-b="${e.b}" title="${tr("身临战场")}">⚔</button>` : ""}${e.l ? `<button class="mini go-l" data-l="${e.l}" title="${tr("读传说")}">❧</button>` : ""}</li>`;
+      html += `<li class="k-${e.k}" data-i="${i}"><span class="d">${esc(fmt(e.t, hasDay(e.t)).replace(/^(第.纪元|FA|SA|TA|FoA) /, ""))}</span><b>${esc(e.h)}</b>${e.b ? `<button class="mini go-b" data-b="${e.b}" title="${tr("身临战场")}">⚔</button>` : ""}${e.l ? `<button class="mini go-l" data-l="${e.l}" title="${tr("读传说")}">❧</button>` : ""}${(() => { const m = MO.find((m) => Math.abs(m.t - e.t) < (e.t > 6900 ? 0.006 : 0.6) && (m.at === e.at || e.t > 6900)); return m ? `<button class="mini go-m" data-mo="${m.id}" title="${tr("关键时刻")}">✦</button>` : ""; })()}</li>`;
     });
     $("#chron").innerHTML = html + "</ul>";
     $("#chron").addEventListener("click", (e) => { if (e.target.closest(".mini")) return; const li = e.target.closest("li[data-i]"); if (li) goEvent(D.EVENTS[+li.dataset.i]); });
     // 传说
-    $("#legends").innerHTML = `<p class="hint">${tr("每个传说是一段引导式阅读：点“下一段”，地图会飞到故事发生的地方，时间也会拨到那一年。")}</p>` + D.LEGENDS.map((l) => `<button class="lg-card" data-l="${l.id}"><span class="lg-y">${esc(fmt(l.beats[0].t).replace(/ \d+( 年)?$/, ""))}</span><b>${esc(l.n)}</b><i>${esc(l.en)}</i><span class="lg-s">${esc(l.sub)}</span><span class="lg-n">${l.beats.length} ${tr("段")}</span></button>`).join("");
+    $("#legends").innerHTML = `<p class="hint">${tr("每个传说是一段引导式阅读：点“下一段”，地图会飞到故事发生的地方，时间也会拨到那一年。")}</p>` + D.LEGENDS.map((l) => `<button class="lg-card" data-l="${l.id}"><span class="lg-y">${esc(fmt(l.beats[0].t).replace(/ \d+( 年)?$/, ""))}</span><b>${esc(l.n)}</b><i>${esc(l.en)}</i><span class="lg-s">${esc(l.sub)}</span><span class="lg-n">${l.beats.length} ${tr("段")}</span></button>`).join("") +
+      (MO.length ? `<h4 class="ch-race mo-h">✦ ${tr("关键时刻")}</h4><p class="hint">${tr("那些被反复讲述的瞬间。播放时间轴走到这里会自动停下，也可以直接点开。")}</p><div class="mo-list">${MO.map((m) => `<button class="mo-card" data-mo="${m.id}"><span class="mo-y">${esc(fmt(m.t, hasDay(m.t)))}</span><b>${esc(m.h)}</b>${m.line ? `<i>${esc(m.line)}</i>` : ""}</button>`).join("")}</div>` : "");
     // 人物
     $("#chars").innerHTML = `<p class="hint">${tr("中洲的 {n} 位人物。点一个人，地图会跳到他出现的年代和地点；在人物卡里点“足迹”，就能跟着他走完那段路。地图上走动的小队就是正在旅行的人。").replace("{n}", CH.CHARS.length)}</p>` +
       CH.RACES.map(([r, n]) => `<h4 class="ch-race">${esc(n)}</h4><div class="cgrid">${CH.CHARS.filter((c) => c.r === r).map((c) => `<button class="cbtn" data-c="${c.id}" data-jump="1"><span class="cb-pt">${PT(c)}</span><b>${esc(c.n)}</b></button>`).join("")}</div>`).join("");
     // 战役
     $("#battles").innerHTML = `<p class="hint">${tr("选一场战役进入战场：分阶段推演兵力移动，你会以一个普通人的视角经历它。")}</p>` + [...BATTLES].sort((a, b) => a.t - b.t).map((b) => `<button class="bt-card" data-b="${b.id}"><span class="bt-y">${esc(b.age)}</span><b>${esc(b.n)}</b><i>${esc(b.en)}</i><span class="bt-s"><em class="w">${esc(b.sides.w)}</em> ${tr("对")} <em class="e">${esc(b.sides.e)}</em></span><span class="bt-go">${tr("进入战场 ▸")}</span></button>`).join("");
     document.addEventListener("click", (e) => {
-      const b = e.target.closest("[data-b]"); if (b && b.dataset.b) { e.preventDefault(); return openBattle(b.dataset.b); }
-      const l = e.target.closest(".go-l,.lg-card"); if (l) { setTab("legends"); return openLegend(l.dataset.l, 0); }
-      const c = e.target.closest("button[data-c]"); if (c) { if (innerWidth <= 860 && c.dataset.jump) document.body.classList.remove("panel-open"); return showChar(c.dataset.c, !!c.dataset.jump); }
+      const mo = e.target.closest("[data-mo]"); if (mo) { e.preventDefault(); if (mo.dataset.mo) { if (innerWidth <= 860) document.body.classList.remove("panel-open"); openMoment(mo.dataset.mo); } return; }
+      const b = e.target.closest("[data-b]"); if (b && b.dataset.b) { e.preventDefault(); closeMoment(); return openBattle(b.dataset.b); }
+      const l = e.target.closest(".go-l,.lg-card,.mo-lg"); if (l) { closeMoment(); setTab("legends"); return openLegend(l.dataset.l, 0); }
+      const c = e.target.closest("button[data-c]"); if (c) { closeMoment(); if (innerWidth <= 860 && c.dataset.jump) document.body.classList.remove("panel-open"); return showChar(c.dataset.c, !!c.dataset.jump); }
     });
     $("#reader").addEventListener("click", (e) => {
       if (e.target.closest(".rd-back")) return closeLegend();
@@ -722,6 +741,40 @@
   function setTab(t) { panelTab = t; $$("#tabs [data-tab]").forEach((b) => b.classList.toggle("on", b.dataset.tab === t)); $$(".pane").forEach((p) => (p.hidden = p.dataset.pane !== t)); if (t !== "legends") closeLegend(); document.body.classList.add("panel-open"); if (t === "chron") setTimeout(() => $("#chron li.cur")?.scrollIntoView({ block: "center" }), 60); }
   function markChron(idx) { $$("#chron li").forEach((li) => { const i = +li.dataset.i; li.classList.toggle("past", i < idx); li.classList.toggle("cur", i === idx); }); }
 
+  let moAuto = true; try { moAuto = localStorage.getItem("me-mo-auto") !== "0"; } catch (e) {}
+  let moCur = null;
+  function openMoment(id, fromPlay) {
+    const i = MOI[id]; if (i == null) return; const m = MO[i];
+    const wasPlaying = fromPlay || (moCur && moCur.resume);
+    pause(); moCur = { id, resume: !!wasPlaying };
+    if (Math.abs(T - m.t) > 1e-6) setT(m.t + 1e-7);
+    const [x, y] = xy(m.at); flyTo(x, y, m.t > 6900 ? 260 : 520, 1600); pulse(x, y, "k-ring"); userMoved = Date.now();
+    const who = (m.who || []).filter((w) => CI[w]);
+    const lg = m.legend && D.LEGENDS.find((l) => l.id === m.legend);
+    const box = $("#moment"); box.hidden = false; box.classList.remove("on"); void box.offsetWidth; box.classList.add("on");
+    box.innerHTML = `<div class="mo-in" role="dialog" aria-modal="true" aria-label="${esc(m.h)}">
+      <button class="mo-x" aria-label="${tr("关闭")}">×</button>
+      <div class="mo-art">${window.ME_SCENE ? window.ME_SCENE(m, who) : ""}
+        <div class="mo-cap"><span class="mo-k">✦ ${tr("关键时刻")} · ${esc(dot(fmt(m.t, hasDay(m.t)), placeName(m.at)))}</span><h2>${esc(m.h)}</h2></div></div>
+      <div class="mo-body">
+        ${m.line ? `<blockquote class="mo-line"><p>${esc(m.line)}</p>${m.by ? `<cite>—— ${esc(m.by)}</cite>` : ""}</blockquote>` : ""}
+        ${who.length ? `<div class="mo-who">${who.map((w) => `<button class="mo-pt" data-c="${w}"><span>${PT(CI[w])}</span><b>${esc(CI[w].n)}</b></button>`).join("")}</div>` : ""}
+        <div class="mo-text">${(m.scene || []).map((p, k) => `<p style="animation-delay:${0.9 + k * 0.5}s">${esc(p)}</p>`).join("")}</div>
+        <div class="mo-nav">
+          <button class="mo-go" data-mo="${i > 0 ? MO[i - 1].id : ""}" ${i > 0 ? "" : "disabled"}>‹ ${tr("上一个时刻")}</button>
+          ${lg ? `<button class="mo-lg" data-l="${lg.id}">❧ ${esc(lg.n)}</button>` : ""}
+          ${moCur.resume ? `<button class="pri mo-play">${tr("继续 ▸")}</button>` : `<button class="pri mo-go" data-mo="${i < MO.length - 1 ? MO[i + 1].id : ""}" ${i < MO.length - 1 ? "" : "disabled"}>${tr("下一个时刻")} ›</button>`}
+        </div>
+        <label class="mo-auto"><input type="checkbox" ${moAuto ? "checked" : ""}/> ${tr("播放时遇到关键时刻自动停下")}</label>
+      </div></div>`;
+    box.querySelector(".mo-in").scrollTop = 0;
+    history.replaceState(null, "", `#m=${id}`);
+  }
+  function closeMoment(resume) {
+    const box = $("#moment"); if (box.hidden) return;
+    const r = resume && moCur && moCur.resume; box.hidden = true; box.innerHTML = ""; moCur = null;
+    if (r) play();
+  }
   function openLegend(id, k) {
     const lg = D.LEGENDS.find((l) => l.id === id); if (!lg) return;
     pause(); reading = { id, k }; const b = lg.beats[k];
@@ -730,6 +783,7 @@
       <ol class="rd-dots">${lg.beats.map((x, i) => `<li><button data-beat="${i}" class="${i === k ? "on" : i < k ? "past" : ""}" title="${esc(x.h)}"></button></li>`).join("")}</ol>
       <article class="rd-beat" key="${k}"><div class="rd-d">${esc(fmt(b.t, hasDay(b.t)))}${placeName(b.at) ? " · " + esc(placeName(b.at)) : ""}</div><h4>${esc(b.h)}</h4><p>${esc(b.p)}</p></article>
       <div class="rd-nav">${k > 0 ? `<button data-beat="${k - 1}">‹ ${tr("上一段")}</button>` : "<span></span>"}<span class="rd-k">${k + 1} / ${lg.beats.length}</span>${k < lg.beats.length - 1 ? `<button class="pri" data-beat="${k + 1}">${tr("下一段")} ›</button>` : `<button class="pri rd-back">${tr("读完了 · 回到列表")}</button>`}</div>
+      ${(() => { const near = (m) => { let bi = -1, bd = 1e9; lg.beats.forEach((x, j) => { const d = Math.abs(x.t - m.t) + (x.at === m.at ? 0 : m.t > 6900 ? 0.004 : 3); if (d < bd) { bd = d; bi = j; } }); return bd < (m.t > 6900 ? 0.03 : 30) ? bi : -1; }; const ms = MO.filter((m) => m.legend === id && near(m) === k); return ms.map((m) => `<button class="go-m wide" data-mo="${m.id}">✦ ${tr("关键时刻")}${EN ? ": " : "："}${esc(m.h)}</button>`).join(""); })()}
       ${(() => { const bs = BATTLES.filter((x) => Math.abs(x.t - b.t) < 0.05); return bs.length ? `<button class="go-b wide" data-b="${bs[0].id}">⚔ ${tr("身临")}${esc(bs[0].n)}</button>` : ""; })()}`;
     setT(b.t + 1e-7); const [x, y] = xy(b.at); flyTo(x, y, b.z || 700); pulse(x, y, "k-ring"); userMoved = Date.now();
     history.replaceState(null, "", `#l=${id}&k=${k}`);
@@ -917,9 +971,15 @@
     $("#intro").addEventListener("click", (e) => { const b = e.target.closest("[data-start]"); if (b) start(b.dataset.start); });
     $("#panelToggle").onclick = () => document.body.classList.toggle("panel-open");
     $("#bClose").onclick = closeBattle;
+    $("#moment").addEventListener("click", (e) => {
+      if (e.target.closest(".mo-x") || e.target === e.currentTarget) return closeMoment(false);
+      if (e.target.closest(".mo-play")) return closeMoment(true);
+      const cb = e.target.closest(".mo-auto input"); if (cb) { moAuto = cb.checked; try { localStorage.setItem("me-mo-auto", moAuto ? "1" : "0"); } catch (x) {} }
+    });
     $("#follow").onclick = (e) => { if (e.target.closest("button")) pause(); };
     document.addEventListener("keydown", (e) => {
       if (e.target.closest("input,textarea")) return;
+      if (!$("#moment").hidden) { if (e.key === "Escape") closeMoment(false); if (e.key === " " || e.key === "Enter") { e.preventDefault(); closeMoment(true); } if (e.key === "ArrowRight" || e.key === "ArrowLeft") { const i = MOI[moCur.id] + (e.key === "ArrowRight" ? 1 : -1); if (MO[i]) openMoment(MO[i].id); } return; }
       if (!B.el.hidden) { if (e.key === "Escape") closeBattle(); if (e.key === "ArrowRight") phase(B.k + 1); if (e.key === "ArrowLeft") B.k > 0 && phase(B.k - 1); return; }
       if (e.key === " ") { e.preventDefault(); playing ? pause() : play(); }
       if (e.key === "ArrowRight") stepEvent(1); if (e.key === "ArrowLeft") stepEvent(-1);
@@ -930,9 +990,10 @@
     if (h.get("t")) { setT(+h.get("t")); flyBox(eraOf(T).cam); }
     if (h.get("l")) { setTab("legends"); openLegend(h.get("l"), +(h.get("k") || 0)); }
     if (h.get("b")) openBattle(h.get("b"));
+    if (h.get("m")) openMoment(h.get("m"));
     if (h.get("c")) { setTab("chars"); showChar(h.get("c"), true); }
     if (h.get("f")) followJ(h.get("f"));
-    window.__ME = { setT, flyTo, openBattle, phase, openLegend, play, pause, followJ, showChar, setTab, get T() { return T; }, get follow() { return !!follow; }, cam, posOf, tAt, fmt, JR, RES };
+    window.__ME = { openMoment, closeMoment, MO, setT, flyTo, openBattle, phase, openLegend, play, pause, followJ, showChar, setTab, get T() { return T; }, get follow() { return !!follow; }, cam, posOf, tAt, fmt, JR, RES };
   }
   init();
 })();

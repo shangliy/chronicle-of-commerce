@@ -59,6 +59,9 @@
     "选一场战役进入战场：分阶段推演兵力移动，你会以一个普通人的视角经历它。": "Choose a battle to enter: the armies move phase by phase, and you live through it as an ordinary soldier.",
     "对": "vs", "进入战场 ▸": "Enter the battle ▸",
     "全部传说": "All legends", "上一段": "Previous", "下一段": "Next", "读完了 · 回到列表": "The end · back to the list",
+    "关键时刻": "Key moment", "上一个时刻": "Previous moment", "下一个时刻": "Next moment", "继续 ▸": "Continue ▸",
+    "播放时遇到关键时刻自动停下": "Pause playback at key moments",
+    "那些被反复讲述的瞬间。播放时间轴走到这里会自动停下，也可以直接点开。": "The instants that are told and retold. Playback pauses when it reaches one, or open any of them here.",
     "你": "You", "上一幕": "Previous act", "序": "Prologue", "回到地图 ▸": "Back to the map ▸", "下一幕": "Next act",
   };
   const UI = window.ME_UI;
@@ -89,6 +92,9 @@
     }
   };
   (window.ME?.EVENTS || []).forEach((e) => { e.h0 = e.h; });
+  // 自带英文字段的数据（关键时刻、扩写后的传说）
+  (window.ME_MOMENTS || []).forEach((m) => ["h", "line", "by", "scene"].forEach((k) => { if (m[k + "En"] != null) m[k] = m[k + "En"]; }));
+  (window.ME?.LEGENDS || []).forEach((l) => { if (l.subEn) l.sub = l.subEn; l.beats.forEach((b) => { if (b.hEn) b.h = b.hEn; if (b.pEn) b.p = b.pEn; }); });
   ["WORLD", "ME", "ME_BATTLES", "ME_CHARS", "ME_DECO", "ME_BIO"].forEach((k) => walk(window[k]));
   if (window.ME_LIFE) { walk(window.ME_LIFE.LANDMARKS); walk(window.ME_LIFE.LIFE); walk(window.ME_LIFE.WONDERS); }
   // 中文名翻译后与英文副名重复时，去掉副名
