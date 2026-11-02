@@ -54,6 +54,14 @@
 
     <div class="mapwrap">
       <svg id="map" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" role="img" aria-label="中洲地图"></svg>
+      <div class="mapframe" aria-hidden="true"><i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i></div>
+      <svg class="compass" viewBox="-50 -50 100 100" aria-hidden="true">
+        <circle r="34" fill="none" stroke="#5a4326" stroke-width="1"/><circle r="30" fill="none" stroke="#5a4326" stroke-width=".5" stroke-dasharray="1 2"/>
+        <path d="M0,-44L5,-5L0,0ZM44,0L5,5L0,0ZM0,44L-5,5L0,0ZM-44,0L-5,-5L0,0Z" fill="#5a4326"/><path d="M0,-44L-5,-5L0,0ZM44,0L5,-5L0,0ZM0,44L5,5L0,0ZM-44,0L-5,5L0,0Z" fill="#e8d8b0" stroke="#5a4326" stroke-width=".6"/>
+        <path d="M0,-24L3,-3L0,0ZM24,0L3,3L0,0ZM0,24L-3,3L0,0ZM-24,0L-3,-3L0,0Z" fill="#9a3a2a" opacity=".85" transform="rotate(45)"/>
+        <circle r="3" fill="#c9a640" stroke="#5a4326" stroke-width=".6"/>
+        <text y="-46" text-anchor="middle" font-size="9" font-family="Cinzel,serif" fill="#5a4326">N</text>
+      </svg>
       <div class="zoom"><button id="zin" aria-label="放大">＋</button><button id="zout" aria-label="缩小">－</button><button id="zfit" aria-label="本纪元全图">⌂</button></div>
       <div class="legend-key"><span class="k-elf">▲ 精灵</span><span class="k-man">■ 人类</span><span class="k-dwarf">◆ 矮人</span><span class="k-hob">● 霍比特</span><span class="k-dark">✕ 暗影</span><span class="k-ring">◉ 至尊戒</span></div>
       <div id="eraFlash" class="era-flash"></div>
@@ -103,6 +111,7 @@
   <script src="js/me-data.js"></script>
   <script src="js/me-battles.js"></script>
   <script src="js/me-chars.js"></script>
+  <script src="js/me-deco.js"></script>
   <script src="js/me.js"></script>
 </body>
 </html>

@@ -417,3 +417,53 @@ svg.far .res .sc, svg.far .jmk .sc { transform: scale(calc(var(--k, 1) * .72)); 
 .bu .sol { filter: drop-shadow(0 1px 0 rgba(0,0,0,.35)); }
 .bu.s-e .sol { filter: drop-shadow(0 1px 0 rgba(0,0,0,.35)) saturate(.85); }
 .bu .lead .hb-sh { fill: rgba(0,0,0,.25); stroke: none; }
+
+/* —— 地图细节 —— */
+.wave { fill: none; stroke: #8e9a90; stroke-width: .6; opacity: .55; stroke-linecap: round; }
+#map.far .wave { opacity: .3; }
+.sea-o { opacity: .85; transition: opacity .8s; } .sea-o.off { opacity: 0; }
+.bobsea { animation: bobsea 5s ease-in-out infinite; }
+@keyframes bobsea { 50% { transform: translateY(1.4px) rotate(1.5deg); } }
+.lake-in { fill: none; stroke: #a5b2a8; stroke-width: 2.4; opacity: .7; transform-box: fill-box; transform-origin: center; transform: scale(.82); }
+.trees-sh { fill: #4c5530; opacity: .35; }
+.mt-s { fill: #5a4326; opacity: .16; stroke: none; }
+.mts.dark .mt-s { opacity: .35; }
+.mt-snow { fill: #fbf8f0; stroke: none; opacity: .92; }
+.river { stroke: #6a8794; }
+.rv-n { font-family: var(--serif); font-style: italic; fill: #4e6a78; font-size: calc(9px * var(--k, 1)); letter-spacing: .08em; paint-order: stroke; stroke: rgba(236, 223, 191, .85); stroke-width: calc(2.5px * var(--k, 1)); pointer-events: none; }
+#map.far .rv-n { display: none; }
+.road-b { fill: none; stroke: #ecdfbf; stroke-width: 2.2; opacity: .8; }
+.road { fill: none; stroke: #8a5a32; stroke-width: .9; stroke-dasharray: 3.5 2; opacity: .75; stroke-linecap: round; }
+#map.far .road { stroke-width: 1.2; }
+.roads { transition: opacity .8s; } .roads.off { opacity: 0; }
+.bridge { fill: none; stroke: #3a2a1a; stroke-width: .8; }
+.beacon .bc-b { fill: #6a5a40; } .beacon .bc-f { fill: #ff9a2a; transform-box: fill-box; transform-origin: bottom; animation: flick 1.2s ease-in-out infinite; }
+@keyframes flick { 50% { transform: scaleY(.7); fill: #ffcf4a; } }
+#map.far .beacon { display: none; }
+.tx path { fill: none; stroke-linecap: round; }
+.tx.off { opacity: 0; } .tx { transition: opacity .8s; }
+.hills path { stroke: #8a6a42; stroke-width: .7; opacity: .7; }
+.hills.rock path { fill: #d8c8a0; stroke: #6a5232; }
+.marsh path { stroke: #5f7a6a; stroke-width: .6; opacity: .75; }
+.marsh.dead path { stroke: #4a5a48; }
+.waste path { stroke: #9a8662; stroke-width: 1; opacity: .6; }
+.waste.ash path { stroke: #3a3030; opacity: .5; } .waste.sand path { stroke: #b8995a; stroke-width: .6; }
+.grass path { stroke: #7f8a55; stroke-width: .45; opacity: 0; transition: opacity .6s; }
+#map.near .grass path { opacity: .7; }
+.fields { transition: opacity .8s; } .fields.off { opacity: 0; }
+.fld { stroke: #6a7a3a; stroke-width: .35; opacity: .6; } .fld.f0 { fill: #b8c27a; } .fld.f1 { fill: #d8c878; } .fld.f2 { fill: #9fb26a; } .fld.f3 { fill: #c8b06a; }
+.tx-l .lbl-n { fill: #6a5232; font-size: calc(var(--fs) * 1px); }
+#map.far .tx-l { display: none; }
+/* 城市小插画 */
+.ic2 { filter: drop-shadow(0 1px .4px rgba(40, 25, 10, .45)); transform: scale(var(--icz, 1)); transition: transform .3s; }
+.pl:hover .ic2 { transform: scale(calc(var(--icz, 1) * 1.25)); }
+.pl .pl-n { transform: translateX(calc(11px * var(--icz, 1))); } .pl .pl-n.st { transform: translateX(calc(8px * var(--icz, 1))); }
+.pl.ruin .ic2 { filter: grayscale(1) opacity(.6); }
+.pl.dk .ic2 { filter: sepia(.8) brightness(.55) drop-shadow(0 0 2px rgba(255, 60, 20, .5)); }
+/* 地图边框与罗盘 */
+.mapframe { position: absolute; inset: 8px; pointer-events: none; border: 1.5px solid rgba(90, 67, 38, .55); box-shadow: inset 0 0 0 3px rgba(236, 223, 191, .35), inset 0 0 0 4px rgba(90, 67, 38, .35), inset 0 0 60px rgba(90, 60, 25, .22); z-index: 1; }
+.mapframe .c { position: absolute; width: 22px; height: 22px; border: 1.5px solid rgba(90, 67, 38, .7); }
+.mapframe .tl { left: -5px; top: -5px; border-right: 0; border-bottom: 0; } .mapframe .tr { right: -5px; top: -5px; border-left: 0; border-bottom: 0; }
+.mapframe .bl { left: -5px; bottom: -5px; border-right: 0; border-top: 0; } .mapframe .br { right: -5px; bottom: -5px; border-left: 0; border-top: 0; }
+.compass { position: absolute; left: 22px; bottom: 22px; width: 84px; height: 84px; pointer-events: none; opacity: .8; z-index: 1; filter: drop-shadow(0 1px 1px rgba(0,0,0,.2)); }
+@media (max-width: 860px) { .compass { width: 56px; height: 56px; left: 14px; bottom: 14px; } .mapframe { inset: 4px; } }

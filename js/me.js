@@ -84,6 +84,62 @@
     Object.entries(CH.SOLDIERS || {}).forEach(([k, look]) => (s += `<g id="chb-sol-${k}">${CB(look)}</g>`));
     return s + `<g id="chb-horse">${CB.horse()}</g><g id="chb-hull">${CB.hull}</g><g id="chb-sail">${CB.sail}</g>`;
   }
+  const DECO = window.ME_DECO || {};
+  function scatter(poly, d, sd) { // 多边形内均匀撒点
+    seed = sd; const xs = poly.map((p) => p[0]), ys = poly.map((p) => p[1]), x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+    const n = Math.round((x1 - x0) * (y1 - y0) * d), out = [];
+    for (let i = 0; i < n * 4 && out.length < n; i++) { const x = lerp(x0, x1, rnd()), y = lerp(y0, y1, rnd()); if (inPoly(x, y, poly)) out.push([x, y]); }
+    return out.sort((a, b) => a[1] - b[1]);
+  }
+  const f1 = (v) => v.toFixed(1);
+  function seaDeco() {
+    const g = el("g", { class: "sea-deco" }, svg); let d = ""; seed = 99;
+    for (let i = 0; i < 1100; i++) { const x = lerp(BX, BX + BW, rnd()), y = lerp(BY, BY + BH, rnd()), w = 3 + rnd() * 3; d += `M${f1(x)},${f1(y)}q${f1(w / 2)},${f1(-w / 2.6)} ${f1(w)},0t${f1(w)},0`; }
+    el("path", { d, class: "wave" }, g);
+    (DECO.SEA || []).forEach((o, i) => {
+      const gg = el("g", { class: "sea-o sea-" + o.k, transform: `translate(${o.x},${o.y}) scale(${(o.flip ? -1 : 1) * o.s},${o.s})` }, g);
+      if (o.from != null) { gg.dataset.from = o.from; gg.dataset.to = o.to; }
+      gg.innerHTML = SEA_ART[o.k] || "";
+      gg.style.animationDelay = -i * 1.3 + "s";
+    });
+  }
+  const SEA_ART = {
+    ship: `<g class="bobsea"><path d="M-12,0L12,0L8,5H-8Z" fill="#8a6a4a" stroke="#3a2a1a" stroke-width=".7"/><path d="M0,0V-16" stroke="#3a2a1a" stroke-width=".8"/><path d="M0.6,-15Q8,-10 0.6,-3Z" fill="#f2ead6" stroke="#3a2a1a" stroke-width=".6"/><path d="M-0.6,-13Q-6,-9 -0.6,-4Z" fill="#e8dcc0" stroke="#3a2a1a" stroke-width=".5"/><path d="M0,-16L4,-17.4L0,-18.4" fill="#a03a2a"/><path d="M-16,6q3,-2 6,0t6,0M8,6q3,-2 6,0" fill="none" stroke="#7f8f88" stroke-width=".7"/></g>`,
+    serpent: `<g class="bobsea"><path d="M-22,2Q-18,-8 -12,2Q-6,-8 0,2Q6,-8 12,2" fill="none" stroke="#4a6a5a" stroke-width="3" stroke-linecap="round"/><path d="M12,2Q15,-8 20,-8Q25,-8 24,-4L19,-3" fill="#5a7a6a" stroke="#2a3a32" stroke-width=".8"/><circle cx="21" cy="-6.4" r=".8" fill="#e8e0a0"/><path d="M-12,-3l-1,-3l2,1M0,-3l-1,-3l2,1" fill="none" stroke="#2a3a32" stroke-width=".7"/><path d="M-26,4q4,-2 8,0t8,0t8,0t8,0t8,0" fill="none" stroke="#7f8f88" stroke-width=".7"/></g>`,
+    whirl: `<path d="M0,0m-8,0a8,5 0 1,1 16,0a6,3.6 0 1,1 -12,0a4,2.4 0 1,1 8,0a2,1.2 0 1,1 -4,0" fill="none" stroke="#7f8f88" stroke-width=".8"/>`,
+    whale: `<g class="bobsea"><path d="M-14,0Q-12,-8 0,-8Q12,-8 14,0Z" fill="#6a7a80" stroke="#2a3a40" stroke-width=".7"/><path d="M14,0L20,-5L19,2Z" fill="#6a7a80" stroke="#2a3a40" stroke-width=".7"/><circle cx="-8" cy="-4" r=".8" fill="#1a1a1a"/><path d="M-6,-9Q-8,-14 -10,-13M-6,-9Q-4,-14 -2,-13" fill="none" stroke="#9fb4ba" stroke-width=".8"/></g>`
+  };
+  function texture(list, cls, draw, sd) {
+    list.forEach((a, i) => {
+      const g = el("g", { class: "tx " + cls + (a.ash ? " ash" : a.sand ? " sand" : a.dead ? " dead" : a.rock ? " rock" : "") }, a.fa ? L.bel : L.ter); let d = "";
+      scatter(a.pts, a.d, sd + i * 31).forEach(([x, y]) => (d += draw(x, y, a)));
+      el("path", { d }, g);
+      if (a.from != null) { g.dataset.from = a.from; L.timed.push(g); }
+      if (a.n && cls !== "grass") { const lg = el("g", { class: "lbl tx-l", transform: `translate(${f1(centroid(a.pts)[0])},${f1(centroid(a.pts)[1] + 2)})` }, a.fa ? L.bel : L.ter); const s2 = el("g", { class: "sc" }, lg); s2.style.setProperty("--fs", 8); el("text", { class: "lbl-n it" }, s2).textContent = a.n; }
+    });
+  }
+  function terrainDeco() {
+    L.timed = [];
+    texture(DECO.HILLS || [], "hills", (x, y, a) => a.rock ? `M${f1(x - 3)},${f1(y)}l1.6,-3.4l1.8,1.2l1.4,-2.6l1.8,4.8z` : `M${f1(x - 4.5)},${f1(y)}q4.5,-6 9,0M${f1(x - 1.6)},${f1(y - 1.4)}l1.2,1.2M${f1(x + 0.6)},${f1(y - 2.2)}l1.4,1.6`, 11);
+    texture(DECO.MARSH || [], "marsh", (x, y) => `M${f1(x - 3)},${f1(y)}h6M${f1(x - 1)},${f1(y)}v-3M${f1(x + 0.6)},${f1(y)}v-2.2M${f1(x + 1.8)},${f1(y)}l1,-2`, 21);
+    texture(DECO.WASTE || [], "waste", (x, y, a) => a.sand ? `M${f1(x - 3)},${f1(y)}q3,-2 6,0` : `M${f1(x)},${f1(y)}h.6`, 31);
+    texture(DECO.GRASS || [], "grass", (x, y) => `M${f1(x - 1.2)},${f1(y)}l-.8,-2M${f1(x)},${f1(y)}v-2.6M${f1(x + 1.2)},${f1(y)}l.8,-2`, 41);
+    const F = DECO.FIELDS; if (F) {
+      const g = el("g", { class: "fields" }, L.ter); seed = 5;
+      for (let i = 0; i < F.n; i++) { const a = rnd() * Math.PI * 2, r = Math.sqrt(rnd()), x = F.cx + Math.cos(a) * r * F.rx, y = F.cy + Math.sin(a) * r * F.ry, w = 2.2 + rnd() * 2.6, h = 1.6 + rnd() * 1.8;
+        el("rect", { x: f1(x - w / 2), y: f1(y - h / 2), width: f1(w), height: f1(h), class: "fld f" + (i % 4), transform: `rotate(${Math.round(rnd() * 50 - 25)} ${f1(x)} ${f1(y)})` }, g); }
+      g.dataset.from = 4031 + 1601; L.timed.push(g);
+    }
+  }
+  function roadsDeco() {
+    L.roads = el("g", { class: "roads" }, L.ter);
+    (DECO.ROADS || []).forEach((r) => {
+      const d = cr(r.pts), g = r.fa ? L.bel : L.roads;
+      el("path", { d, class: "road-b" }, g); el("path", { d, class: "road" }, g);
+    });
+    (DECO.BRIDGES || []).forEach(([x, y, a]) => el("path", { d: "M-3.4,-1.4Q0,-3.4 3.4,-1.4M-3.4,1.4Q0,3.4 3.4,1.4", class: "bridge", transform: `translate(${x},${y}) rotate(${a})` }, L.roads));
+    (DECO.BEACONS || []).forEach(([x, y], i) => { const g = el("g", { class: "beacon", transform: `translate(${x},${y})` }, L.roads); el("path", { d: "M-1.6,0L0,-2.6L1.6,0Z", class: "bc-b" }, g); el("path", { d: "M-1,-2.6Q0,-6 1,-2.6Z", class: "bc-f", style: `animation-delay:-${i * 0.3}s` }, g); });
+  }
   function buildMap() {
     const defs = el("defs", {}, svg);
     defs.innerHTML = `
@@ -95,6 +151,7 @@
       <pattern id="seaHatch" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(-18)"><path d="M0 7h6" class="sea-h"/></pattern>`;
     el("rect", { x: BX, y: BY, width: BW, height: BH, class: "sea" }, svg);
     el("rect", { x: BX, y: BY, width: BW, height: BH, fill: "url(#seaHatch)", opacity: 0.5 }, svg);
+    seaDeco();
     const landD = cr(W.land.me, true);
     L.coast = el("g", { class: "coast" }, svg);
     [16, 10, 5].forEach((w, i) => el("path", { d: landD, class: "ripple r" + i, "stroke-width": w }, L.coast));
@@ -132,7 +189,8 @@
     el("rect", { x: BX, y: BY, width: BW, height: BH, filter: "url(#paper)", class: "paper", "pointer-events": "none" }, svg);
     // 湖
     L.ter = el("g", { class: "terrain" }, svg);
-    W.lakes.forEach((lk) => el("path", { d: cr(lk.pts, true), class: "lake" }, L.ter));
+    W.lakes.forEach((lk) => { const d = cr(lk.pts, true); el("path", { d, class: "lake" }, L.ter); el("path", { d, class: "lake-in" }, L.ter); });
+    terrainDeco();
     // 森林
     W.forests.forEach((f) => {
       const g = f.fa ? L.bel : L.ter; let d = ""; seed = f.pts.length * 131 + 7;
@@ -141,10 +199,25 @@
       const trees = [];
       for (let i = 0; i < n * 3 && trees.length < n; i++) { const x = lerp(x0, x1, rnd()), y = lerp(y0, y1, rnd()); if (inPoly(x, y, f.pts)) trees.push([x, y]); }
       trees.sort((a, b) => a[1] - b[1]).forEach(([x, y]) => { const r = 2.2 + rnd() * 1.2; d += `M${(x - r).toFixed(1)},${y.toFixed(1)}a${r.toFixed(1)},${(r * 1.1).toFixed(1)} 0 1,1 ${(2 * r).toFixed(1)},0z`; });
+      el("path", { d, class: "trees-sh", transform: "translate(1.1,1.3)" }, g);
       el("path", { d, class: "trees" + (f.gold ? " gold" : "") }, g);
     });
     // 河
-    W.rivers.forEach((r) => el("path", { d: cr(r.pts), class: "river", "stroke-width": r.w }, r.fa ? L.bel : L.ter));
+    const RN = (DECO.RIVER_N || {});
+    W.rivers.forEach((r) => {
+      const g = r.fa ? L.bel : L.ter, sp = sample(r.pts, 3), n = 7;
+      for (let i = 0; i < n; i++) {
+        const a = Math.floor((i * (sp.length - 1)) / n), b = Math.floor(((i + 1) * (sp.length - 1)) / n);
+        if (b <= a) continue;
+        el("path", { d: "M" + sp.slice(a, b + 1).map((q) => q[0].toFixed(1) + "," + q[1].toFixed(1)).join("L"), class: "river", "stroke-width": (r.w * (0.38 + 0.62 * ((i + 1) / n))).toFixed(2) }, g);
+      }
+      const nm = r.n || RN[r.id];
+      if (nm) {
+        const pid = "rv-" + r.id; el("path", { id: pid, d: cr(r.pts), fill: "none", stroke: "none" }, g);
+        const t = el("text", { class: "rv-n", dy: -3 }, g), tp = el("textPath", { href: "#" + pid, startOffset: "38%" }, t); tp.textContent = nm;
+      }
+    });
+    roadsDeco();
     // 山
     W.mountains.forEach((m) => {
       const g = el("g", { class: "mts" + (m.dark ? " dark" : "") }, m.fa ? L.bel : m.aman ? L.aman : L.ter); seed = m.pts.length * 977 + Math.round(m.h * 13);
@@ -154,6 +227,8 @@
       peaks.sort((a, b) => a[1] - b[1]).forEach(([x, y, h]) => {
         const w = h * 0.62;
         el("path", { d: `M${(x - w).toFixed(1)},${y.toFixed(1)}L${(x - w * 0.1).toFixed(1)},${(y - h).toFixed(1)}L${(x + w).toFixed(1)},${y.toFixed(1)}`, class: "mt" }, g);
+        el("path", { d: `M${(x - w * 0.1).toFixed(1)},${(y - h).toFixed(1)}L${(x + w).toFixed(1)},${y.toFixed(1)}L${(x + w * 0.12).toFixed(1)},${y.toFixed(1)}Z`, class: "mt-s" }, g);
+        if (h > 13 && !m.dark) el("path", { d: `M${(x - w * 0.36).toFixed(1)},${(y - h * 0.62).toFixed(1)}L${(x - w * 0.1).toFixed(1)},${(y - h).toFixed(1)}L${(x + w * 0.3).toFixed(1)},${(y - h * 0.6).toFixed(1)}L${(x + w * 0.05).toFixed(1)},${(y - h * 0.7).toFixed(1)}L${(x - w * 0.14).toFixed(1)},${(y - h * 0.58).toFixed(1)}Z`, class: "mt-snow" }, g);
         el("path", { d: `M${(x + w * 0.05).toFixed(1)},${(y - h * 0.75).toFixed(1)}L${(x + w * 0.4).toFixed(1)},${(y - h * 0.15).toFixed(1)}M${(x + w * 0.25).toFixed(1)},${(y - h * 0.6).toFixed(1)}L${(x + w * 0.62).toFixed(1)},${(y - h * 0.05).toFixed(1)}`, class: "mt-h" }, g);
       });
     });
@@ -208,14 +283,9 @@
     D.PLACES.forEach((p) => {
       const g = el("g", { class: `pl k-${p.k}${p.minor ? " minor" : ""}`, transform: `translate(${p.x},${p.y})`, "data-id": p.id }, L.pl);
       const s = el("g", { class: "sc" }, g);
-      if (p.k === "elf") el("path", { d: "M0,-5L4.3,2.5L-4.3,2.5Z", class: "ic" }, s);
-      else if (p.k === "dwarf") el("rect", { x: -3.5, y: -3.5, width: 7, height: 7, class: "ic", transform: "rotate(45)" }, s);
-      else if (p.k === "hob") el("circle", { r: 3.6, class: "ic" }, s);
-      else if (p.k === "dark") el("path", { d: "M-4,-4L4,4M4,-4L-4,4", class: "ic x" }, s);
-      else if (p.k === "site") el("circle", { r: 2.4, class: "ic" }, s);
-      else el("rect", { x: -3.4, y: -3.4, width: 6.8, height: 6.8, class: "ic" }, s);
+      const ic = el("g", { class: "ic2" }, s); ic.innerHTML = window.ME_ICON ? window.ME_ICON(p) : `<circle r="3" class="ic"/>`;
       el("path", { d: "M-5,-5L5,5", class: "ruinx" }, s);
-      p.tx = el("text", { x: 7, y: 3.5, class: "pl-n" }, s); p.tx.textContent = p.n;
+      p.tx = el("text", { y: 3.5, class: "pl-n" + (p.k === "site" ? " st" : "") }, s); p.tx.textContent = p.n;
       p.g = g;
       g.addEventListener("click", (ev) => { ev.stopPropagation(); showPlace(p); });
     });
@@ -283,6 +353,8 @@
     const t = T;
     L.bel.classList.toggle("gone", t >= 587.5);
     L.nu.classList.toggle("gone", t < 622 || t >= 3909.3);
+    L.roads.classList.toggle("off", t < 591); L.timed.forEach((g) => g.classList.toggle("off", t < +g.dataset.from));
+    svg.querySelectorAll(".sea-o[data-from]").forEach((g) => g.classList.toggle("off", t < +g.dataset.from || t >= +g.dataset.to));
     const veiled = t >= 3909.3; L.aman.classList.toggle("veiled", veiled);
     L.trees.classList.toggle("dead", t >= -40);
     W.labels.forEach((lb) => lb.g && lb.g.classList.toggle("off", (lb.from != null && t < lb.from) || (lb.ta && t < 591)));
@@ -331,6 +403,7 @@
     const h = (cam.w * ch) / cw;
     svg.setAttribute("viewBox", `${cam.x.toFixed(2)} ${cam.y.toFixed(2)} ${cam.w.toFixed(2)} ${h.toFixed(2)}`);
     const k = cam.w / cw; svg.style.setProperty("--k", k.toFixed(4));
+    svg.style.setProperty("--icz", clamp(640 / cam.w, 0.8, 2.4).toFixed(3));
     svg.classList.toggle("far", cam.w > 1150); svg.classList.toggle("near", cam.w < 620);
   }
   let flyRaf = 0, userMoved = 0;
