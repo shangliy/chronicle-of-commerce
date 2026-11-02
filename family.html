@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>罗斯柴尔德家报</title>
+  <meta name="description" content="商海时报·家族版：罗斯柴尔德家族二百八十年——从法兰克福犹太巷到 Rothschild &amp; Co，家谱随时间生长。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;600;900&family=UnifrakturMaguntia&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- ============ 头版 ============ -->
+  <div id="front">
+    <header class="masthead">
+      <div class="ear">商海时报 · 家族版<br /><b>1744 — 2026</b><br /><a class="link edition-link" href="index.html">‹ 返回主报</a> · <a class="link edition-link" href="fashion.html">风尚版 ›</a></div>
+      <div class="title">
+        <h1>羅斯柴爾德家報</h1>
+        <div class="en">The Rothschild Chronicle</div>
+      </div>
+      <div class="ear right">定价：五支箭<br /><button id="quizBtn" class="link">看图猜年份 ›</button></div>
+    </header>
+    <div class="dateline">
+      <span id="today"></span>
+      <span class="sep">◆</span>
+      <b id="edition" class="edition"></b>
+      <span class="sep">◆</span>
+      <span>今日 <b id="pageCount"></b> 版 · 故事 <b id="storyCount"></b> 则</span>
+      <div class="search">
+        <input id="q" type="search" placeholder="检索本报：伦敦、苏伊士、木桐、1871…" autocomplete="off" />
+        <ul id="results" hidden></ul>
+      </div>
+    </div>
+
+    <section id="machine" class="machine" tabindex="0" aria-label="时光机：罗斯柴尔德家族二百八十年">
+      <div class="m-left">
+        <span class="kicker">家族变迁 · 时光机</span>
+        <div class="m-year" id="mYear">1744</div>
+        <div class="m-era" id="mEra"></div>
+        <p class="m-desc" id="mDesc"></p>
+        <div class="m-ctrl">
+          <button id="mPlay" class="go">▶ 播放家族史</button>
+          <button id="mSpeed" class="chip" title="播放速度">1×</button>
+        </div>
+        <p class="muted small">拖动下方标尺穿越 · 悬停圆点预览 · 点击展阅 · ← → 逐条跳转</p>
+      </div>
+      <div class="m-desk" id="mDesk">
+        <div class="m-empty" id="mEmpty">故事即将开始……</div>
+        <div class="m-stamp" id="mStamp"></div>
+      </div>
+      <div class="m-axis" id="mAxis">
+        <div class="m-eras" id="mEras"></div>
+        <div class="m-lanes" id="mLanes"></div>
+        <div class="m-ticks" id="mTicks"></div>
+        <div class="m-headwrap"><div class="m-head" id="mHead"></div></div>
+      </div>
+    </section>
+
+    <section id="tree" class="tree" aria-label="家谱"></section>
+
+    <main class="front-grid">
+      <article id="lead" class="lead"></article>
+      <aside id="brief" class="brief"></aside>
+      <section id="stories" class="stories"></section>
+    </main>
+
+    <section class="river">
+      <h3>时间之河 <small>一个家族的影像，随岁月流动 · 悬停暂停，点击展阅</small></h3>
+      <div class="river-window"><div id="river" class="river-track"></div></div>
+    </section>
+
+    <footer class="colophon">
+      图片来自 Wikimedia Commons / Wikipedia，作者与许可见各图图注 · 文字为本报编辑整理，换一个家族或品牌：复制 <code>js/family-rothschild.js</code> 改写即可
+    </footer>
+  </div>
+
+  <!-- ============ 翻页阅读 ============ -->
+  <div id="reader" hidden>
+    <div class="r-top">
+      <button id="home" class="link">‹ 返回头版</button>
+      <span id="rTitle"></span>
+      <span id="rEra" class="muted"></span>
+      <span id="rPage" class="muted"></span>
+    </div>
+    <div class="stage">
+      <button id="prev" class="turn" aria-label="上一页">‹</button>
+      <div id="book" class="book">
+        <div id="pL" class="page left"></div>
+        <div id="pR" class="page right"></div>
+      </div>
+      <button id="next" class="turn" aria-label="下一页">›</button>
+    </div>
+    <div class="r-bar">
+      <button id="play">▶ 自动翻页</button>
+      <button id="tone">旧报色调</button>
+      <span class="muted small">← → 翻页 · 空格自动 · Esc 返回头版</span>
+    </div>
+    <div class="film">
+      <div id="ruler" class="ruler"></div>
+      <div class="film-window"><div id="film" class="film-track"></div></div>
+    </div>
+  </div>
+
+  <!-- ============ 剪报 / 小试 弹窗 ============ -->
+  <div id="modal" hidden>
+    <div class="clip">
+      <button class="close" id="mClose" aria-label="关闭">×</button>
+      <div id="mBody"></div>
+    </div>
+  </div>
+
+  <script src="js/family-rothschild.js"></script>
+  <script src="js/family-rothschild-images.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/tree.js"></script>
+</body>
+</html>

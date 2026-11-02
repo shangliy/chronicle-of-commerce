@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>風尚誌 · 倒叙黑白版</title>
+  <meta name="description" content="香奈儿倒着读：从 2026 年的大皇宫一路翻回 1883 年的修道院。黑白底色，秀场与产品图作唯一的颜色。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..700&family=Noto+Serif+SC:wght@300;400;600;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/fashion.css" />
+</head>
+<body data-tone="dark">
+  <nav class="topbar" id="topbar">
+    <a href="#cover" class="tb-brand"><b id="tbTitle"></b><span id="tbIssue"></span></a>
+    <span class="tb-links"><a href="fashion.html">正序版</a><a href="fashion-book.html">翻页版</a><a href="index.html">商海时报</a><a href="family.html">家族版</a></span>
+  </nav>
+
+  <header class="cover" id="cover"></header>
+  <section class="prologue" id="prologue"></section>
+
+  <section class="story" id="story">
+    <aside class="rail" id="rail" aria-live="polite"></aside>
+    <div class="chapters" id="chapters"></div>
+    <aside class="spine" id="spine" aria-label="时间线与各阶段产品"></aside>
+  </section>
+
+  <section class="finale" id="finale"></section>
+
+  <button class="sp-toggle" id="spToggle" aria-label="打开衣橱时间线"><b>衣橱</b></button>
+  <div class="modal" id="modal" hidden><div class="modal-card" role="dialog" aria-modal="true"><button class="modal-x" aria-label="关闭">×</button><div id="modalBody"></div></div></div>
+
+  <!-- 倒叙 · 黑白 · T 台大图：同一份数据，换一种读法 -->
+  <script>window.FASHION_MODE = { rewind: true, mono: true, runway: true, coverImg: "2026-05-26 Tilda Swinton for Chanel 02.jpg" };</script>
+  <!-- 换品牌：换掉下面两个文件即可 -->
+  <script src="js/fashion-chanel.js"></script>
+  <script src="js/fashion-chanel-images.js"></script>
+  <script src="js/fashion-common.js"></script>
+  <script src="js/fashion.js"></script>
+</body>
+</html>

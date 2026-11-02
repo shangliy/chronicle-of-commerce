@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>風尚誌 · 翻页版</title>
+  <meta name="description" content="香奈儿 1883—2026，排成一本左右翻页的杂志：每章左页大图、右页正文，六幕、三十九个场景、官方走秀影片。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..700&family=Noto+Serif+SC:wght@300;400;600;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/fashion-book.css" />
+</head>
+<body>
+  <nav class="topbar">
+    <a href="fashion-book.html" class="tb-brand"><b>風尚誌</b><span>香奈儿特辑 · 翻页版</span></a>
+    <span class="tb-links"><a href="fashion.html">滚动版</a><a href="index.html">商海时报</a><a href="family.html">家族版</a></span>
+  </nav>
+
+  <main class="stage" id="stage">
+    <button class="nav-btn prev" id="prevBtn" aria-label="上一页">‹</button>
+    <div class="book" id="book" aria-live="polite"></div>
+    <button class="nav-btn next" id="nextBtn" aria-label="下一页">›</button>
+  </main>
+
+  <footer class="bar">
+    <button class="toc-btn" id="tocBtn" aria-label="目录">目录</button>
+    <div class="scrub-wrap">
+      <div class="ticks" id="ticks"></div>
+      <input type="range" id="scrub" min="0" max="1" value="0" step="1" aria-label="拖动翻到某一页" />
+      <output class="scrub-tip" id="scrubTip" hidden></output>
+    </div>
+    <div class="pg-label" id="pgLabel"></div>
+  </footer>
+
+  <!-- 离屏量尺：分页时用来测量一页能装多少内容 -->
+  <div class="measure" id="measure" aria-hidden="true"></div>
+
+  <div class="modal" id="modal" hidden><div class="modal-card" role="dialog" aria-modal="true"><button class="modal-x" aria-label="关闭">×</button><div id="modalBody"></div></div></div>
+
+  <script src="js/fashion-chanel.js"></script>
+  <script src="js/fashion-chanel-images.js"></script>
+  <script src="js/fashion-common.js"></script>
+  <script src="js/fashion-book.js"></script>
+</body>
+</html>
