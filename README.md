@@ -172,3 +172,7 @@ js/fashion-common.js  两个版本共用的符号图标与廓形
 js/fashion-chanel*.js     风尚版的内容、故事主线与图片元数据
 scripts/          图片分配与抓取脚本
 ```
+
+## 许可证
+
+本项目代码以 [MIT 许可证](LICENSE) 发布。页面引用的图片来自 Wikimedia Commons，各自遵循原作者的 CC / 公有领域授权（见图片说明）；嵌入的视频版权归原发布方所有。
