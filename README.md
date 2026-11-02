@@ -3,7 +3,7 @@
 一份可以翻页的商业故事报：七百年商业影像随时间流动，看一门生意如何穿越时代。
 灵感来自 [江山时序](https://github.com/DeanChensj/jiangshan-map)，选题参考播客「虚实之间」。
 
-**在线访问：** https://shangliy.github.io/chronicle-of-commerce/ （[倒叙黑白版](https://shangliy.github.io/chronicle-of-commerce/fashion-noir.html) · [香奈儿滚动版](https://shangliy.github.io/chronicle-of-commerce/fashion.html) · [翻页版](https://shangliy.github.io/chronicle-of-commerce/fashion-book.html) · [家族版](https://shangliy.github.io/chronicle-of-commerce/family.html)）
+**在线访问：** https://shangliy.github.io/chronicle-of-commerce/ （[倒叙黑白版](https://shangliy.github.io/chronicle-of-commerce/fashion-noir.html) · [香奈儿滚动版](https://shangliy.github.io/chronicle-of-commerce/fashion.html) · [翻页版](https://shangliy.github.io/chronicle-of-commerce/fashion-book.html) · [家族版](https://shangliy.github.io/chronicle-of-commerce/family.html) · [中洲纪年·指环王版](https://shangliy.github.io/chronicle-of-commerce/middle-earth.html)）
 
 ## 玩法
 
@@ -67,6 +67,18 @@
 - **右侧衣橱时间线**：竖直贯穿全文，每章一个节点、挂着那一年的产品缩略图；往下读时当前节点放大、读过的变成彩色，
   点年份跳章、点缩略图看大图；窄屏收成右侧抽屉（右下角「衣橱」按钮）
 - 时代色调切换；链接参数 `fashion.html?year=1954`（同一年有多章时用 `#y2026-2` 锚点）；键盘 `j` / `k`
+
+## 中洲纪年 · 指环王版（`middle-earth.html`）
+
+非官方爱好者作品，与托尔金遗产委员会、Middle-earth Enterprises、华纳兄弟均无关联。地图是原创手绘风 SVG 示意图（不按比例），文字是原创中文概述，不使用电影剧照或书中插图。
+
+- **会变的大陆**：一条时间轴贯穿双树纪到第四纪元；贝烈瑞安德在第一纪元末沉入大海，努门诺尔在第二纪元升起又覆灭，城池随年代建立、改名、沦为废墟，各个王国的势力范围渐显渐隐
+- **编年**：97 个事件，点一下就拨到那一年并飞到事发地点；播放时依次弹出
+- **旅程与至尊戒**：芬国昐、埃兰迪尔、比尔博、弗罗多、阿拉贡、甘道夫等人的路线逐日画出；金色光点是至尊戒，从末日火山铸成一路跟到它被毁
+- **传说**：12 段引导式阅读（精灵宝钻、贝伦与露西恩、图林、刚多林、努门诺尔、魔戒……），每读一段，地图和时间就跟着走
+- **战役**：泪雨之战、最后联盟、五军之战、号角堡、帕兰诺平原、黑门，分幕推演兵力移动，并用第二人称写“你”在战场上的经历；可开启合成环境音（风、雨、号角、战鼓）
+- 链接参数：`#t=7050.2`（时间）、`#l=beren&k=2`（传说第几段）、`#b=pelennor`（战役）；键盘：空格播放、← → 逐个事件、Esc 关闭战场
+- 内容在 `js/me-data.js`（纪元、地点、国度、事件、旅程、传说），地理在 `js/me-world.js`，战役在 `js/me-battles.js`
 
 ## 倒叙黑白版（`fashion-noir.html`）
 
@@ -170,6 +182,12 @@ js/fashion.js     风尚版引擎（读 window.MAG）
 js/fashion-book.js    翻页版引擎（排版、分页、3D 翻页）
 js/fashion-common.js  两个版本共用的符号图标与廓形
 js/fashion-chanel*.js     风尚版的内容、故事主线与图片元数据
+middle-earth.html 中洲纪年 · 指环王版
+css/me.css        中洲版样式
+js/me.js          中洲版引擎（地图、时光机、编年、传说、战役、合成音效）
+js/me-world.js    中洲地理（海岸、山脉、河流、森林、地名）
+js/me-data.js     纪元 / 地点 / 国度 / 事件 / 旅程 / 传说
+js/me-battles.js  六场战役的地形、兵力与分幕
 scripts/          图片分配与抓取脚本
 ```
 

@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>中洲纪年 · 指环王版</title>
+  <meta name="description" content="可交互的中洲世界地图、编年史、传说导读与主要战役推演。非官方爱好者作品。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=IM+Fell+English:ital@0;1&family=Noto+Serif+SC:wght@400;600;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/me.css" />
+</head>
+<body data-era="trees">
+  <!-- 封面 -->
+  <div id="intro" class="intro">
+    <div class="intro-in">
+      <div class="intro-ring" aria-hidden="true"></div>
+      <p class="intro-k">商海时报 · 特别版 · 非官方爱好者作品</p>
+      <h1>中洲纪年</h1>
+      <p class="intro-en">A Chronicle of Middle-earth</p>
+      <p class="intro-p">从双圣树的光，到魔戒在末日火山中熔化——七千多年的大陆、王国、传说与战争，铺在一张会随时间变化的地图上。拖动时间，看贝烈瑞安德沉入大海、努门诺尔升起又覆灭；跟着至尊戒走完它的路；走进战场，亲身经历那几场决定世界的战役。</p>
+      <div class="intro-btns">
+        <button data-start="begin" class="pri">从头开始 ▸<small>自动播放全部纪元</small></button>
+        <button data-start="war">直接去魔戒大战<small>跟着弗罗多出发</small></button>
+        <button data-start="battle">身临战场 ⚔<small>六场主要战役</small></button>
+      </div>
+      <p class="intro-note">空格 播放/暂停 · ← → 逐个事件 · 滚轮/双指 缩放地图 · 点击地名查看历史</p>
+    </div>
+  </div>
+
+  <header class="top">
+    <a class="brand" href="index.html">商海时报</a>
+    <b class="ttl">中洲纪年<small>指环王版</small></b>
+    <nav>
+      <a href="index.html">首页</a><a href="family.html">家族版</a><a href="fashion.html">时尚版</a>
+    </nav>
+    <button id="panelToggle" class="ptog" aria-label="切换侧栏">☰</button>
+  </header>
+
+  <main class="stage">
+    <aside class="panel" id="panel">
+      <div id="tabs" class="tabs" role="tablist">
+        <button data-tab="chron" class="on">编年</button>
+        <button data-tab="legends">传说</button>
+        <button data-tab="battles">战役</button>
+      </div>
+      <div class="pane" data-pane="chron"><div id="chron" class="chron"></div></div>
+      <div class="pane" data-pane="legends" hidden><div id="legends" class="legends"></div><div id="reader" class="reader" hidden></div></div>
+      <div class="pane" data-pane="battles" hidden><div id="battles" class="battles"></div></div>
+      <p class="disc">非官方爱好者作品，与托尔金遗产委员会、Middle-earth Enterprises、华纳兄弟等均无关联。地图为原创示意图、不按比例；文字为原创中文概述。</p>
+    </aside>
+
+    <div class="mapwrap">
+      <svg id="map" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" role="img" aria-label="中洲地图"></svg>
+      <div class="zoom"><button id="zin" aria-label="放大">＋</button><button id="zout" aria-label="缩小">－</button><button id="zfit" aria-label="本纪元全图">⌂</button></div>
+      <div class="legend-key"><span class="k-elf">▲ 精灵</span><span class="k-man">■ 人类</span><span class="k-dwarf">◆ 矮人</span><span class="k-hob">● 霍比特</span><span class="k-dark">✕ 暗影</span><span class="k-ring">◉ 至尊戒</span></div>
+      <div id="eraFlash" class="era-flash"></div>
+      <div id="toast" class="toast"></div>
+      <div id="card" class="card" hidden></div>
+    </div>
+  </main>
+
+  <footer id="tm" class="tm">
+    <div class="tm-ctl">
+      <button id="tmPrev" aria-label="上一个事件">‹</button>
+      <button id="tmPlay" class="play" aria-label="播放"></button>
+      <button id="tmNext" aria-label="下一个事件">›</button>
+      <button id="tmSpeed" class="spd">1×</button>
+      <div class="tm-date"><b id="tmDate"></b><span id="tmEra"></span></div>
+    </div>
+    <div id="tmTrack" class="tm-track">
+      <div id="tmBands" class="tm-bands"></div>
+      <div class="tm-rail"><div id="tmFill" class="tm-fill"></div></div>
+      <div id="tmTicks" class="tm-ticks"></div>
+      <div id="tmThumb" class="tm-thumb"></div>
+      <div id="tmHover" class="tm-hover"></div>
+    </div>
+  </footer>
+
+  <!-- 战场 -->
+  <section id="battle" class="battle" hidden>
+    <div class="b-top">
+      <div><b id="bTitle"></b><span id="bEn"></span></div>
+      <div class="b-ctl"><span id="bK"></span><button id="bAuto">自动推进</button><button id="bSound">声音 关</button><button id="bClose" aria-label="关闭">×</button></div>
+    </div>
+    <div class="b-body">
+      <div class="b-field">
+        <svg id="bsvg" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet"></svg>
+        <div id="bOverlay" class="b-overlay"></div>
+        <div class="b-key"><span class="w">■ 西方/自由人民</span><span class="e">■ 黑暗势力</span></div>
+      </div>
+      <div class="b-side">
+        <div id="bDots" class="b-dots"></div>
+        <div id="bText" class="b-text"></div>
+      </div>
+    </div>
+  </section>
+
+  <script src="js/me-world.js"></script>
+  <script src="js/me-data.js"></script>
+  <script src="js/me-battles.js"></script>
+  <script src="js/me.js"></script>
+</body>
+</html>
