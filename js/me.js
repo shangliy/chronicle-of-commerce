@@ -446,6 +446,7 @@
     const rr = t >= RING[0].t && t < RING_END ? at(RING, t) : null;
     L.ring.style.display = rr ? "" : "none";
     if (rr) L.ring.setAttribute("transform", `translate(${rr.pos[0].toFixed(1)},${(rr.pos[1] - 1).toFixed(1)})`);
+    schedDc();
   }
 
   /* ——镜头—— */
@@ -456,7 +457,50 @@
     const k = cam.w / cw; svg.style.setProperty("--k", k.toFixed(4));
     svg.style.setProperty("--icz", clamp(640 / cam.w, 0.8, 2.4).toFixed(3));
     svg.classList.toggle("far", cam.w > 1150); svg.classList.toggle("near", cam.w < 620);
-    scaleBar(k);
+    scaleBar(k); schedDc();
+  }
+  /* ——标签避让：按重要性逐个放置，和已放置的文字重叠就先隐藏，放大后再出现—— */
+  let dcAt = 0, dcTimer = 0;
+  function schedDc() { if (!dcTimer) dcTimer = setTimeout(declutter, Math.max(30, 220 - (performance.now() - dcAt))); }
+  function declutter() {
+    dcAt = performance.now(); dcTimer = 0;
+    const U = [], add = (sel, pri) => svg.querySelectorAll(sel).forEach((n) => U.push({ n, pri: typeof pri === "function" ? pri(n) : pri }));
+    add(".pl-n", (n) => (n.closest(".minor") || n.classList.contains("st") ? 4 : 1));
+    add(".ring-n", 1.5);
+    add(".realm-n", 2);
+    add(".edge > .sc", 2.5);
+    add(".lbl:not(.mt-l):not(.tx-l) > .sc", 3);
+    add(".lm-n", 5);
+    add(".tx-l > .sc, .mt-l > .sc", 6);
+    add(".rv-n", 7);
+    add(".jname", 8);
+    const vw = innerWidth, vh = innerHeight, placed = [], seen = [], pad = 1.5;
+    const inView = (r) => r.width >= 1 && r.right > 0 && r.left < vw && r.bottom > 0 && r.top < vh;
+    const hits = (r) => placed.some((q) => r.left < q.right - pad && r.right > q.left + pad && r.top < q.bottom - pad && r.bottom > q.top + pad);
+    // 地点图标本身也是障碍
+    svg.querySelectorAll(".pl:not(.off) .ic2").forEach((ic) => { const r = ic.getBoundingClientRect(); if (inView(r)) placed.push(r); });
+    U.forEach((u) => {
+      u.r = u.n.closest(".off,.gone,.realm:not(.on),.veiled") ? null : u.n.getBoundingClientRect();
+      if (u.r && !inView(u.r)) u.r = null;
+      u.h = u.r ? u.r.height : 0;
+      if (u.r && u.n.classList.contains("pl-n")) { // 记下图标中心，算出“放右边”的原始位置
+        const ic = u.n.parentNode.querySelector(".ic2").getBoundingClientRect(); u.cx = (ic.left + ic.right) / 2;
+        if (u.n.classList.contains("lf")) u.r = new DOMRect(2 * u.cx - u.r.right, u.r.top, u.r.width, u.r.height);
+      }
+    });
+    U.sort((a, b) => a.pri - b.pri || b.h - a.h);
+    U.forEach((u) => {
+      if (!u.r) { u.n.classList.remove("dc"); return; }
+      let r = u.r, lf = false;
+      const txt = (u.n.textContent || "").replace(/（废墟）| \(ruins\)/, "").trim();
+      let hit = hits(r);
+      if (hit && u.cx != null) { const r2 = new DOMRect(2 * u.cx - r.right, r.top, r.width, r.height); if (!hits(r2)) { r = r2; lf = true; hit = false; } }
+      const cx = (r.left + r.right) / 2, cy = (r.top + r.bottom) / 2;
+      if (!hit && txt) hit = seen.some((q) => q.t === txt && Math.hypot(q.x - cx, q.y - cy) < 160);
+      u.n.classList.toggle("dc", hit);
+      if (u.cx != null) u.n.classList.toggle("lf", lf);
+      if (!hit) { placed.push(r); if (txt) seen.push({ t: txt, x: cx, y: cy }); }
+    });
   }
   function scaleBar(k) { // 100 里格 ≈ 125 地图单位
     const sb = document.getElementById("scalebar"); if (!sb) return;

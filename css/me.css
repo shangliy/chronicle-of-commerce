@@ -674,7 +674,7 @@ html[lang="en"] .mo-text p { line-height: 1.7; font-size: 16px; }
 .go-m { margin-top: 10px; background: #2a1e10; color: #f6d26a; border: 1px solid #8a6a2a; padding: 6px 14px; border-radius: 3px; font-size: 13px; }
 .go-m.wide { display: block; width: 100%; margin-top: 12px; padding: 10px; text-align: left; }
 .go-m:hover { background: #3a2a14; }
-.mini.go-m { color: #b8860b; }
+.mini.go-m { margin: 0; padding: 0 6px; background: none; border: 1px solid #c9a640; color: #b8860b; font-size: 12px; } .mini.go-m:hover { background: var(--dark); color: #f6d26a; }
 @media (max-width: 860px) {
   .moment { padding: 0; place-items: stretch; }
   .mo-in { max-height: 100vh; height: 100%; border: 0; }
@@ -685,3 +685,8 @@ html[lang="en"] .mo-text p { line-height: 1.7; font-size: 16px; }
   .mo-k { font-size: 11px; letter-spacing: .08em; }
   .mo-pt span { width: 52px; height: 65px; }
 }
+/* 标签避让 */
+#map .pl-n, #map .realm-n, #map .lbl > .sc, #map .lm-n, #map .rv-n, #map .jname, #map .ring-n { transition: opacity .35s; }
+#map .dc { opacity: 0 !important; }
+#map .pl:hover .pl-n.dc { opacity: 1 !important; }
+.pl .pl-n.lf { text-anchor: end; transform: translateX(calc(-11px * var(--icz, 1))); } .pl .pl-n.st.lf { transform: translateX(calc(-8px * var(--icz, 1))); }
