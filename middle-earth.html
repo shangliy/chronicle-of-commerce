@@ -17,6 +17,10 @@
       l = l === "en" ? "en" : "zh"; window.ME_LANG = l;
       document.documentElement.lang = l === "en" ? "en" : "zh-CN";
       if (l === "en") document.write('<script src="js/me-en.js"><\/script>');
+      var sq = new URLSearchParams(location.search).get("style"), sm = null;
+      try { sm = localStorage.getItem("me-style"); } catch (e) {}
+      var st = (sq || sm) === "parch" ? "parch" : "h3"; window.ME_STYLE = st;
+      document.documentElement.classList.add("st-" + st);
     })();
   </script>
 </head>
@@ -44,6 +48,7 @@
     <nav>
       <a href="index.html">首页</a><a href="family.html">家族版</a><a href="fashion.html">时尚版</a>
     </nav>
+    <button id="styleBtn" class="lang sty" aria-label="Map style / 地图风格"></button>
     <button id="langBtn" class="lang" aria-label="Language / 语言">EN</button>
     <button id="panelToggle" class="ptog" aria-label="切换侧栏">☰</button>
   </header>
@@ -65,6 +70,7 @@
 
     <div class="mapwrap">
       <svg id="map" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" role="img" aria-label="中洲地图"></svg>
+      <div id="mini" class="h3mini" aria-label="小地图"></div>
       <div class="mapframe" aria-hidden="true"><i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i></div>
       <svg class="compass" viewBox="-50 -50 100 100" aria-hidden="true">
         <circle r="34" fill="none" stroke="#5a4326" stroke-width="1"/><circle r="30" fill="none" stroke="#5a4326" stroke-width=".5" stroke-dasharray="1 2"/>
@@ -90,7 +96,7 @@
       <button id="tmPlay" class="play" aria-label="播放"></button>
       <button id="tmNext" aria-label="下一个事件">›</button>
       <button id="tmSpeed" class="spd">1×</button>
-      <div class="tm-date"><b id="tmDate"></b><span id="tmEra"></span></div>
+      <div class="tm-date"><b id="tmDate"></b><span id="tmEra"></span><em id="tmCal"></em></div>
     </div>
     <div id="tmTrack" class="tm-track">
       <div id="tmBands" class="tm-bands"></div>
@@ -129,6 +135,7 @@
   <script src="js/me-chars.js"></script>
   <script src="js/me-portrait.js"></script>
   <script src="js/me-deco.js"></script>
+  <script src="js/me-h3.js"></script>
   <script src="js/me-life.js"></script>
   <script src="js/me-bio.js"></script>
   <script src="js/me-legends.js"></script>

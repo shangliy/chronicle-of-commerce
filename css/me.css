@@ -690,3 +690,140 @@ html[lang="en"] .mo-text p { line-height: 1.7; font-size: 16px; }
 #map .dc { opacity: 0 !important; }
 #map .pl:hover .pl-n.dc { opacity: 1 !important; }
 .pl .pl-n.lf { text-anchor: end; transform: translateX(calc(-11px * var(--icz, 1))); } .pl .pl-n.st.lf { transform: translateX(calc(-8px * var(--icz, 1))); }
+
+/* =====================================================================
+ * “英雄”风格（html.st-h3）：彩色冒险地图 + 金边石框界面（原创绘制）
+ * ===================================================================== */
+.sty { margin-left: 4px; }
+@media (max-width: 860px) { .sty { margin-left: auto; } .sty ~ .lang { margin-left: 4px; } }
+.st-h3 { --gold: #e0b44a; --h3gold: linear-gradient(180deg, #f8e08a, #c8902a 45%, #8a5a14 55%, #e8c060); --stone: #2a2420; }
+/* —— 海、陆地、海滩 —— */
+.st-h3 .sea { fill: url(#tx-water); }
+.st-h3 .sea-hatch, .st-h3 .paper, .st-h3 .wave { display: none; }
+.st-h3 .ripple { stroke: #e8f6ff; } .st-h3 .ripple.r0 { stroke: #2f78ae; opacity: .55; } .st-h3 .ripple.r1 { stroke: #7cc0e4; opacity: .5; } .st-h3 .ripple.r2 { opacity: .85; stroke-dasharray: 5 3; }
+.st-h3 .beach { fill: none; stroke: #e2c98a; stroke-width: 5; stroke-linejoin: round; }
+.st-h3 .land, .st-h3 .land.coastline { fill: url(#tx-grass); }
+.st-h3 .aman-land, .st-h3 .aman-land.coastline { fill: url(#tx-aman); }
+.st-h3 .coastline { stroke: #6a5432; stroke-width: .9; }
+.st-h3 .ice { fill: url(#tx-snow); stroke: #8ab0c8; stroke-dasharray: none; }
+.st-h3 .biome { stroke: none; }
+.st-h3 .biome.off { display: none; }
+/* —— 湖河路 —— */
+.st-h3 .lake { fill: url(#tx-shallow); stroke: #e2c98a; stroke-width: 1.8; }
+.st-h3 .lake-in { stroke: #e8f6ff; opacity: .8; stroke-width: 1.2; stroke-dasharray: 4 3; }
+.st-h3 .river { stroke: #2f80c8; opacity: 1; filter: drop-shadow(0 0 .6px #e8f6ff); }
+.st-h3 .road-b { stroke: #6a4a24; stroke-width: 3.6; opacity: .55; }
+.st-h3 .road { stroke: #c8a468; stroke-width: 2.4; stroke-dasharray: none; opacity: 1; }
+.st-h3 #map.far .road { stroke-width: 2.8; }
+.st-h3 .bridge { stroke: #5a3a1a; stroke-width: 1.4; }
+/* —— 原有地貌小纹理：在贴图上只留轻微笔触 —— */
+.st-h3 .hills path { stroke: #4a6a22; fill: none; opacity: .55; } .st-h3 .hills.rock path { fill: #a89878; stroke: #4e4232; opacity: .9; }
+.st-h3 .marsh path { stroke: #2a3a1a; opacity: .5; } .st-h3 .waste path { opacity: .25; }
+.st-h3 .grass path { stroke: #2d5e17; }
+.st-h3 .fld { stroke: #6a5a2a; stroke-width: .5; opacity: .95; } .st-h3 .fld.f0 { fill: #d8c050; } .st-h3 .fld.f1 { fill: #e8d070; } .st-h3 .fld.f2 { fill: #8ab040; } .st-h3 .fld.f3 { fill: #c89a48; }
+/* —— 森林 —— */
+.h3f-floor { fill: #2a5a18; opacity: .55; }
+.h3f-sh { fill: #0e2808; opacity: .4; }
+.h3f-cr { fill: #2f7a22; stroke: #123a0c; stroke-width: .45; }
+.h3f-hi { fill: #5ea83a; }
+.h3f-pl { fill: #2a6a2a; stroke: #0c2a0c; stroke-width: .4; } .h3f-ps { fill: #174a1a; stroke: #0c2a0c; stroke-width: .4; }
+.h3f.dk .h3f-floor { fill: #142a10; opacity: .7; } .h3f.dk .h3f-cr { fill: #1f4a1c; } .h3f.dk .h3f-hi { fill: #3a6a2a; } .h3f.dk .h3f-pl { fill: #1c401e; } .h3f.dk .h3f-ps { fill: #0e2a12; }
+.h3f.gold .h3f-floor { fill: #6a7a20; } .h3f.gold .h3f-cr { fill: #e0b030; stroke: #6a4a08; } .h3f.gold .h3f-hi { fill: #fff0a0; }
+/* —— 山 —— */
+.st-h3 .mt-base { fill: none; stroke: #6e5a3a; stroke-linecap: round; stroke-linejoin: round; opacity: .55; }
+.st-h3 .mt-base2 { fill: none; stroke: #8a7650; stroke-linecap: round; stroke-linejoin: round; opacity: .75; }
+.st-h3 .mts.dark .mt-base { stroke: #241a18; opacity: .8; } .st-h3 .mts.dark .mt-base2 { stroke: #3a2c28; opacity: .9; }
+.st-h3 .mt { fill: #b0946a; stroke: #3a2a18; stroke-width: .7; }
+.st-h3 .mt-s { fill: #4a3420; opacity: .55; }
+.st-h3 .mt-h { stroke: #3a2a18; }
+.st-h3 .mts.dark .mt { fill: #4e4040; stroke: #120a08; } .st-h3 .mts.dark .mt-s { fill: #120a08; opacity: .6; }
+.st-h3 .peak.fire .mt { fill: #4a3030; }
+/* —— 文字：浅色字 + 深色描边 —— */
+.st-h3 .pl-n { fill: #fff6d0; stroke: rgba(26, 16, 6, .92); stroke-width: 3px; }
+.st-h3 .pl.dk .pl-n { fill: #ffb8a0; } .st-h3 .pl.ruin .pl-n { fill: #d8ccb0; } .st-h3 .pl:hover .pl-n { fill: #ffd84a; }
+.st-h3 .lbl-n { fill: #fff0c0; opacity: .95; paint-order: stroke; stroke: rgba(30, 18, 6, .75); stroke-width: calc(var(--fs) * .075px); }
+.st-h3 .lbl-en { fill: #f0e0b0; opacity: .85; paint-order: stroke; stroke: rgba(30, 18, 6, .65); stroke-width: calc(var(--fs) * .05px); }
+.st-h3 .sea-l .lbl-n { fill: #d8f0ff; stroke: rgba(10, 30, 60, .7); } .st-h3 .sea-l .lbl-en { fill: #b8dcf4; stroke: rgba(10, 30, 60, .6); }
+.st-h3 .tx-l .lbl-n { fill: #f0e4b8; }
+.st-h3 .rv-n { fill: #d8f0ff; stroke: rgba(10, 40, 80, .85); }
+.st-h3 .realm-n { opacity: .9; stroke: rgba(20, 12, 4, .7); }
+.st-h3 .edge-n { fill: #d8f0ff; } .st-h3 .edge-en { fill: #a8cce4; }
+.st-h3 .jname { stroke: rgba(20, 12, 4, .9); filter: brightness(1.6) saturate(1.2); }
+.st-h3 .res-n { fill: #fff6d0; stroke: rgba(26, 16, 6, .92); }
+.st-h3 .ring-n { fill: #ffe080; stroke: rgba(30, 18, 6, .9); }
+.st-h3 .veil-n { fill: #e8f6ff; }
+/* —— 城镇图标 —— */
+.st-h3 .ic2 { filter: drop-shadow(0 1px .6px rgba(0, 0, 0, .5)); transform: scale(calc(var(--icz, 1) * .74)); }
+.st-h3 .pl:hover .ic2 { transform: scale(calc(var(--icz, 1) * .9)); }
+.st-h3 .pl .pl-n { transform: translateX(calc(12px * var(--icz, 1))); }
+.st-h3 .pl.ruin .ic2 { filter: grayscale(.85) brightness(.85); }
+.st-h3 .pl.dk .ic2 { filter: hue-rotate(-30deg) saturate(.6) brightness(.6) drop-shadow(0 0 2px rgba(255, 60, 20, .7)); }
+.h3flag { transform-box: fill-box; transform-origin: left center; animation: h3flag 1.6s ease-in-out infinite; }
+@keyframes h3flag { 0%, 100% { transform: skewY(0) scaleX(1); } 50% { transform: skewY(-8deg) scaleX(.86); } }
+.h3glow { animation: h3glow 2.4s ease-in-out infinite; }
+@keyframes h3glow { 0%, 100% { opacity: .3; } 50% { opacity: .7; } }
+.h3mill { transform-box: fill-box; transform-origin: center; animation: h3spin 6s linear infinite; }
+@keyframes h3spin { to { transform: rotate(360deg); } }
+.h3smoke { animation: h3smoke 3s ease-out infinite; transform-box: fill-box; }
+@keyframes h3smoke { 0% { opacity: 0; transform: translateY(2px); } 30% { opacity: 1; } 100% { opacity: 0; transform: translateY(-4px); } }
+.h3spark { animation: h3glow 1.4s ease-in-out infinite; }
+/* —— 冒险物件 —— */
+.advo { pointer-events: none; }
+.aoi { transform: scale(clamp(.5, calc(var(--icz, 1) * .62), 1.05)); filter: drop-shadow(0 .6px .3px rgba(0, 0, 0, .45)); }
+#map.far .advo { display: none; }
+body[data-era="trees"] .advo { display: none; }
+/* —— 时代色调 —— */
+.st-h3 body[data-era="trees"] .mapwrap { filter: saturate(.7) brightness(.82); }
+/* —— 界面：石框 + 金边 —— */
+.st-h3 .top { background: linear-gradient(180deg, #3a2e26, #1e1814); border-bottom: 0; box-shadow: 0 2px 0 #8a5a14, 0 3px 0 #f0cc6a, 0 5px 0 #6a4410, 0 6px 12px rgba(0, 0, 0, .5); }
+.st-h3 .top .ttl { color: #f0cc6a; text-shadow: 0 1px 0 #000, 0 0 10px rgba(240, 180, 60, .35); }
+.st-h3 .lang { border: 1px solid #c8902a; background: linear-gradient(180deg, #4a3a2c, #241c16); color: #f0cc6a; border-radius: 3px; box-shadow: inset 0 1px 0 rgba(255, 220, 140, .25); }
+.st-h3 .panel { border-right: 0; box-shadow: 2px 0 0 #8a5a14, 3px 0 0 #f0cc6a, 5px 0 0 #5a3a10, 8px 0 18px rgba(0, 0, 0, .35); }
+.st-h3 .tabs { background: linear-gradient(180deg, #3a2e26, #241c16); border-bottom: 2px solid #c8902a; }
+.st-h3 .tabs button { color: #c8b080; border-bottom: 0; text-shadow: 0 1px 0 #000; }
+.st-h3 .tabs button.on { color: #ffe08a; background: linear-gradient(180deg, rgba(240, 200, 100, .18), rgba(240, 200, 100, .04)); box-shadow: inset 0 -3px 0 #e0b44a; }
+.st-h3 .mapframe { inset: 0; border: 0; box-shadow: inset 0 0 0 3px #1e1612, inset 0 0 0 4px #e8c060, inset 0 0 0 6px #6a4410, inset 0 0 0 7px #2a1e14, inset 0 0 40px rgba(0, 0, 0, .35); }
+.st-h3 .mapframe .c { width: 18px; height: 18px; border: 0; background: radial-gradient(circle at 40% 35%, #fff0b0, #e0a830 40%, #6a4410 75%); border-radius: 50%; box-shadow: 0 0 0 2px #1e1612; }
+.st-h3 .mapframe .tl { left: -4px; top: -4px; } .st-h3 .mapframe .tr { right: -4px; top: -4px; } .st-h3 .mapframe .bl { left: -4px; bottom: -4px; } .st-h3 .mapframe .br { right: -4px; bottom: -4px; }
+.st-h3 .zoom button { background: linear-gradient(180deg, #4a3a2c, #1e1814); color: #f0cc6a; border: 1px solid #c8902a; border-radius: 3px; box-shadow: 0 2px 4px rgba(0, 0, 0, .4), inset 0 1px 0 rgba(255, 220, 140, .25); }
+.st-h3 .legend-key, .st-h3 .scalebar { background: rgba(30, 22, 16, .86); color: #e8d8b0; border: 1px solid #c8902a; }
+.st-h3 .scalebar i { border-color: #e8d8b0; background: repeating-linear-gradient(90deg, #e8d8b0 0 25%, transparent 25% 50%); }
+.st-h3 .legend-key .k-dark { color: #c890e8; } .st-h3 .legend-key .k-man { color: #ff8a70; } .st-h3 .legend-key .k-elf { color: #8ab8ff; } .st-h3 .legend-key .k-dwarf { color: #f0b060; } .st-h3 .legend-key .k-hob { color: #8ad070; }
+.st-h3 .compass { opacity: .95; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .5)) sepia(.3) saturate(1.6) brightness(1.1); }
+.st-h3 .toast, .st-h3 .card { border: 0; box-shadow: 0 0 0 2px #2a1e14, 0 0 0 4px #e0b44a, 0 0 0 6px #6a4410, 0 10px 30px rgba(0, 0, 0, .5); border-radius: 2px; }
+.st-h3 .toast { border-left: 0; }
+.st-h3 .debut { box-shadow: 0 0 0 2px #2a1e14, 0 0 0 4px #e0b44a, 0 0 0 5px #6a4410, 0 8px 22px rgba(0, 0, 0, .45); }
+/* 时间轴：石板 + 金色轨道 */
+.st-h3 .tm { background: linear-gradient(180deg, #3a2e26, #1a1410); border-top: 0; box-shadow: 0 -2px 0 #8a5a14, 0 -3px 0 #f0cc6a, 0 -5px 0 #5a3a10, 0 -8px 14px rgba(0, 0, 0, .4); }
+.st-h3 .tm-rail { background: #120c08; box-shadow: inset 0 1px 2px #000, 0 0 0 1px #6a4410; height: 6px; top: 29px; }
+.st-h3 .tm-fill { background: var(--h3gold); }
+.st-h3 .tm-thumb { width: 12px; height: 22px; margin-left: -6px; top: 21px; border-radius: 2px; background: radial-gradient(circle at 40% 30%, #ffffff, #ffd84a 35%, #c8902a 70%, #6a4410); box-shadow: 0 0 0 1px #1e1612, 0 0 12px #ffcc4a; }
+.st-h3 .tm-ctl button { border-color: #c8902a; background: linear-gradient(180deg, #4a3a2c, #1e1814); color: #f0cc6a; }
+.tm-date em { display: none; }
+.st-h3 .tm-date em { display: block; font-style: normal; font-size: 11px; color: #ffe08a; letter-spacing: .06em; margin-top: 1px; }
+.st-h3 .tm-date b { color: #ffe08a; text-shadow: 0 1px 0 #000; }
+/* —— 小地图 —— */
+.h3mini { display: none; }
+.st-h3 .h3mini { display: block; position: absolute; right: 56px; top: 14px; width: 210px; height: 82px; z-index: 3; background: #0e2a44; box-shadow: 0 0 0 2px #1e1612, 0 0 0 4px #e0b44a, 0 0 0 5px #6a4410, 0 6px 14px rgba(0, 0, 0, .45); cursor: crosshair; touch-action: none; }
+.h3mini svg { display: block; width: 100%; height: 100%; }
+.mm-sea { fill: #18507e; } .mm-land { fill: #4e9030; stroke: #e2c98a; stroke-width: 4; } .mm-aman { fill: #6ab048; }
+.mm-b { stroke: none; } .mm-snow { fill: #e8eef4; } .mm-lava { fill: #4a3430; } .mm-sand { fill: #d8bc78; }
+.mm-p { stroke: #000; stroke-width: 3; }
+.mm-vp { fill: rgba(255, 255, 255, .08); stroke: #fff; stroke-width: 9; vector-effect: none; }
+.h3mini .gone, .h3mini .veiled { display: none; }
+@media (max-width: 860px) { .st-h3 .h3mini { display: none; } }
+/* 小地图占了右上角：卡片和人物登场下移 */
+.st-h3 .card { top: 112px; max-height: calc(100% - 128px); }
+.st-h3 .debut-box { top: 112px; }
+@media (max-width: 860px) { .st-h3 .card { top: 14px; max-height: 60%; } }
+/* —— 英雄属性 —— */
+.h3-stats { margin: 10px 0 6px; padding: 8px 10px 9px; background: linear-gradient(180deg, #3a2e26, #1e1814); border-radius: 2px; box-shadow: 0 0 0 1px #1e1612, 0 0 0 3px #c8902a, inset 0 1px 0 rgba(255, 220, 140, .2); color: #f0e0b8; }
+.h3-lv { font-size: 12px; text-align: center; color: #e8d8b0; margin-bottom: 6px; letter-spacing: .05em; } .h3-lv b { color: #ffe08a; }
+.h3-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.h3-st { display: flex; flex-direction: column; align-items: center; gap: 1px; background: rgba(0, 0, 0, .3); padding: 4px 2px 3px; border: 1px solid #6a4410; }
+.h3-st i { display: block; width: 26px; height: 26px; } .h3-st i svg { width: 100%; height: 100%; display: block; }
+.h3-st small { font-size: 10px; color: #c8b080; white-space: nowrap; }
+.h3-st b { font-size: 16px; color: #fff; font-family: var(--cinzel); line-height: 1.1; }
+.st-h3 .realm circle { opacity: .4; }
+.st-h3 .realm-n { fill: #fff2c8; }
+@media (max-width: 860px) { .top { gap: 8px; padding: 0 10px; } .lang { padding: 2px 7px; font-size: 11px; } html[lang="en"] .top .ttl { font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; min-width: 0; } }

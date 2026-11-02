@@ -63,6 +63,9 @@
     "播放时遇到关键时刻自动停下": "Pause playback at key moments",
     "那些被反复讲述的瞬间。播放时间轴走到这里会自动停下，也可以直接点开。": "The instants that are told and retold. Playback pauses when it reaches one, or open any of them here.",
     "你": "You", "上一幕": "Previous act", "序": "Prologue", "回到地图 ▸": "Back to the map ▸", "下一幕": "Next act",
+    "攻击": "Attack", "防御": "Defense", "力量": "Power", "知识": "Knowledge", "等级": "Level", "士气": "Morale", "运气": "Luck",
+    "巫师": "Wizard", "骑士": "Knight", "游侠": "Ranger", "战士": "Warrior", "冒险者": "Adventurer", "术士": "Warlock", "贤者": "Sage", "吟游诗人": "Bard", "领主": "Lord",
+    "月": "Month", "周": "Week", "日": "Day", "小地图": "Minimap", "英雄属性": "Hero stats",
   };
   const UI = window.ME_UI;
 
@@ -75,6 +78,18 @@
       const to = EN ? "zh" : "en";
       try { localStorage.setItem("me-lang", to); } catch (e) {}
       const u = new URL(location.href); u.searchParams.set("lang", to); location.href = u.toString();
+    });
+  }
+  // 地图风格切换：英雄（彩色冒险地图）/ 羊皮纸
+  const sb = document.getElementById("styleBtn");
+  if (sb) {
+    const H = window.ME_STYLE === "h3";
+    sb.textContent = H ? (EN ? "Parchment" : "羊皮纸") : (EN ? "Heroes" : "英雄");
+    sb.title = H ? (EN ? "Switch to the parchment map" : "切换到羊皮纸地图") : (EN ? "Switch to the colourful adventure map" : "切换到彩色冒险地图");
+    sb.addEventListener("click", () => {
+      const to = H ? "parch" : "h3";
+      try { localStorage.setItem("me-style", to); } catch (e) {}
+      const u = new URL(location.href); u.searchParams.set("style", to); location.href = u.toString();
     });
   }
   if (!EN) return;
