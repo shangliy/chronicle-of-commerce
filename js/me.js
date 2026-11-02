@@ -334,6 +334,7 @@
     // 山
     W.mountains.forEach((m) => {
       const g = el("g", { class: "mts" + (m.dark ? " dark" : "") }, m.fa ? L.bel : m.aman ? L.aman : L.ter); seed = m.pts.length * 977 + Math.round(m.h * 13);
+      if (PAINT && window.ME_RELIEF) { ME_RELIEF.place({ pts: m.pts, h: m.h, kind: m.dark ? "dark" : m.aman ? "aman" : "norm" }, el("image", { class: "mt-img" }, g)); return; }
       if (H3) { const bd = cr(m.pts); el("path", { d: bd, class: "mt-base", "stroke-width": (m.h * 2.1).toFixed(1) }, g); el("path", { d: bd, class: "mt-base2", "stroke-width": (m.h * 1.3).toFixed(1) }, g); }
       const sp = sample(m.pts, m.h * 0.62);
       const peaks = [];
@@ -348,6 +349,7 @@
     });
     W.peaks.forEach((p) => {
       const g = el("g", { class: "peak" + (p.fire ? " fire" : "") }, p.nu ? L.nu : p.aman ? L.aman : L.ter), w = p.h * 0.7;
+      if (PAINT && window.ME_RELIEF) { ME_RELIEF.place({ pts: [[p.x, p.y]], h: p.h, peak: true, kind: p.fire ? "fire" : p.aman ? "aman" : "norm" }, el("image", { class: "mt-img" }, g)); if (p.fire) el("circle", { cx: p.x, cy: p.y - p.h * 0.8, r: 3, class: "ember" }, g); return; }
       el("path", { d: `M${p.x - w},${p.y}L${p.x - 2},${p.y - p.h}L${p.x + 2},${p.y - p.h}L${p.x + w},${p.y}Z`, class: "mt big" }, g);
       if (p.fire) el("circle", { cx: p.x, cy: p.y - p.h, r: 3, class: "ember" }, g);
     });

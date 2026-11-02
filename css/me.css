@@ -855,7 +855,7 @@ body[data-era="trees"] .advo { display: none; }
 .st-paint .road-b { stroke: #e8dcb4; stroke-width: 1.8; opacity: .35; }
 .st-paint .road { stroke: #5a4628; stroke-width: .9; stroke-dasharray: 3 2; opacity: .65; }
 .st-paint .bridge { stroke: #3a2a1a; stroke-width: 1; }
-.st-paint .hills path { stroke: #3e4a26; fill: none; opacity: .45; } .st-paint .hills.rock path { fill: #8c8470; stroke: #4a4232; opacity: .75; }
+.st-paint .hills path { stroke: #3e4a26; fill: none; opacity: .45; } .st-paint .hills.rock path { fill: #a49c88; stroke: #5a5242; stroke-width: .35; opacity: .55; }
 .st-paint .marsh path { stroke: #2e3a24; opacity: .45; } .st-paint .waste path { opacity: .2; }
 .st-paint .grass path { stroke: #3e4e26; }
 .st-paint .fld { stroke: #5a5030; stroke-width: .35; opacity: .7; } .st-paint .fld.f0 { fill: #a8a258; } .st-paint .fld.f1 { fill: #bcae6a; } .st-paint .fld.f2 { fill: #7e8c48; } .st-paint .fld.f3 { fill: #a68e58; }
