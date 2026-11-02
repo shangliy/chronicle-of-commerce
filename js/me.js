@@ -81,6 +81,7 @@
     if (!CB) return "";
     let s = CH.CHARS.map((c) => `<g id="chb-${c.id}">${CB(c.look)}</g>`).join("");
     if (CI.aragorn) s += `<g id="chb-elessar">${CB({ ...CI.aragorn.look, hat: "crown", hc: "#e8ecf0", c: "#1a1a2e", t: "#c8c8d8", it: "sword", ic: "#e8f4ff" })}</g>`;
+    Object.entries(CH.SOLDIERS || {}).forEach(([k, look]) => (s += `<g id="chb-sol-${k}">${CB(look)}</g>`));
     return s + `<g id="chb-horse">${CB.horse()}</g><g id="chb-hull">${CB.hull}</g><g id="chb-sail">${CB.sail}</g>`;
   }
   function buildMap() {
@@ -483,9 +484,12 @@
     const w = whereIs(id);
     if (w && jump) { flyTo(w[0], w[1], fine(T) ? 420 : 640); userMoved = Date.now(); }
     if (w) pulse(w[0], w[1], "k-" + (c.r === "dark" ? "dark" : "ring"));
+    const inB = (b) => b.units.some((u) => [...(CH.HEROES[b.id + "." + u.id] || []), ...((CH.TROOPS || {})[b.id + "." + u.id]?.lead || [])].includes(id));
+    const bs = BATTLES.filter(inB).sort((a, b) => a.t - b.t);
     const homes = (c.homes || []).map(([at, from, to, hn]) => `<li data-home="${from}" data-at="${Array.isArray(at) ? at.join(",") : at}"><b>${esc(fmt(from))} — ${esc(fmt(to))}</b>${esc(hn || placeName(at))}</li>`).join("");
     openCard(`<div class="cc">${chSvg(id, "cc-big")}<div><div class="pc-k">${esc(RACE[c.r] || "")} · ${esc(c.en)}</div><h3>${esc(c.n)}</h3></div></div><p class="cc-bio">${esc(c.bio)}</p>` +
       (homes ? `<h5 class="cc-h">居所</h5><ul class="pc-ev">${homes}</ul>` : "") +
+      (bs.length ? `<h5 class="cc-h">参战</h5><div class="cc-js">${bs.map((x) => `<button class="go-b" data-b="${x.id}" style="--c:#8a2a1a">⚔ ${esc(x.n)}<small>${esc(x.age)}</small></button>`).join("")}</div>` : "") +
       (js.length ? `<h5 class="cc-h">足迹 · 点一下跟着走</h5><div class="cc-js">${js.map((j) => `<button data-follow="${j.id}" style="--c:${j.c}">▶ ${esc(j.n)}<small>${esc(fmt(j.P[0].t, hasDay(j.P[0].t)))}</small></button>`).join("")}</div>` : ""));
   }
   function showJourney(j) {
@@ -599,7 +603,10 @@
       else if (u.kind === "troll") { el("rect", { x: -11, y: -11, width: 22, height: 22, class: "blk tr" }, g); el("path", { d: "M-6,-6L6,6M6,-6L-6,6", class: "tri" }, g); }
       else if (u.kind === "beast") { el("ellipse", { rx: w / 2, ry: h / 2, class: "blk" }, g); for (let i = 0; i < 3; i++) el("circle", { cx: (i - 1) * w / 3.5, r: Math.min(w, h) / 6, class: "bst" }, g); }
       else { el("rect", { x: -w / 2, y: -h / 2, width: w, height: h, rx: 2, class: "blk" }, g); if (u.kind === "cav") el("path", { d: `M${-w / 2 + 4},${-4}l6,4l-6,4M${-w / 2 + 12},${-4}l6,4l-6,4`, class: "chev" }, g); if (u.kind === "arc" || u.kind === "elf") el("path", { d: `M${-w / 2 + 2},${h / 2 + 4}h${w - 4}`, class: "arcl" }, g); }
-      const tx = el("text", { y: (hs ? -42 : u.kind === "hero" ? -26 : -(u.h || 24) / 2 - 6), class: "bu-n" }, g); tx.textContent = u.n;
+      const tp = !hs && CB && CH.TROOPS ? CH.TROOPS[b.id + "." + u.id] : null;
+      let top = hs ? -42 : u.kind === "hero" ? -26 : -(u.h || 24) / 2 - 6;
+      if (tp) top = troops(g, u, tp, w, h, top);
+      const tx = el("text", { y: top, class: "bu-n" }, g); tx.textContent = u.n;
       B.units[u.id] = { u, g, x: u.x, y: u.y, o: u.o ?? 1 };
       place(B.units[u.id], true);
     });
@@ -608,6 +615,36 @@
     renderIntro(b);
     history.replaceState(null, "", "#b=" + id);
     sound.bed("wind");
+  }
+  /* 部队里画满 Q 版士兵；带队人物站在最前面 */
+  function troops(g, u, tp, w, h, top) {
+    g.classList.add("has-sol");
+    const cav = u.kind === "cav", big = tp.s === "troll";
+    if (tp.s && !["nazgul", "eagle", "beast", "ship"].includes(u.kind)) {
+      const sw = big ? 26 : cav ? 22 : 13, sh = big ? 30 : cav ? 22 : 17;
+      const cols = Math.max(1, Math.min(14, Math.floor(w / sw))), rows = Math.max(1, Math.min(6, Math.floor(h / sh)));
+      const sc = big ? 0.5 : cav ? 0.42 : 0.4, step = Math.max(1, Math.ceil((cols * rows) / 48));
+      const sg = el("g", { class: "sol" }, g); let k = 0;
+      for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+        if (k++ % step) continue;
+        const x = (c - (cols - 1) / 2) * (w / cols) + (r % 2 ? 3 : 0), y = (r - (rows - 1) / 2) * (h / rows) + sh * 0.45;
+        const gg = el("g", { transform: `translate(${x.toFixed(1)},${y.toFixed(1)})` }, sg);
+        const bb = el("g", { class: "bob", style: `animation-delay:-${((r * 7 + c * 3) % 10) / 10}s` }, gg);
+        if (cav) { el("use", { href: "#chb-horse", transform: `scale(${sc * 0.95})` }, bb); el("use", { href: "#chb-sol-" + tp.s, transform: `translate(0,${-8 * sc}) scale(${sc})` }, bb); }
+        else el("use", { href: "#chb-sol-" + tp.s, transform: `scale(${sc})` }, bb);
+      }
+    } else if (["troll", "beast", "nazgul", "hero"].includes(u.kind) && tp.lead) g.classList.add("lead-only");
+    if (tp.lead) {
+      const n = tp.lead.length, y0 = tp.s ? -h / 2 - 2 : 10, lg = el("g", { class: "lead" }, g);
+      el("ellipse", { rx: 8 + n * 9, ry: 5, cy: y0, class: "hb hb-sh" }, lg);
+      tp.lead.forEach((id, i) => {
+        const gg = el("g", { transform: `translate(${((i - (n - 1) / 2) * 20).toFixed(1)},${y0})` }, lg), bb = el("g", { class: "bob", style: `animation-delay:-${i * 0.2}s` }, gg);
+        if (cav && tp.s) el("use", { href: "#chb-horse", transform: "scale(.66)" }, bb);
+        el("use", { href: "#chb-" + id, transform: cav && tp.s ? "translate(0,-7) scale(.72)" : "scale(.78)" }, bb);
+      });
+      top = y0 - (cav && tp.s ? 46 : 40);
+    } else if (tp.s) top = -h / 2 - 4;
+    return top;
   }
   function centroid(pts) { let x = 0, y = 0; pts.forEach((p) => { x += p[0]; y += p[1]; }); return [x / pts.length, y / pts.length]; }
   function place(U, instant) { U.g.style.transition = instant ? "none" : ""; U.g.style.transform = `translate(${U.x}px,${U.y}px)`; U.g.style.opacity = U.o; }

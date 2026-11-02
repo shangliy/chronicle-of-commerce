@@ -280,8 +280,72 @@
     "lastalliance.isildur": ["isildur", "elendil", "gilgalad"], "lastalliance.sauron": ["sauron"]
   };
 
+  /* ——战场兵种：通用 Q 版士兵（不进人物面板）—— */
+  const SOLDIERS = {
+    gondor: { h: "#2a1a1a", hat: "helm", hc: "#d8dde2", c: "#2a2a3a", t: "#c8ccd4", it: "spear", ic: "#e8ecf0" },
+    rohan: { h: "#d8b060", hs: "long", hat: "helm", hc: "#c8ccd0", plume: "#f0ece0", c: "#3a6a2a", t: "#c8a040", it: "spear" },
+    westfold: { h: "#b08040", hat: "helm", hc: "#a8acb0", c: "#5a6a3a", t: "#b0985a", it: "spear" },
+    elf: C({ h: "#e8d8a0", hat: "helm", hc: "#e0c060", c: "#3a5a8a", t: "#d0d8e8", it: "bow" }, ELF),
+    woodelf: C({ h: "#c09040", c: "#4a6a3a", t: "#b8c890", it: "bow" }, ELF),
+    noldor: C({ h: "#151515", hat: "helm", hc: "#e8ecf0", c: "#2a3a7a", t: "#c8d0e8", it: "spear", ic: "#fff" }, ELF),
+    dwarf: C({ h: "#7a3a1a", bc: "#7a3a1a", hat: "helm", hc: "#8a9098", c: "#5a3a2a", t: "#8a7a6a", it: "axe" }, DW),
+    laketown: { h: "#3a2a1a", hat: "hood", hc: "#5a5a6a", c: "#5a5a6a", t: "#a89a7a", it: "bow" },
+    edain: { h: "#3a2a1a", hs: "long", hat: "helm", hc: "#b09040", c: "#5a3a2a", t: "#a88a5a", it: "spear" },
+    numenor: { h: "#151515", hat: "helm", hc: "#e8ecf0", c: "#1a2a4a", t: "#b8c4d8", it: "sword", ic: "#e8f4ff" },
+    orc: { s: "#8a9a5a", h: "#1a1a1a", hat: "darkhelm", hc: "#3a3430", c: "#3a3028", t: "#5a4a3a", it: "sword", ic: "#6a6a6a", ear: 1, eye: "#c02010" },
+    uruk: { s: "#6a6a52", h: "#151515", hat: "darkhelm", hc: "#2a2420", c: "#2a2420", t: "#4a4038", it: "shield", ic: "#e8e0d0", wide: 1, eye: "#c02010" },
+    easterling: { h: "#151515", hat: "helm", hc: "#a07a2a", c: "#7a2a1a", t: "#c09040", it: "spear" },
+    harad: { s: "#a8784a", h: "#151515", hat: "hood", hc: "#7a1a1a", c: "#b03a1a", t: "#e0b040", it: "spear" },
+    dunland: { h: "#4a2a1a", hs: "long", b: "long", bc: "#4a2a1a", c: "#6a4a2a", t: "#8a6a4a", it: "axe" },
+    troll: { s: "#7a7a6a", h: "#3a3a30", hs: "bald", c: "#4a3a2a", t: "#6a5a4a", it: "axe", ic: "#5a5a5a", wide: 1, sz: 1.5, eye: "#c02010" },
+    wolf: { sp: "wraith" }
+  };
+  /* ——每支部队：s 兵种，lead 带队的具名人物；hero 单位继续用 HEROES—— */
+  const TROOPS = {
+    "hornburg.theoden": { s: "rohan", lead: ["theoden"] }, "hornburg.wall": { s: "westfold", lead: ["gamling"] }, "hornburg.dike": { s: "westfold" },
+    "hornburg.uruk": { s: "uruk" }, "hornburg.dun": { s: "dunland" }, "hornburg.ladders": { s: "uruk" }, "hornburg.rams": { s: "troll" },
+    "hornburg.gandalf": { s: "westfold", lead: ["gandalfw", "erkenbrand"] },
+    "pelennor.city": { s: "gondor", lead: ["denethor", "faramir"] }, "pelennor.host1": { s: "orc", lead: ["gothmog"] }, "pelennor.host2": { s: "orc" },
+    "pelennor.grond": { s: "troll" }, "pelennor.harad": { s: "harad" }, "pelennor.rohan": { s: "rohan", lead: ["eomer"] }, "pelennor.ships": { lead: ["aragorn", "legolas", "gimli"] },
+    "morannon.west1": { s: "gondor", lead: ["imrahil"] }, "morannon.west2": { s: "rohan", lead: ["eomer"] }, "morannon.mouth": { lead: ["mouth"] },
+    "morannon.gatehost": { s: "orc" }, "morannon.flankL": { s: "orc" }, "morannon.flankR": { s: "easterling" }, "morannon.trolls": { s: "troll" }, "morannon.nazgul": { lead: ["nazgul", "nazgul", "nazgul"] },
+    "fivearmies.men": { s: "laketown", lead: ["bard"] }, "fivearmies.elves": { s: "woodelf", lead: ["thranduil"] }, "fivearmies.dain": { s: "dwarf", lead: ["dain"] },
+    "fivearmies.goblins": { s: "orc" }, "fivearmies.bolg": { s: "troll", lead: ["bolg"] }, "fivearmies.beorn": { lead: ["beorn"] },
+    "lastalliance.gilgalad": { s: "elf", lead: ["gilgalad", "elrond"] }, "lastalliance.elendil": { s: "numenor", lead: ["anarion"] }, "lastalliance.oropher": { s: "woodelf", lead: ["oropher"] },
+    "lastalliance.sauronhost": { s: "orc" },
+    "nirnaeth.fingon": { s: "noldor", lead: ["fingon"] }, "nirnaeth.hurin": { s: "edain", lead: ["hurin", "huor"] }, "nirnaeth.turgon": { s: "noldor", lead: ["turgon"] },
+    "nirnaeth.maedhros": { s: "noldor", lead: ["maedhros"] }, "nirnaeth.ulfang": { s: "easterling" }, "nirnaeth.dwarves": { s: "dwarf", lead: ["azaghal"] },
+    "nirnaeth.host": { s: "orc" }, "nirnaeth.hidden": { s: "orc" }, "nirnaeth.glaurung": { lead: ["glaurung", "balrog"] }
+  };
+  /* 只出现在战场里的具名人物 */
+  const EXTRA = [
+    { id: "fingon", n: "芬巩", en: "Fingon", r: "elf", look: C({ h: "#151515", hs: "long", hat: "helm", hc: "#e0c060", c: "#2a4a8a", t: "#c0c8e0", it: "sword" }, ELF),
+      bio: "芬国昐的长子，至高王。曾独自上安戈洛墨斯山救下梅斯罗斯；泪雨之战中被炎魔之首围攻而死。" },
+    { id: "hurin", n: "胡林", en: "Húrin Thalion", r: "man", look: { h: "#2a1a10", b: "short", bc: "#2a1a10", hat: "helm", hc: "#b09040", c: "#3a3a5a", t: "#a8a080", it: "axe" },
+      bio: "多尔罗明的领主，图林的父亲。泪雨之战断后，挥斧高喊“白昼将再来临”，直到被俘。" },
+    { id: "huor", n: "胡奥", en: "Huor", r: "man", look: { h: "#c09040", hat: "helm", hc: "#b09040", c: "#3a3a5a", t: "#a8a080", it: "spear" },
+      bio: "胡林的弟弟，图奥的父亲。与哥哥一起守住退路，让特刚得以撤回刚多林，自己中箭战死。" },
+    { id: "azaghal", n: "阿萨格哈尔", en: "Azaghâl", r: "dwarf", look: C({ h: "#4a2a1a", bc: "#4a2a1a", hat: "helm", hc: "#8a9098", c: "#3a3a3a", t: "#8a7a6a", it: "axe" }, DW),
+      bio: "贝烈戈斯特的矮人王。矮人不怕龙火，他重伤格劳龙，自己也被踩死。" },
+    { id: "oropher", n: "欧洛费尔", en: "Oropher", r: "elf", look: C({ h: "#e8d8a0", hat: "crown", hc: "#8a5a2a", c: "#5a6a2a", t: "#c8c090", it: "bow" }, ELF),
+      bio: "瑟兰迪尔的父亲，绿林之王。在达戈拉德不等号令就冲锋，战死在魔多门前。" },
+    { id: "imrahil", n: "印拉希尔", en: "Prince Imrahil", r: "man", look: { h: "#151515", hat: "helm", hc: "#d8dde2", plume: "#3a6aa8", c: "#2a4a7a", t: "#d8dde2", it: "sword" },
+      bio: "多阿姆洛斯亲王，率天鹅骑士守卫米那斯提力斯，也跟着阿拉贡走到了黑门。" },
+    { id: "erkenbrand", n: "艾肯布兰德", en: "Erkenbrand", r: "man", look: { h: "#c8c0a8", b: "short", bc: "#c8c0a8", hat: "helm", hc: "#a8acb0", c: "#5a6a3a", t: "#b0985a", it: "spear" },
+      bio: "西伏尔德的领主。号角堡之战的清晨，他与甘道夫一起从山坡上冲下来。" },
+    { id: "gamling", n: "甘姆林", en: "Gamling", r: "man", look: { h: "#a8a090", b: "long", bc: "#a8a090", hat: "helm", hc: "#a8acb0", c: "#5a6a3a", t: "#b0985a", it: "sword" },
+      bio: "号角堡的老守将，深谷墙上的守军由他指挥。" },
+    { id: "gothmog", n: "戈斯魔格", en: "Gothmog of Minas Morgul", r: "dark", look: { s: "#8a9a5a", h: "#1a1a1a", hat: "darkhelm", hc: "#2a2420", c: "#2a2028", t: "#4a3a3a", it: "sword", wide: 1, eye: "#c02010" },
+      bio: "米那斯魔古尔的副将。巫王倒下后，由他接手指挥帕兰诺平原上的魔多大军。" },
+    { id: "bolg", n: "博格", en: "Bolg", r: "dark", look: { s: "#7a8a5a", h: "#151515", hs: "bald", c: "#2a2420", t: "#4a3a2a", it: "sword", wide: 1, sz: 1.2, eye: "#c02010" },
+      bio: "阿佐格之子，北方奥克之王。五军之战中率近卫杀到最前，被比翁所杀。" },
+    { id: "mouth", n: "索隆之口", en: "The Mouth of Sauron", r: "dark", look: { s: "#d8d0c0", h: "#151515", hat: "darkhelm", hc: "#151515", c: "#151515", t: "#3a1a1a", eye: "#c02010" },
+      bio: "巴拉督尔的副官，努门诺尔人后裔，早已忘了自己的名字。在黑门前拿出弗罗多的锁子甲来恐吓西方将领。" }
+  ];
+  EXTRA.forEach((c) => (c.battle = 1)); CHARS.push(...EXTRA);
+
   const RACES = [["hob", "霍比特人"], ["elf", "精灵"], ["man", "人类"], ["dwarf", "矮人"], ["maia", "巫师与古老者"], ["dark", "黑暗势力"]];
-  window.ME_CHARS = { CHARS, HEROES, RACES };
+  window.ME_CHARS = { CHARS, HEROES, RACES, SOLDIERS, TROOPS };
 })();
 
 /* ======== Q 版小人绘制（返回 SVG 片段；脚底在 0,0，头顶约 -44）======== */

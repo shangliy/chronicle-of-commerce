@@ -409,3 +409,11 @@ svg.far .res .sc, svg.far .jmk .sc { transform: scale(calc(var(--k, 1) * .72)); 
 @keyframes tpulse { 50% { opacity: .82; } }
 .trees2.dead { animation: none; }
 .trees2.dead .tglow { opacity: 0; } .trees2.dead .tcrown { fill: #5a5148; }
+
+/* —— 战场里的 Q 版士兵 —— */
+.bu.has-sol .blk { opacity: .35; }
+.bu.lead-only .blk, .bu.lead-only .tri, .bu.lead-only .bst, .bu.lead-only .naz, .bu.lead-only .hb:not(.hb-sh), .bu.lead-only .flag { display: none; }
+.bu .sol use, .bu .lead use { pointer-events: none; }
+.bu .sol { filter: drop-shadow(0 1px 0 rgba(0,0,0,.35)); }
+.bu.s-e .sol { filter: drop-shadow(0 1px 0 rgba(0,0,0,.35)) saturate(.85); }
+.bu .lead .hb-sh { fill: rgba(0,0,0,.25); stroke: none; }
