@@ -9,6 +9,16 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=IM+Fell+English:ital@0;1&family=Noto+Serif+SC:wght@400;600;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/me.css" />
+  <script>
+    (function () {
+      var q = new URLSearchParams(location.search).get("lang"), m = null;
+      try { m = localStorage.getItem("me-lang"); } catch (e) {}
+      var l = q || m || (/^zh/i.test(navigator.language || "") ? "zh" : "en");
+      l = l === "en" ? "en" : "zh"; window.ME_LANG = l;
+      document.documentElement.lang = l === "en" ? "en" : "zh-CN";
+      if (l === "en") document.write('<script src="js/me-en.js"><\/script>');
+    })();
+  </script>
 </head>
 <body data-era="trees">
   <!-- 封面 -->
@@ -34,6 +44,7 @@
     <nav>
       <a href="index.html">首页</a><a href="family.html">家族版</a><a href="fashion.html">时尚版</a>
     </nav>
+    <button id="langBtn" class="lang" aria-label="Language / 语言">EN</button>
     <button id="panelToggle" class="ptog" aria-label="切换侧栏">☰</button>
   </header>
 
@@ -117,6 +128,7 @@
   <script src="js/me-deco.js"></script>
   <script src="js/me-life.js"></script>
   <script src="js/me-bio.js"></script>
+  <script src="js/me-i18n.js"></script>
   <script src="js/me.js"></script>
 </body>
 </html>

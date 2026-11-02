@@ -582,3 +582,22 @@ svg.far .res .sc, svg.far .jmk .sc { transform: scale(calc(var(--k, 1) * .72)); 
 .bio-more { display: block; margin: 0 0 8px 12px; background: none; border: 1px solid #b9a37a; border-radius: 12px; padding: 2px 12px; font: inherit; font-size: 12px; color: #6a4a20; cursor: pointer; }
 .bio-more:hover { background: rgba(176, 138, 58, .15); }
 .bio-f { font-size: 12.5px; margin: 4px 0 8px; } .bio-f b { color: #8a2a1a; margin-right: 6px; }
+
+/* ——中英切换—— */
+.lang { background: none; border: 1px solid #8a6a3a; color: var(--gold); border-radius: 12px; padding: 2px 10px; font: 600 12px/1.4 var(--serif); cursor: pointer; letter-spacing: .05em; }
+.lang:hover { background: rgba(201, 166, 64, .15); color: #fff; }
+@media (max-width: 860px) { .lang { margin-left: auto; } .lang ~ .ptog { margin-left: 0; } }
+html[lang="en"] .top .ttl small { letter-spacing: .05em; }
+html[lang="en"] .intro-k { letter-spacing: .12em; }
+
+/* English layout */
+html[lang="en"] .intro h1 { font-family: var(--cinzel); letter-spacing: .06em; font-size: clamp(34px, 6.4vw, 66px); line-height: 1.1; }
+html[lang="en"] .intro-en { letter-spacing: .18em; font-family: var(--fell); font-style: italic; }
+html[lang="en"] .tabs button { letter-spacing: .04em; font-size: 13px; }
+html[lang="en"] .ch-era { letter-spacing: .06em; font-family: var(--cinzel); }
+.ch-era small:empty, .pc-k:empty { display: none; }
+.lang { white-space: nowrap; flex: none; }
+@media (max-width: 600px) {
+  html[lang="en"] .top .ttl { font-size: 14px; letter-spacing: .04em; white-space: nowrap; }
+  html[lang="en"] .top .ttl small { display: none; }
+}
