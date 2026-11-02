@@ -2,6 +2,9 @@
 (function () {
   "use strict";
   const W = window.WORLD, D = window.ME, BATTLES = window.ME_BATTLES || [];
+  const CH = window.ME_CHARS || { CHARS: [], HEROES: {}, RACES: [] }, CB = window.CHIBI;
+  const CI = {}; CH.CHARS.forEach((c) => (CI[c.id] = c));
+  const RACE = Object.fromEntries(CH.RACES);
   const NS = "http://www.w3.org/2000/svg";
   const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v)), lerp = (a, b, k) => a + (b - a) * k;
@@ -74,6 +77,12 @@
   const cam = { x: 80, y: -80, w: 940 };
   let cw = 1, ch = 1;
   const L = {};
+  function chibiDefs() {
+    if (!CB) return "";
+    let s = CH.CHARS.map((c) => `<g id="chb-${c.id}">${CB(c.look)}</g>`).join("");
+    if (CI.aragorn) s += `<g id="chb-elessar">${CB({ ...CI.aragorn.look, hat: "crown", hc: "#e8ecf0", c: "#1a1a2e", t: "#c8c8d8", it: "sword", ic: "#e8f4ff" })}</g>`;
+    return s + `<g id="chb-horse">${CB.horse()}</g><g id="chb-hull">${CB.hull}</g><g id="chb-sail">${CB.sail}</g>`;
+  }
   function buildMap() {
     const defs = el("defs", {}, svg);
     defs.innerHTML = `
@@ -81,6 +90,7 @@
       <filter id="blur6"><feGaussianBlur stdDeviation="6"/></filter>
       <filter id="gold" x="-200%" y="-200%" width="500%" height="500%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
       ${["elf", "man", "dwarf", "dark", "rohan"].map((c) => `<radialGradient id="rg-${c}"><stop offset="0" class="rg-${c}" stop-opacity=".55"/><stop offset=".75" class="rg-${c}" stop-opacity=".22"/><stop offset="1" class="rg-${c}" stop-opacity="0"/></radialGradient>`).join("")}
+      ${chibiDefs()}
       <pattern id="seaHatch" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(-18)"><path d="M0 7h6" class="sea-h"/></pattern>`;
     el("rect", { x: BX, y: BY, width: BW, height: BH, class: "sea" }, svg);
     el("rect", { x: BX, y: BY, width: BW, height: BH, fill: "url(#seaHatch)", opacity: 0.5 }, svg);
@@ -168,11 +178,14 @@
     // 旅程
     L.jr = el("g", { class: "journeys" }, svg);
     JR.forEach((j) => {
-      j.path = el("path", { class: "jpath", stroke: j.c, "vector-effect": "non-scaling-stroke" }, L.jr);
-      j.mk = el("g", { class: "jmk" }, L.jr);
+      j.path = el("path", { class: "jpath" + (j.mig ? " mig" : ""), stroke: j.c, "vector-effect": "non-scaling-stroke" }, L.jr);
+    });
+    JR.forEach((j) => {
+      j.mk = el("g", { class: "jmk", "data-j": j.id }, L.jr);
       const s = el("g", { class: "sc" }, j.mk);
-      el("circle", { r: 4.5, fill: j.c, class: "jdot" }, s);
-      el("text", { x: 8, y: -6, class: "jname", fill: j.c }, s).textContent = j.n;
+      j.cl = el("g", { class: "jcl" }, s);
+      j.lab = el("text", { y: 14, class: "jname", fill: j.c, "text-anchor": "middle" }, s); j.lab.textContent = j.n;
+      j.mk.addEventListener("click", (ev) => { ev.stopPropagation(); showJourney(j); });
     });
     // 地点
     L.pl = el("g", { class: "places" }, svg);
@@ -190,6 +203,16 @@
       p.g = g;
       g.addEventListener("click", (ev) => { ev.stopPropagation(); showPlace(p); });
     });
+    // 常驻人物
+    L.res = el("g", { class: "residents" }, svg);
+    CH.CHARS.forEach((c) => (c.homes || []).forEach(([at, from, to, hn], k) => {
+      const [x, y] = xy(at), g = el("g", { class: "res", "data-c": c.id, transform: `translate(${x},${y})` }, L.res), s = el("g", { class: "sc" }, g);
+      const inner = el("g", { class: "res-i" }, s);
+      inner.innerHTML = `<g class="bob2" style="animation-delay:-${(RES.length * 0.37) % 3}s"><use href="#chb-${c.homeLook && k === c.homes.length - 1 ? c.homeLook : c.id}" transform="scale(.62)"/></g><text class="res-n" y="10" text-anchor="middle">${esc(c.n)}</text>`;
+      el("title", {}, g).textContent = c.n + " · " + (hn || placeName(at));
+      g.addEventListener("click", (ev) => { ev.stopPropagation(); showChar(c.id); });
+      RES.push({ c, x, y, from, to, g, inner, key: String(at), tf: "" });
+    }));
     // 至尊戒
     L.ring = el("g", { class: "ring" }, svg);
     const rs = el("g", { class: "sc" }, L.ring);
@@ -200,22 +223,41 @@
   }
 
   /* ——旅程解析—— */
-  const JR = D.JOURNEYS.map((j) => ({ ...j, P: j.pts.map(([at, t, g]) => { const [x, y] = xy(at); return { x, y, t, gap: g === "gap" }; }) }));
+  const JR = D.JOURNEYS.map((j) => ({ ...j, P: j.pts.map(([at, t, g]) => { const [x, y] = xy(at); return { x, y, t, gap: g === "gap", m: g === "ship" || g === "ride" ? g : null }; }) }));
+  const RES = [];
+  function whoAt(j, t) { let w = j.who || []; (j.whoAt || []).forEach(([t0, l]) => { if (t >= t0) w = l; }); return w; }
+  function joinT(j, id) { if ((j.who || []).includes(id)) return j.P[0].t; const w = (j.whoAt || []).find(([, l]) => l.includes(id)); return w ? w[0] : j.P[0].t; }
+  function renderCluster(j, who, mode) {
+    const key = who.join() + "|" + mode; if (j.key === key) return; j.key = key;
+    if (!who.length || !CB) { j.cl.innerHTML = `<circle r="4.5" fill="${j.c}" class="jdot"/>`; return; }
+    const n = who.length, two = n > 4, per = two ? Math.ceil(n / 2) : n, gap = mode === "ride" ? 32 : 21;
+    const S = 0.82; let h = "";
+    if (mode === "ship") { const sx = Math.max(0.85, (per * gap + 26) / 62); h += `<use href="#chb-sail" transform="translate(-2,2) scale(.85)"/>`; j.hullTf = `translate(0,3) scale(${sx.toFixed(2)},.8)`; }
+    const rows = two ? [who.slice(0, per), who.slice(per)] : [who];
+    rows.forEach((row, ri) => row.forEach((id, i) => {
+      const x = (i - (row.length - 1) / 2) * gap + (two && ri ? gap / 2 : 0), y = two && ri === 0 ? -13 : 0;
+      const d = ((j.id.length * 7 + ri * 3 + i) * 0.13) % 0.6;
+      h += `<g transform="translate(${x.toFixed(1)},${y})"><g class="bob" style="animation-delay:-${d.toFixed(2)}s"><g class="flip">` +
+        (mode === "ride" ? `<use href="#chb-horse" transform="scale(.8)"/><use href="#chb-${id}" transform="translate(0,-8) scale(${S})"/>` : `<use href="#chb-${id}" transform="scale(${S})"/>`) + `</g></g></g>`;
+    }));
+    if (mode === "ship") h += `<use href="#chb-hull" transform="${j.hullTf}"/>`;
+    j.cl.innerHTML = h; j.lab.setAttribute("y", mode === "ride" ? 24 : 15);
+  }
   const RING = []; D.RING.forEach((r) => { if (typeof r === "string") { const j = JR.find((x) => x.id === r.slice(1)); j.P.forEach((p) => RING.push({ ...p, gap: false })); } else { const [x, y] = xy(r[0]); RING.push({ x, y, t: r[1] }); } });
   RING.sort((a, b) => a.t - b.t);
   const RING_END = RING[RING.length - 1].t;
   function at(P, t) { // 当前位置与已走过的路径
     if (t < P[0].t) return null;
-    let d = `M${P[0].x},${P[0].y}`, pos = [P[0].x, P[0].y], hidden = false;
+    let d = `M${P[0].x},${P[0].y}`, pos = [P[0].x, P[0].y], hidden = false, seg = P.length - 1;
     for (let i = 1; i < P.length; i++) {
       const a = P[i - 1], b = P[i];
       if (t >= b.t) { d += `${b.gap ? "M" : "L"}${b.x},${b.y}`; pos = [b.x, b.y]; hidden = false; continue; }
       const k = (t - a.t) / Math.max(1e-9, b.t - a.t);
-      pos = [lerp(a.x, b.x, k), lerp(a.y, b.y, k)];
+      pos = [lerp(a.x, b.x, k), lerp(a.y, b.y, k)]; seg = i;
       if (b.gap) hidden = true; else d += `L${pos[0].toFixed(1)},${pos[1].toFixed(1)}`;
       break;
     }
-    return { d, pos, hidden, done: t >= P[P.length - 1].t };
+    return { d, pos, hidden, seg, done: t >= P[P.length - 1].t };
   }
 
   /* ——随时间更新地图—— */
@@ -237,14 +279,28 @@
       const label = n + (ruin ? "（废墟）" : "");
       if (p.tx.textContent !== label) p.tx.textContent = label;
     });
+    const away = new Set();
     JR.forEach((j) => {
       const r = at(j.P, t), end = j.P[j.P.length - 1].t, span = Math.max(0.4, (end - j.P[0].t) * 0.6);
-      const on = r && t <= end + span;
-      j.path.style.display = on ? "" : "none"; j.mk.style.display = on && !r.done && !r.hidden ? "" : "none";
+      const on = r && t <= end + span, mk = on && !r.done && !r.hidden;
+      j.path.style.display = on ? "" : "none"; j.mk.style.display = mk ? "" : "none"; j.vis = mk;
       if (!on) return;
       j.path.setAttribute("d", r.d); j.path.classList.toggle("done", r.done);
+      if (!mk) return;
+      const who = whoAt(j, t); who.forEach((id) => away.add(id)); j.curWho = who; j.curPos = r.pos;
+      const a = j.P[r.seg - 1] || j.P[0], b = j.P[r.seg], moving = Math.hypot(b.x - a.x, b.y - a.y) > 0.5;
+      renderCluster(j, who, moving ? b.m || j.mode || "" : "");
+      j.mk.classList.toggle("still", !moving);
+      if (moving && Math.abs(b.x - a.x) > 0.5) j.mk.classList.toggle("left", b.x < a.x);
       j.mk.setAttribute("transform", `translate(${r.pos[0].toFixed(1)},${r.pos[1].toFixed(1)})`);
     });
+    const groups = {};
+    RES.forEach((r) => { const v = t >= r.from && t < r.to && !away.has(r.c.id); r.vis = v; r.g.style.display = v ? "" : "none"; if (v) (groups[r.key] ||= []).push(r); });
+    Object.values(groups).forEach((list) => list.forEach((r, i) => {
+      const n = list.length, per = Math.min(n, 4), row = Math.floor(i / 4), col = i % 4, cnt = Math.min(per, n - row * 4);
+      const tf = `translate(${((col - (cnt - 1) / 2) * 17).toFixed(1)},${-6 - row * 28})`;
+      if (r.tf !== tf) { r.inner.setAttribute("transform", tf); r.tf = tf; }
+    }));
     const rr = t >= RING[0].t && t < RING_END ? at(RING, t) : null;
     L.ring.style.display = rr ? "" : "none";
     if (rr) L.ring.setAttribute("transform", `translate(${rr.pos[0].toFixed(1)},${(rr.pos[1] - 1).toFixed(1)})`);
@@ -304,7 +360,9 @@
     pulse(p.x, p.y);
   }
   function openCard(html) { const c = $("#card"); c.innerHTML = `<button class="x" aria-label="关闭">×</button>` + html; c.hidden = false; }
-  $("#card").addEventListener("click", (e) => { if (e.target.closest(".x")) return ($("#card").hidden = true); const li = e.target.closest("[data-t]"); if (li) { const ev = D.EVENTS.find((x) => x.t === +li.dataset.t); if (ev) goEvent(ev); } });
+  $("#card").addEventListener("click", (e) => { if (e.target.closest(".x")) return ($("#card").hidden = true);
+    const fo = e.target.closest("[data-follow]"); if (fo) return followJ(fo.dataset.follow);
+    const ho = e.target.closest("[data-home]"); if (ho) { pause(); setT(+ho.dataset.home + 1e-4); const a = ho.dataset.at, [x, y] = a.includes(",") ? a.split(",").map(Number) : xy(a); flyTo(x, y, fine(T) ? 420 : 640); userMoved = Date.now(); pulse(x, y, "k-ring"); return; } const li = e.target.closest("[data-t]"); if (li) { const ev = D.EVENTS.find((x) => x.t === +li.dataset.t); if (ev) goEvent(ev); } });
 
   /* ======================= 时光机 ======================= */
   const tm = $("#tm"), track = $("#tmTrack"), thumb = $("#tmThumb");
@@ -336,7 +394,7 @@
     lastEra = e.id;
     // 越过的事件：播放时弹出
     let idx = -1; D.EVENTS.forEach((ev, i) => { if (ev.t <= T + 1e-6) idx = i; });
-    if (idx !== lastEvIdx) { if (playing && idx > lastEvIdx && idx >= 0) toast(D.EVENTS[idx]); lastEvIdx = idx; markChron(idx); }
+    if (idx !== lastEvIdx) { if ((playing || follow) && idx > lastEvIdx && idx >= 0) toast(D.EVENTS[idx]); lastEvIdx = idx; markChron(idx); }
     $$(".tick").forEach((k, i) => k.classList.toggle("past", i <= idx));
     updateMap();
   }
@@ -350,18 +408,75 @@
   let playing = false, speed = 1, raf = 0, last = 0;
   const DUR = 240; // 1× 下整条时间轴约 4 分钟
   function play() {
+    endFollow();
     if (T >= T1 - 0.01) setT(T0);
     playing = true; $("#tmPlay").classList.add("on"); $("#tmPlay").setAttribute("aria-label", "暂停"); last = performance.now();
     const step = (now) => { if (!playing) return; const dt = Math.min(0.1, (now - last) / 1000); last = now; const p = posOf(T) + (dt * speed) / DUR; if (p >= 1) { setT(T1 - 0.001); return pause(); } setT(tAt(p)); raf = requestAnimationFrame(step); };
     raf = requestAnimationFrame(step);
   }
-  function pause() { playing = false; cancelAnimationFrame(raf); $("#tmPlay").classList.remove("on"); $("#tmPlay").setAttribute("aria-label", "播放"); }
+  function pause() { endFollow(); playing = false; cancelAnimationFrame(raf); $("#tmPlay").classList.remove("on"); $("#tmPlay").setAttribute("aria-label", "播放"); }
   function stepEvent(dir) {
     pause(); const i = D.EVENTS.findIndex((e) => e.t > T + 1e-6);
     const cur = i < 0 ? D.EVENTS.length - 1 : i - 1;
     const n = clamp(dir > 0 ? (i < 0 ? D.EVENTS.length - 1 : i) : cur - (Math.abs(D.EVENTS[Math.max(0, cur)].t - T) < 1e-6 ? 1 : 0), 0, D.EVENTS.length - 1);
     goEvent(D.EVENTS[n]);
   }
+  /* ——跟随一段旅程：慢放 + 镜头跟着小人走—— */
+  let follow = null;
+  function followJ(id) {
+    const j = JR.find((x) => x.id === id); if (!j) return;
+    pause(); $("#card").hidden = true;
+    const t0 = j.P[0].t, t1 = j.P[j.P.length - 1].t, xs = j.P.map((p) => p.x), ys = j.P.map((p) => p.y);
+    const bw = Math.max(...xs) - Math.min(...xs), bh = Math.max(...ys) - Math.min(...ys);
+    const f = { j, t1, rate: (t1 - t0) / clamp(j.P.length * 2.2, 12, 28), w: clamp(Math.max(bw, (bh * cw) / ch) * 0.6, 320, 900) };
+    setT(t0 + 1e-6); flyTo(j.P[0].x, j.P[0].y, f.w, 900); f.mv = userMoved = Date.now(); follow = f;
+    $("#tmPlay").classList.add("on"); document.body.classList.add("following");
+    const fb = $("#follow"); fb.hidden = false; fb.innerHTML = `<span>跟随</span><b style="color:${j.c}">${esc(j.n)}</b><button aria-label="停止跟随">×</button>`;
+    setTimeout(() => { if (follow !== f) return; last = performance.now(); raf = requestAnimationFrame(fstep); }, 900);
+  }
+  function fstep(now) {
+    const f = follow; if (!f) return;
+    const dt = Math.min(0.1, (now - last) / 1000); last = now;
+    const nt = T + dt * f.rate * speed;
+    if (nt >= f.t1) { setT(f.t1 - 1e-6); return pause(); }
+    setT(nt);
+    const r = at(f.j.P, T);
+    if (r && (userMoved === f.mv || Date.now() - userMoved > 3000)) {
+      const h = (cam.w * ch) / cw; cam.x += (r.pos[0] - cam.w / 2 - cam.x) * 0.06; cam.y += (r.pos[1] - h / 2 - cam.y) * 0.06; cam.w += (f.w - cam.w) * 0.03; applyCam();
+    }
+    raf = requestAnimationFrame(fstep);
+  }
+  function endFollow() { if (!follow) return; follow = null; cancelAnimationFrame(raf); document.body.classList.remove("following"); $("#follow").hidden = true; $("#tmPlay").classList.remove("on"); }
+
+  /* ——人物卡 / 旅程卡—— */
+  const chSvg = (id, cls = "") => `<svg class="${cls}" viewBox="-24 -68 48 74" aria-hidden="true"><use href="#chb-${id}"/></svg>`;
+  function charJourneys(id) { return JR.filter((j) => (j.who || []).includes(id) || (j.whoAt || []).some(([, l]) => l.includes(id))); }
+  function whereIs(id) {
+    const j = JR.find((x) => x.vis && x.curWho.includes(id)); if (j) return j.curPos;
+    const r = RES.find((x) => x.vis && x.c.id === id); return r ? [r.x, r.y] : null;
+  }
+  function showChar(id, jump) {
+    const c = CI[id]; if (!c) return;
+    const js = charJourneys(id);
+    if (jump && !whereIs(id)) {
+      const opts = [...(c.homes || []).map((h) => h[1] + 1e-4), ...js.map((j) => joinT(j, id) + 1e-4)].sort((a, b) => a - b);
+      if (opts.length) { pause(); setT(opts[0]); }
+    }
+    const w = whereIs(id);
+    if (w && jump) { flyTo(w[0], w[1], fine(T) ? 420 : 640); userMoved = Date.now(); }
+    if (w) pulse(w[0], w[1], "k-" + (c.r === "dark" ? "dark" : "ring"));
+    const homes = (c.homes || []).map(([at, from, to, hn]) => `<li data-home="${from}" data-at="${Array.isArray(at) ? at.join(",") : at}"><b>${esc(fmt(from))} — ${esc(fmt(to))}</b>${esc(hn || placeName(at))}</li>`).join("");
+    openCard(`<div class="cc">${chSvg(id, "cc-big")}<div><div class="pc-k">${esc(RACE[c.r] || "")} · ${esc(c.en)}</div><h3>${esc(c.n)}</h3></div></div><p class="cc-bio">${esc(c.bio)}</p>` +
+      (homes ? `<h5 class="cc-h">居所</h5><ul class="pc-ev">${homes}</ul>` : "") +
+      (js.length ? `<h5 class="cc-h">足迹 · 点一下跟着走</h5><div class="cc-js">${js.map((j) => `<button data-follow="${j.id}" style="--c:${j.c}">▶ ${esc(j.n)}<small>${esc(fmt(j.P[0].t, hasDay(j.P[0].t)))}</small></button>`).join("")}</div>` : ""));
+  }
+  function showJourney(j) {
+    const who = j.curWho || whoAt(j, T);
+    openCard(`<div class="pc-k">${j.mig ? "迁徙" : "旅程"} · ${esc(fmt(j.P[0].t, hasDay(j.P[0].t)))} — ${esc(fmt(j.P[j.P.length - 1].t, hasDay(j.P[j.P.length - 1].t)))}</div><h3>${esc(j.n)}</h3>
+      <div class="cc-who">${who.map((id) => `<button data-c="${id}">${chSvg(id)}<span>${esc(CI[id]?.n || id)}</span></button>`).join("")}</div>
+      <button class="cc-follow" data-follow="${j.id}" style="--c:${j.c}">▶ 从头跟随这段路</button>`);
+  }
+
   let toastTimer = 0;
   function toast(ev) {
     const t = $("#toast");
@@ -392,11 +507,15 @@
     $("#chron").addEventListener("click", (e) => { if (e.target.closest(".mini")) return; const li = e.target.closest("li[data-i]"); if (li) goEvent(D.EVENTS[+li.dataset.i]); });
     // 传说
     $("#legends").innerHTML = `<p class="hint">每个传说是一段引导式阅读：点“下一段”，地图会飞到故事发生的地方，时间也会拨到那一年。</p>` + D.LEGENDS.map((l) => `<button class="lg-card" data-l="${l.id}"><span class="lg-y">${esc(fmt(l.beats[0].t).replace(/ \d+ 年$/, ""))}</span><b>${esc(l.n)}</b><i>${esc(l.en)}</i><span class="lg-s">${esc(l.sub)}</span><span class="lg-n">${l.beats.length} 段</span></button>`).join("");
+    // 人物
+    $("#chars").innerHTML = `<p class="hint">中洲的 ${CH.CHARS.length} 位人物。点一个人，地图会跳到他出现的年代和地点；在人物卡里点“足迹”，就能跟着他走完那段路。地图上走动的小队就是正在旅行的人。</p>` +
+      CH.RACES.map(([r, n]) => `<h4 class="ch-race">${esc(n)}</h4><div class="cgrid">${CH.CHARS.filter((c) => c.r === r).map((c) => `<button class="cbtn" data-c="${c.id}" data-jump="1">${chSvg(c.id)}<b>${esc(c.n)}</b></button>`).join("")}</div>`).join("");
     // 战役
     $("#battles").innerHTML = `<p class="hint">选一场战役进入战场：分阶段推演兵力移动，你会以一个普通人的视角经历它。</p>` + [...BATTLES].sort((a, b) => a.t - b.t).map((b) => `<button class="bt-card" data-b="${b.id}"><span class="bt-y">${esc(b.age)}</span><b>${esc(b.n)}</b><i>${esc(b.en)}</i><span class="bt-s"><em class="w">${esc(b.sides.w)}</em> 对 <em class="e">${esc(b.sides.e)}</em></span><span class="bt-go">进入战场 ▸</span></button>`).join("");
     document.addEventListener("click", (e) => {
       const b = e.target.closest("[data-b]"); if (b && b.dataset.b) { e.preventDefault(); return openBattle(b.dataset.b); }
       const l = e.target.closest(".go-l,.lg-card"); if (l) { setTab("legends"); return openLegend(l.dataset.l, 0); }
+      const c = e.target.closest("button[data-c]"); if (c) { if (innerWidth <= 860 && c.dataset.jump) document.body.classList.remove("panel-open"); return showChar(c.dataset.c, !!c.dataset.jump); }
     });
     $("#reader").addEventListener("click", (e) => {
       if (e.target.closest(".rd-back")) return closeLegend();
@@ -452,7 +571,9 @@
     b.units.forEach((u) => {
       const g = el("g", { class: `bu s-${SIDEC[u.side]} u-${u.kind}` }, ug);
       const w = u.w || 24, h = u.h || 24;
-      if (u.kind === "hero") { el("circle", { r: 7, class: "hb" }, g); el("path", { d: "M0,-7V-22L12,-18L0,-14", class: "flag" }, g); }
+      const hs = u.kind === "hero" && CB ? CH.HEROES[b.id + "." + u.id] : null;
+      if (hs) { el("ellipse", { rx: 8 + hs.length * 9, ry: 5, cy: 8, class: "hb hb-sh" }, g); hs.forEach((id, i) => { const gg = el("g", { transform: `translate(${((i - (hs.length - 1) / 2) * 20).toFixed(1)},8)` }, g), bb = el("g", { class: "bob", style: `animation-delay:-${i * 0.2}s` }, gg); el("use", { href: "#chb-" + id, transform: "scale(.8)" }, bb); }); }
+      else if (u.kind === "hero") { el("circle", { r: 7, class: "hb" }, g); el("path", { d: "M0,-7V-22L12,-18L0,-14", class: "flag" }, g); }
       else if (u.kind === "nazgul") { el("path", { d: "M-18,-4Q-8,-12 0,0Q8,-12 18,-4Q8,-6 0,6Q-8,-6 -18,-4Z", class: "naz" }, g); }
       else if (u.kind === "eagle") { for (let i = 0; i < 5; i++) el("path", { d: `M${-w / 2 + i * (w / 4) - 10},${(i % 2) * 10 - 4}q10,-10 10,0q0,-10 10,0`, class: "eag" }, g); }
       else if (u.kind === "ship") { for (let i = 0; i < 4; i++) el("path", { d: `M-12,${-h / 2 + i * (h / 4)}h24l-5,8h-14z M0,${-h / 2 + i * (h / 4)}v-12l9,8z`, class: "shp" }, g); }
@@ -460,7 +581,7 @@
       else if (u.kind === "troll") { el("rect", { x: -11, y: -11, width: 22, height: 22, class: "blk tr" }, g); el("path", { d: "M-6,-6L6,6M6,-6L-6,6", class: "tri" }, g); }
       else if (u.kind === "beast") { el("ellipse", { rx: w / 2, ry: h / 2, class: "blk" }, g); for (let i = 0; i < 3; i++) el("circle", { cx: (i - 1) * w / 3.5, r: Math.min(w, h) / 6, class: "bst" }, g); }
       else { el("rect", { x: -w / 2, y: -h / 2, width: w, height: h, rx: 2, class: "blk" }, g); if (u.kind === "cav") el("path", { d: `M${-w / 2 + 4},${-4}l6,4l-6,4M${-w / 2 + 12},${-4}l6,4l-6,4`, class: "chev" }, g); if (u.kind === "arc" || u.kind === "elf") el("path", { d: `M${-w / 2 + 2},${h / 2 + 4}h${w - 4}`, class: "arcl" }, g); }
-      const tx = el("text", { y: (u.kind === "hero" ? -26 : -(u.h || 24) / 2 - 6), class: "bu-n" }, g); tx.textContent = u.n;
+      const tx = el("text", { y: (hs ? -42 : u.kind === "hero" ? -26 : -(u.h || 24) / 2 - 6), class: "bu-n" }, g); tx.textContent = u.n;
       B.units[u.id] = { u, g, x: u.x, y: u.y, o: u.o ?? 1 };
       place(B.units[u.id], true);
     });
@@ -566,6 +687,7 @@
     $("#intro").addEventListener("click", (e) => { const b = e.target.closest("[data-start]"); if (b) start(b.dataset.start); });
     $("#panelToggle").onclick = () => document.body.classList.toggle("panel-open");
     $("#bClose").onclick = closeBattle;
+    $("#follow").onclick = (e) => { if (e.target.closest("button")) pause(); };
     document.addEventListener("keydown", (e) => {
       if (e.target.closest("input,textarea")) return;
       if (!B.el.hidden) { if (e.key === "Escape") closeBattle(); if (e.key === "ArrowRight") phase(B.k + 1); if (e.key === "ArrowLeft") B.k > 0 && phase(B.k - 1); return; }
@@ -578,7 +700,9 @@
     if (h.get("t")) { setT(+h.get("t")); flyBox(eraOf(T).cam); }
     if (h.get("l")) { setTab("legends"); openLegend(h.get("l"), +(h.get("k") || 0)); }
     if (h.get("b")) openBattle(h.get("b"));
-    window.__ME = { setT, flyTo, openBattle, phase, openLegend, play, pause, get T() { return T; }, cam, posOf, tAt, fmt };
+    if (h.get("c")) { setTab("chars"); showChar(h.get("c"), true); }
+    if (h.get("f")) followJ(h.get("f"));
+    window.__ME = { setT, flyTo, openBattle, phase, openLegend, play, pause, followJ, showChar, setTab, get T() { return T; }, get follow() { return !!follow; }, cam, posOf, tAt, fmt, JR, RES };
   }
   init();
 })();

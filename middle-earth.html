@@ -18,7 +18,7 @@
       <p class="intro-k">商海时报 · 特别版 · 非官方爱好者作品</p>
       <h1>中洲纪年</h1>
       <p class="intro-en">A Chronicle of Middle-earth</p>
-      <p class="intro-p">从双圣树的光，到魔戒在末日火山中熔化——七千多年的大陆、王国、传说与战争，铺在一张会随时间变化的地图上。拖动时间，看贝烈瑞安德沉入大海、努门诺尔升起又覆灭；跟着至尊戒走完它的路；走进战场，亲身经历那几场决定世界的战役。</p>
+      <p class="intro-p">从双圣树的光，到魔戒在末日火山中熔化——七千多年的大陆、王国、传说与战争，铺在一张会随时间变化的地图上。拖动时间，看贝烈瑞安德沉入大海、努门诺尔升起又覆灭；跟着至尊戒走完它的路；看六十多位 Q 版人物在大陆上迁徙、远征、定居；走进战场，亲身经历那几场决定世界的战役。</p>
       <div class="intro-btns">
         <button data-start="begin" class="pri">从头开始 ▸<small>自动播放全部纪元</small></button>
         <button data-start="war">直接去魔戒大战<small>跟着弗罗多出发</small></button>
@@ -41,10 +41,12 @@
     <aside class="panel" id="panel">
       <div id="tabs" class="tabs" role="tablist">
         <button data-tab="chron" class="on">编年</button>
+        <button data-tab="chars">人物</button>
         <button data-tab="legends">传说</button>
         <button data-tab="battles">战役</button>
       </div>
       <div class="pane" data-pane="chron"><div id="chron" class="chron"></div></div>
+      <div class="pane" data-pane="chars" hidden><div id="chars" class="chars"></div></div>
       <div class="pane" data-pane="legends" hidden><div id="legends" class="legends"></div><div id="reader" class="reader" hidden></div></div>
       <div class="pane" data-pane="battles" hidden><div id="battles" class="battles"></div></div>
       <p class="disc">非官方爱好者作品，与托尔金遗产委员会、Middle-earth Enterprises、华纳兄弟等均无关联。地图为原创示意图、不按比例；文字为原创中文概述。</p>
@@ -55,6 +57,7 @@
       <div class="zoom"><button id="zin" aria-label="放大">＋</button><button id="zout" aria-label="缩小">－</button><button id="zfit" aria-label="本纪元全图">⌂</button></div>
       <div class="legend-key"><span class="k-elf">▲ 精灵</span><span class="k-man">■ 人类</span><span class="k-dwarf">◆ 矮人</span><span class="k-hob">● 霍比特</span><span class="k-dark">✕ 暗影</span><span class="k-ring">◉ 至尊戒</span></div>
       <div id="eraFlash" class="era-flash"></div>
+      <div id="follow" class="follow" hidden></div>
       <div id="toast" class="toast"></div>
       <div id="card" class="card" hidden></div>
     </div>
@@ -99,6 +102,7 @@
   <script src="js/me-world.js"></script>
   <script src="js/me-data.js"></script>
   <script src="js/me-battles.js"></script>
+  <script src="js/me-chars.js"></script>
   <script src="js/me.js"></script>
 </body>
 </html>
