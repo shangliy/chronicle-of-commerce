@@ -3,6 +3,8 @@
 一份可以翻页的商业故事报：七百年商业影像随时间流动，看一门生意如何穿越时代。
 灵感来自 [江山时序](https://github.com/DeanChensj/jiangshan-map)，选题参考播客「虚实之间」。
 
+**在线访问：** https://shangliy.github.io/chronicle-of-commerce/ （[倒叙黑白版](https://shangliy.github.io/chronicle-of-commerce/fashion-noir.html) · [香奈儿滚动版](https://shangliy.github.io/chronicle-of-commerce/fashion.html) · [翻页版](https://shangliy.github.io/chronicle-of-commerce/fashion-book.html) · [家族版](https://shangliy.github.io/chronicle-of-commerce/family.html)）
+
 ## 玩法
 
 1. **时光机（头版顶部）**：一键播放 1300 → 2026。年份滚动，时代色带随之变色，新时代到来时盖下“时代更替”印章，
