@@ -3,7 +3,8 @@
  * 提供：canvas 生成的地形贴图、地形区块、城镇插画、地图上的宝物与建筑、英雄属性。
  */
 (function () {
-  if (window.ME_STYLE !== "h3") return;
+  if (window.ME_STYLE !== "h3" && window.ME_STYLE !== "paint") return;
+  const PAINT = window.ME_STYLE === "paint";
 
   /* ——随机数—— */
   let s0 = 1; const rnd = () => ((s0 = (s0 * 16807) % 2147483647) - 1) / 2147483646;
@@ -80,7 +81,43 @@
     }
   }
   const TX = {};
+  // 写实手绘风：柔和的笔触（长条半透明短刷）
+  function strokes(g, n, cols, l0, l1, w, al) {
+    for (let i = 0; i < n; i++) {
+      const x = R(0, S), y = R(0, S), l = R(l0, l1), a = R(-0.5, 0.5) + (rnd() < 0.5 ? 0 : 1.57), c = pick(cols);
+      W(g, x, y, l1 + 3, (g) => { g.globalAlpha = al; g.strokeStyle = c; g.lineWidth = R(w * 0.5, w); g.lineCap = "round"; g.rotate(a); g.beginPath(); g.moveTo(-l / 2, 0); g.quadraticCurveTo(0, R(-l, l) * 0.15, l / 2, 0); g.stroke(); });
+    }
+    g.globalAlpha = 1;
+  }
+  function soft(g, n, cols, r0, r1, al) { // 柔边大色块
+    for (let i = 0; i < n; i++) {
+      const x = R(0, S), y = R(0, S), r = R(r0, r1), c = pick(cols);
+      W(g, x, y, r1 + 2, (g) => { const gr = g.createRadialGradient(0, 0, 0, 0, 0, r); gr.addColorStop(0, c); gr.addColorStop(1, c.replace(/[\d.]+\)$/, "0)")); g.globalAlpha = al; g.fillStyle = gr; g.beginPath(); g.arc(0, 0, r, 0, 6.29); g.fill(); });
+    }
+    g.globalAlpha = 1;
+  }
+  function paintTextures() {
+    const P = (base, a, b, extra) => (g) => { soft(g, 70, a, 30, 90, 0.55); blobs(g, 900, b, 3, 12, 0.22); strokes(g, 1400, b, 3, 9, 1.6, 0.28); dots(g, 1800, b, 0.9); extra && extra(g); };
+    const rgba = (h, a = 1) => { const n = parseInt(h.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; };
+    const RG = (...h) => h.map((x) => rgba(x));
+    TX.grass = mk(31, "#5b6c38", P("#5b6c38", RG("#4c5e2e", "#6c7a40", "#76784a", "#556a34", "#7d8450"), ["#4a5a2c", "#687840", "#80864e", "#5e7036", "#3f5228"]));
+    TX.aman = mk(32, "#6a8a40", P("#6a8a40", RG("#5e8238", "#82984a", "#94a058", "#70903e"), ["#5a7e34", "#8aa050", "#a0a860", "#c8c080"]));
+    TX.dry = mk(33, "#8a7f52", P("#8a7f52", RG("#7c7248", "#9a8c5c", "#a69866", "#847a4e"), ["#746a42", "#a09062", "#b0a272", "#6a6040"]));
+    TX.dirt = mk(34, "#7f6a48", P("#7f6a48", RG("#725e3e", "#8e7852", "#9a845c", "#6a5838"), ["#6a563a", "#947e58", "#a89068"]));
+    TX.rough = mk(35, "#7c7563", P("#7c7563", RG("#6e685a", "#8a8472", "#949080", "#6a6456"), ["#605a4e", "#9a9484", "#aaa494"]));
+    TX.sand = mk(36, "#c4a670", P("#c4a670", RG("#b89a62", "#d0b47e", "#d8bc88", "#b49660"), ["#ae905a", "#d4b886", "#e0c898"], (g) => arcs(g, 260, "#a8885a", 1, 14, 0.25)));
+    TX.snow = mk(37, "#d4d8d4", P("#d4d8d4", RG("#c4cac8", "#e4e6e2", "#f0f0ec", "#b8c0c0"), ["#bcc4c4", "#e8eae6", "#ffffff"]));
+    TX.swamp = mk(38, "#4e5a3a", P("#4e5a3a", RG("#44502f", "#5a6644", "#3e4a34", "#62684a"), ["#3a4630", "#5e6a48", "#6a7050"], (g) => { g.globalAlpha = 0.5; puddles(g, 30); g.globalAlpha = 1; }));
+    TX.lava = mk(39, "#3c302c", P("#3c302c", RG("#342824", "#4a3c36", "#56443c", "#2c2220"), ["#2a201e", "#4e403a", "#5e4a40"], (g) => { g.globalAlpha = 0.6; cracks(g, 20, true); g.globalAlpha = 1; }));
+    TX.ash = mk(40, "#5a5048", P("#5a5048", RG("#4e4640", "#665a52", "#70645a", "#463e38"), ["#443c36", "#6a5e56", "#7a6e64"]));
+    TX.water = mk(41, "#1c4256", (g) => { soft(g, 60, RG("#173a4e", "#22506a", "#1a4660", "#284e62"), 40, 110, 0.6); strokes(g, 900, ["#2a5a72", "#1a3c50", "#346a80"], 6, 18, 1.4, 0.25); });
+    TX.shallow = mk(42, "#2f7480", (g) => { soft(g, 60, RG("#2a6c78", "#3a8a92", "#2a6470", "#48989c"), 30, 90, 0.6); strokes(g, 700, ["#3e8890", "#24606a", "#5aa8aa"], 5, 14, 1.3, 0.3); });
+    // 大尺度起伏（叠加在所有陆地上，用“柔光”混合）
+    TX.relief = mk(43, "#808080", (g) => { soft(g, 90, RG("#5a5a5a", "#a8a8a8", "#6a6a6a", "#9a9a9a", "#4a4a4a", "#b8b8b8"), 40, 140, 0.7); strokes(g, 500, ["#606060", "#a0a0a0"], 10, 30, 3, 0.25); });
+    return Object.entries(TX).map(([k, u]) => { const w = k === "relief" ? 900 : k === "water" ? 420 : 170; return `<pattern id="tx-${k}" patternUnits="userSpaceOnUse" width="${w}" height="${w}"><image href="${u}" width="${w}" height="${w}" preserveAspectRatio="none"/></pattern>`; }).join("");
+  }
   function textures() {
+    if (PAINT) return paintTextures();
     TX.grass = mk(11, "#4b8a2c", (g) => { blobs(g, 700, ["#3f7a25", "#56962f", "#4f8f2b", "#62a338", "#43802a"], 8, 26, 0.32); blobs(g, 2600, ["#3a7022", "#5c9c34", "#6aa83e"], 1.5, 4, 0.5); tufts(g, 650, "#2d5e17", "#86c252"); dots(g, 46, ["#f4e86a", "#ffffff", "#f0a0c0"], 1.6); });
     TX.aman = mk(12, "#5aa83b", (g) => { blobs(g, 700, ["#6cb848", "#4f9a33", "#7cc050", "#a8c048"], 8, 26, 0.32); blobs(g, 2400, ["#4a9030", "#8cc858", "#c8c060"], 1.5, 4, 0.5); tufts(g, 500, "#3a7a22", "#a8e070"); dots(g, 160, ["#ffffff", "#f4e070", "#f0b0d0", "#c8e0ff"], 1.8); });
     TX.dry = mk(13, "#7d7442", (g) => { blobs(g, 700, ["#6e6638", "#8c8250", "#9a8c58", "#706a3a"], 8, 26, 0.32); blobs(g, 2400, ["#5e5830", "#a09460"], 1.5, 4, 0.5); tufts(g, 450, "#4e4a28", "#b0a468", 5); });
@@ -241,5 +278,5 @@
     kno: `<svg viewBox="0 0 24 24"><path d="M3,5Q8,3 12,6Q16,3 21,5V19Q16,17 12,20Q8,17 3,19Z" fill="#ece0c0" stroke="#1e140a" stroke-width="1.2"/><path d="M12,6V20" stroke="#1e140a" stroke-width="1"/><path d="M5,9H10M5,12H10M14,9H19M14,12H19" stroke="#7a6040" stroke-width=".9"/></svg>`
   };
 
-  window.ME_H3 = { textures, BIOMES, OBJ, pickObj, FLAG, stats, ICON, plate };
+  window.ME_H3 = { PAINT, textures, BIOMES, OBJ, pickObj, FLAG, stats, ICON, plate };
 })();

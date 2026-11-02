@@ -12,7 +12,7 @@
   const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   function el(tag, attrs = {}, parent) { const e = document.createElementNS(NS, tag); for (const k in attrs) if (attrs[k] != null) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
   const EN = window.ME_LANG === "en";
-  const H3 = window.ME_STYLE === "h3" ? window.ME_H3 : null;
+  const H3 = window.ME_STYLE === "h3" || window.ME_STYLE === "paint" ? window.ME_H3 : null, PAINT = !!(H3 && H3.PAINT);
   const tr = (s) => (EN && window.ME_UI && window.ME_UI[s]) || s;
   const dot = (...a) => a.filter(Boolean).join(" · ");
   let seed = 7; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
@@ -261,6 +261,7 @@
     if (H3) el("path", { d: landD, class: "beach" }, svg);
     el("path", { d: landD, class: "land" }, svg);
     if (H3) biomes("me", svg);
+    if (PAINT) el("path", { d: landD, class: "relief" }, svg);
     // 贝烈瑞安德（第一纪元）
     L.bel = el("g", { class: "bel era-layer" }, svg);
     const belD = belD0;
@@ -268,6 +269,7 @@
     if (H3) el("path", { d: belD, class: "beach" }, L.bel);
     el("path", { d: belD, class: "land" }, L.bel);
     if (H3) biomes("bel", L.bel);
+    if (PAINT) el("path", { d: belD, class: "relief" }, L.bel);
     el("path", { d: cr(W.land.balar, true), class: "land coastline" }, L.bel);
     el("path", { d: belD, class: "coastline" }, L.bel);
     el("path", { d: landD, class: "coastline" }, svg);
@@ -286,6 +288,7 @@
     if (H3) { el("path", { d: amD, class: "beach" }, L.aman); el("path", { d: erD, class: "beach" }, L.aman); }
     el("path", { d: amD, class: "land aman-land coastline" }, L.aman);
     el("path", { d: erD, class: "land aman-land coastline" }, L.aman);
+    if (PAINT) { el("path", { d: amD, class: "relief" }, L.aman); el("path", { d: erD, class: "relief" }, L.aman); }
     // 冰峡（赫尔卡拉克瑟）
     el("path", { d: cr(W.land.ice, true), class: "ice" }, L.bel);
     { let d = ""; seed = 41; for (let i = 0; i < 60; i++) { const x = lerp(-900, -695, rnd()), y = lerp(-118, -72, rnd()); if (inPoly(x, y, W.land.ice)) d += `M${x.toFixed(1)},${y.toFixed(1)}l${(4 + rnd() * 5).toFixed(1)},${(-2 - rnd() * 3).toFixed(1)}`; } el("path", { d, class: "ice-h" }, L.bel); }
@@ -348,7 +351,7 @@
       el("path", { d: `M${p.x - w},${p.y}L${p.x - 2},${p.y - p.h}L${p.x + 2},${p.y - p.h}L${p.x + w},${p.y}Z`, class: "mt big" }, g);
       if (p.fire) el("circle", { cx: p.x, cy: p.y - p.h, r: 3, class: "ember" }, g);
     });
-    if (H3) advObjects();
+    if (H3 && !PAINT) advObjects();
     // 国度
     L.realms = el("g", { class: "realms" }, svg);
     D.REALMS.forEach((r) => {
@@ -470,7 +473,7 @@
   function renderCluster(j, who, mode) {
     const key = who.join() + "|" + mode; if (j.key === key) return; j.key = key;
     if (!who.length || !CB) { j.cl.innerHTML = `<circle r="4.5" fill="${j.c}" class="jdot"/>`; return; }
-    if (H3 && mode !== "ship") return h3Cluster(j, who, mode);
+    if (H3 && !PAINT && mode !== "ship") return h3Cluster(j, who, mode);
     const n = who.length, two = n > 4, per = two ? Math.ceil(n / 2) : n, gap = mode === "ride" ? 32 : 21;
     const S = 0.82; let h = "";
     if (mode === "ship") { const sx = Math.max(0.85, (per * gap + 26) / 62); h += `<use href="#chb-sail" transform="translate(-2,2) scale(.85)"/>`; j.hullTf = `translate(0,3) scale(${sx.toFixed(2)},.8)`; }
@@ -660,6 +663,7 @@
     setTimeout(() => g.remove(), 2600);
   }
   function showPlace(p) {
+    if (window.ME_KIDS && window.ME_KIDS.place(p)) return;
     const evs = D.EVENTS.filter((e) => e.at === p.id);
     const kind = tr({ elf: "精灵", man: "人类", dwarf: "矮人", hob: "霍比特人", dark: "黑暗势力", site: "地标" }[p.k]);
     openCard(`<div class="pc-k">${esc(dot(kind, p.en))}</div><h3>${esc(p.tx.textContent)}</h3>` + (evs.length ? `<ul class="pc-ev">${evs.map((e) => `<li data-t="${e.t}"><b>${esc(fmt(e.t, hasDay(e.t)))}</b>${esc(e.h)}</li>`).join("")}</ul>` : `<p class="muted">${tr("这里在编年里还没有专门的记载。")}</p>`));
@@ -695,7 +699,7 @@
     thumb.style.left = posOf(T) * 100 + "%"; $("#tmFill").style.width = posOf(T) * 100 + "%";
     const e = eraOf(T);
     $("#tmDate").textContent = fmt(T, fine(T)); $("#tmEra").textContent = dot(e.n, e.en);
-    if (H3) { const [mo, dd] = md(T); if (age(T).y == null) $("#tmCal").textContent = ""; else { const wk = Math.min(4, Math.ceil(dd / 7)), dy = ((dd - 1) % 7) + 1; $("#tmCal").textContent = EN ? `Month ${mo} · Week ${wk} · Day ${dy}` : `第${mo}月 · 第${wk}周 · 第${dy}天`; } }
+    if (H3 && !PAINT) { const [mo, dd] = md(T); if (age(T).y == null) $("#tmCal").textContent = ""; else { const wk = Math.min(4, Math.ceil(dd / 7)), dy = ((dd - 1) % 7) + 1; $("#tmCal").textContent = EN ? `Month ${mo} · Week ${wk} · Day ${dy}` : `第${mo}月 · 第${wk}周 · 第${dy}天`; } }
     tm.style.setProperty("--era", e.col); document.body.dataset.era = e.id;
     $$(".band").forEach((b) => b.classList.toggle("cur", b.dataset.era === e.id));
     if (lastEra && lastEra !== e.id && !reading && Date.now() - userMoved > 2500) flyBox(e.cam);
@@ -814,6 +818,7 @@
   }
   function showChar(id, jump) {
     const c = CI[id]; if (!c) return;
+    if (window.ME_KIDS && window.ME_KIDS.char(c, jump)) return;
     const js = charJourneys(id);
     if (jump && !whereIs(id)) {
       const opts = [...(c.homes || []).map((h) => h[1] + 1e-4), ...js.map((j) => joinT(j, id) + 1e-4)].sort((a, b) => a - b);
@@ -825,7 +830,7 @@
     const inB = (b) => b.units.some((u) => [...(CH.HEROES[b.id + "." + u.id] || []), ...((CH.TROOPS || {})[b.id + "." + u.id]?.lead || [])].includes(id));
     const bs = BATTLES.filter(inB).sort((a, b) => a.t - b.t);
     const homes = (c.homes || []).map(([at, from, to, hn]) => `<li data-home="${from}" data-at="${Array.isArray(at) ? at.join(",") : at}"><b>${esc(fmt(from))} — ${esc(fmt(to))}</b>${esc(hn || placeName(at))}</li>`).join("");
-    openCard(`<div class="cc"><div class="cc-pt">${PT(c)}</div><div><div class="pc-k">${esc(dot(RACE[c.r], c.en))}</div><h3>${esc(c.n)}</h3></div></div>` + (H3 ? statsHtml(c, bs.length, js.length) : "") + `<p class="cc-bio">${esc(c.bio)}</p>` + bioHtml(id) +
+    openCard(`<div class="cc"><div class="cc-pt">${PT(c)}</div><div><div class="pc-k">${esc(dot(RACE[c.r], c.en))}</div><h3>${esc(c.n)}</h3></div></div>` + (H3 && !PAINT ? statsHtml(c, bs.length, js.length) : "") + `<p class="cc-bio">${esc(c.bio)}</p>` + bioHtml(id) +
       (homes ? `<h5 class="cc-h">${tr("居所")}</h5><ul class="pc-ev">${homes}</ul>` : "") +
       (bs.length ? `<h5 class="cc-h">${tr("参战")}</h5><div class="cc-js">${bs.map((x) => `<button class="go-b" data-b="${x.id}" style="--c:#8a2a1a">⚔ ${esc(x.n)}<small>${esc(x.age)}</small></button>`).join("")}</div>` : "") +
       (js.length ? `<h5 class="cc-h">${tr("足迹 · 点一下跟着走")}</h5><div class="cc-js">${js.map((j) => `<button data-follow="${j.id}" style="--c:${j.c}">▶ ${esc(j.n)}<small>${esc(fmt(j.P[0].t, hasDay(j.P[0].t)))}</small></button>`).join("")}</div>` : ""));
@@ -841,6 +846,7 @@
   }
   function showJourney(j) {
     const who = j.curWho || whoAt(j, T);
+    if (window.ME_KIDS && window.ME_KIDS.journey(j, who)) return;
     openCard(`<div class="pc-k">${tr(j.mig ? "迁徙" : "旅程")} · ${esc(fmt(j.P[0].t, hasDay(j.P[0].t)))} — ${esc(fmt(j.P[j.P.length - 1].t, hasDay(j.P[j.P.length - 1].t)))}</div><h3>${esc(j.n)}</h3>
       <div class="cc-who">${who.map((id) => `<button data-c="${id}">${chSvg(id)}<span>${esc(CI[id]?.n || id)}</span></button>`).join("")}</div>
       <button class="cc-follow" data-follow="${j.id}" style="--c:${j.c}">▶ ${tr("从头跟随这段路")}</button>`);
@@ -1118,9 +1124,10 @@
     if (mode === "begin") { setT(T0 + 1); flyBox(ERAS[0].cam); setTimeout(play, 900); }
     else if (mode === "war") { const ev = D.EVENTS.find((e) => (e.h0 || e.h) === "离开袋底洞"); setT(ev.t); flyBox(eraOf(ev.t).cam); setTab("legends"); openLegend("ring", 0); }
     else if (mode === "battle") { setTab("battles"); }
+    else if (mode === "kids" && window.ME_KIDS) window.ME_KIDS.enter();
   }
   function init() {
-    buildMap(); if (H3) buildMini(); applyCam(); buildTM(); buildPanel(); bindPan();
+    buildMap(); if (H3 && !PAINT) buildMini(); applyCam(); buildTM(); buildPanel(); bindPan();
     setT(T0 + 1); flyBox(ERAS[0].cam, 0);
     const c = ERAS[0].cam; cam.x = c[0]; cam.y = c[1]; cam.w = c[2]; applyCam();
     $("#intro").addEventListener("click", (e) => { const b = e.target.closest("[data-start]"); if (b) start(b.dataset.start); });
@@ -1148,7 +1155,7 @@
     if (h.get("m")) openMoment(h.get("m"));
     if (h.get("c")) { setTab("chars"); showChar(h.get("c"), true); }
     if (h.get("f")) followJ(h.get("f"));
-    window.__ME = { openMoment, closeMoment, MO, setT, flyTo, openBattle, phase, openLegend, play, pause, followJ, showChar, setTab, get T() { return T; }, get follow() { return !!follow; }, cam, posOf, tAt, fmt, JR, RES };
+    window.__ME = { pulse, flyBox, PT, CI, openMoment, closeMoment, MO, setT, flyTo, openBattle, phase, openLegend, play, pause, followJ, showChar, setTab, get T() { return T; }, get follow() { return !!follow; }, cam, posOf, tAt, fmt, JR, RES };
   }
   init();
 })();

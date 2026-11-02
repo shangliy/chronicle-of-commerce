@@ -5,6 +5,7 @@
 (function () {
   const EN = window.ME_LANG === "en";
   window.ME_UI = {
+    "小朋友寻宝 🧒": "Kids Treasure Hunt 🧒", "跟着弗罗多找地方、集贴纸": "Find places with Frodo, collect stickers", "小朋友模式": "Kids mode",
     // 页面
     "中洲纪年 · 指环王版": "Chronicle of Middle-earth",
     "可交互的中洲世界地图、编年史、传说导读与主要战役推演。非官方爱好者作品。": "An interactive map of Middle-earth: chronicle, guided legends and the great battles. An unofficial fan work.",
@@ -80,14 +81,14 @@
       const u = new URL(location.href); u.searchParams.set("lang", to); location.href = u.toString();
     });
   }
-  // 地图风格切换：英雄（彩色冒险地图）/ 羊皮纸
+  // 地图风格切换：手绘写实（默认）→ 英雄（彩色冒险地图）→ 羊皮纸
   const sb = document.getElementById("styleBtn");
   if (sb) {
-    const H = window.ME_STYLE === "h3";
-    sb.textContent = H ? (EN ? "Parchment" : "羊皮纸") : (EN ? "Heroes" : "英雄");
-    sb.title = H ? (EN ? "Switch to the parchment map" : "切换到羊皮纸地图") : (EN ? "Switch to the colourful adventure map" : "切换到彩色冒险地图");
+    const ORD = ["paint", "h3", "parch"], NM = { paint: ["手绘", "Painted"], h3: ["英雄", "Heroes"], parch: ["羊皮纸", "Parchment"] };
+    const cur = window.ME_STYLE, to = ORD[(ORD.indexOf(cur) + 1) % ORD.length];
+    sb.textContent = "🗺 " + NM[cur][EN ? 1 : 0];
+    sb.title = EN ? `Map style: ${NM[cur][1]} — click for ${NM[to][1]}` : `地图风格：${NM[cur][0]}，点击切换到「${NM[to][0]}」`;
     sb.addEventListener("click", () => {
-      const to = H ? "parch" : "h3";
       try { localStorage.setItem("me-style", to); } catch (e) {}
       const u = new URL(location.href); u.searchParams.set("style", to); location.href = u.toString();
     });

@@ -827,3 +827,173 @@ body[data-era="trees"] .advo { display: none; }
 .st-h3 .realm circle { opacity: .4; }
 .st-h3 .realm-n { fill: #fff2c8; }
 @media (max-width: 860px) { .top { gap: 8px; padding: 0 10px; } .lang { padding: 2px 7px; font-size: 11px; } html[lang="en"] .top .ttl { font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; min-width: 0; } }
+
+/* =====================================================================
+ * “手绘写实”风格（html.st-paint，默认）：深青色海、陈旧纸边、柔和起伏的写实地貌、
+ * 红棕色衬线地名。全部为程序绘制的原创贴图。
+ * ===================================================================== */
+.st-paint { --gold: #c89a4a; }
+.st-paint .mapwrap { background: #c9b07a; }
+.st-paint .sea { fill: url(#tx-water); }
+.st-paint .sea-hatch, .st-paint .paper, .st-paint .wave { display: none; }
+/* 大陆架：几层宽而淡的青绿色描边，越靠岸越亮 */
+.st-paint .ripple { stroke-dasharray: none; stroke-linejoin: round; fill: none; }
+.st-paint .ripple.r0 { stroke: #1f5a68; stroke-width: 64px; opacity: .55; }
+.st-paint .ripple.r1 { stroke: #2b7a84; stroke-width: 30px; opacity: .6; }
+.st-paint .ripple.r2 { stroke: #4fa6a4; stroke-width: 11px; opacity: .7; }
+.st-paint .beach { fill: none; stroke: #b9a472; stroke-width: 3.2; stroke-linejoin: round; opacity: .9; }
+.st-paint .land, .st-paint .land.coastline { fill: url(#tx-grass); }
+.st-paint .aman-land, .st-paint .aman-land.coastline { fill: url(#tx-aman); }
+.st-paint .coastline { stroke: #4a3e28; stroke-width: .6; stroke-opacity: .7; }
+.st-paint .relief { fill: url(#tx-relief); mix-blend-mode: overlay; opacity: .7; pointer-events: none; }
+.st-paint .ice { fill: url(#tx-snow); stroke: #8aa0a8; stroke-dasharray: none; }
+.st-paint .biome { stroke: none; }
+.st-paint .biome.off { display: none; }
+.st-paint .lake { fill: url(#tx-shallow); stroke: #b9a472; stroke-width: 1.2; }
+.st-paint .lake-in { stroke: #7cc4c0; opacity: .5; stroke-width: 1; stroke-dasharray: none; }
+.st-paint .river { stroke: #2c6878; opacity: .95; }
+.st-paint .road-b { stroke: #e8dcb4; stroke-width: 1.8; opacity: .35; }
+.st-paint .road { stroke: #5a4628; stroke-width: .9; stroke-dasharray: 3 2; opacity: .65; }
+.st-paint .bridge { stroke: #3a2a1a; stroke-width: 1; }
+.st-paint .hills path { stroke: #3e4a26; fill: none; opacity: .45; } .st-paint .hills.rock path { fill: #8c8470; stroke: #4a4232; opacity: .75; }
+.st-paint .marsh path { stroke: #2e3a24; opacity: .45; } .st-paint .waste path { opacity: .2; }
+.st-paint .grass path { stroke: #3e4e26; }
+.st-paint .fld { stroke: #5a5030; stroke-width: .35; opacity: .7; } .st-paint .fld.f0 { fill: #a8a258; } .st-paint .fld.f1 { fill: #bcae6a; } .st-paint .fld.f2 { fill: #7e8c48; } .st-paint .fld.f3 { fill: #a68e58; }
+/* 森林：深沉的墨绿树冠 */
+.st-paint .h3f-floor { fill: #26361a; opacity: .7; }
+.st-paint .h3f-sh { fill: #0c1608; opacity: .45; }
+.st-paint .h3f-cr { fill: #304a22; stroke: #16240e; stroke-width: .3; }
+.st-paint .h3f-hi { fill: #4e6a34; opacity: .8; }
+.st-paint .h3f-pl { fill: #2a4224; stroke: #101e0c; stroke-width: .3; } .st-paint .h3f-ps { fill: #1a2c16; stroke: #101e0c; stroke-width: .3; }
+.st-paint .h3f.dk .h3f-floor { fill: #1c2a16; opacity: .75; } .st-paint .h3f.dk .h3f-cr { fill: #26381e; } .st-paint .h3f.dk .h3f-hi { fill: #3e5430; } .st-paint .h3f.dk .h3f-pl { fill: #22341e; }
+.st-paint .h3f.gold .h3f-floor { fill: #6a6a2a; } .st-paint .h3f.gold .h3f-cr { fill: #b89a3a; stroke: #4a3a10; } .st-paint .h3f.gold .h3f-hi { fill: #e8d888; }
+/* 山：灰褐色岩体 + 浅色受光面 + 积雪，脚下一圈柔和阴影形成浮雕感 */
+.st-paint .mt-base { fill: none; stroke: #4a4436; stroke-linecap: round; stroke-linejoin: round; opacity: .5; }
+.st-paint .mt-base2 { fill: none; stroke: #8e8874; stroke-linecap: round; stroke-linejoin: round; opacity: .85; }
+.st-paint .mts.dark .mt-base { stroke: #1a1412; opacity: .6; } .st-paint .mts.dark .mt-base2 { stroke: #3a302c; opacity: .8; }
+.st-paint .mt { fill: #c8c2b2; stroke: #5a5446; stroke-width: .3; }
+.st-paint .mt-s { fill: #48443a; opacity: .7; }
+.st-paint .mt-snow { fill: #fbfbf6; opacity: .95; }
+.st-paint .mt-h { stroke: #6a6456; opacity: .6; }
+.st-paint .mts.dark .mt { fill: #4a403c; stroke: #120a08; } .st-paint .mts.dark .mt-s { fill: #120a08; opacity: .6; }
+.st-paint .peak.fire .mt { fill: #4a3430; }
+/* 文字：红棕色衬线字 + 浅纸色描边 */
+.st-paint .lbl-n { fill: #6e1e0e; font-family: var(--cinzel); font-weight: 700; opacity: .95; paint-order: stroke; stroke: rgba(246, 232, 196, .85); stroke-width: calc(var(--fs) * .09px); }
+.st-paint .lbl-en { fill: #7a2e1a; opacity: .85; paint-order: stroke; stroke: rgba(246, 232, 196, .7); stroke-width: calc(var(--fs) * .06px); }
+.st-paint .sea-l .lbl-n { fill: #e8d8b0; stroke: rgba(10, 28, 38, .55); } .st-paint .sea-l .lbl-en { fill: #d0c098; stroke: rgba(10, 28, 38, .5); }
+.st-paint .pl-n { fill: #5a1a0c; font-weight: 600; stroke: rgba(246, 234, 200, .92); stroke-width: 2.8px; }
+.st-paint .pl.dk .pl-n { fill: #8a1a0a; } .st-paint .pl.ruin .pl-n { fill: #6a5a48; } .st-paint .pl:hover .pl-n { fill: #b0300a; }
+.st-paint .rv-n { fill: #1e4a58; stroke: rgba(230, 236, 220, .8); }
+.st-paint .tx-l .lbl-n { fill: #4a3a22; }
+.st-paint .edge-n { fill: #e8d8b0; } .st-paint .edge-en { fill: #c8b890; }
+.st-paint .realm circle { opacity: .35; }
+/* 城镇小画 */
+.st-paint .ic2 { filter: drop-shadow(0 1px .6px rgba(0, 0, 0, .55)) saturate(.75) sepia(.15); transform: scale(calc(var(--icz, 1) * .72)); }
+.st-paint .pl:hover .ic2 { transform: scale(calc(var(--icz, 1) * .9)); }
+.st-paint .pl .pl-n { transform: translateX(calc(12px * var(--icz, 1))); }
+.st-paint .pl.ruin .ic2 { filter: grayscale(.85) brightness(.85); }
+.st-paint .pl.dk .ic2 { filter: hue-rotate(-30deg) saturate(.6) brightness(.6) drop-shadow(0 0 2px rgba(255, 60, 20, .7)); }
+.st-paint .h3flag { display: none; }
+/* 陈旧纸边：四周的海面渐渐褪成羊皮纸色 */
+.st-paint .mapframe { inset: 0; border: 0; background:
+  radial-gradient(ellipse 75% 70% at 50% 50%, transparent 62%, rgba(176, 146, 92, .35) 82%, rgba(150, 118, 70, .75) 100%);
+  box-shadow: inset 0 0 0 6px rgba(90, 64, 34, .55), inset 0 0 0 8px rgba(226, 204, 156, .7), inset 0 0 0 9px rgba(90, 64, 34, .6), inset 0 0 90px rgba(70, 46, 20, .55); }
+.st-paint .mapframe .c { width: 26px; height: 26px; border: 2px solid rgba(90, 64, 34, .8); border-radius: 50%; background: radial-gradient(circle, rgba(226, 204, 156, .9) 30%, rgba(90, 64, 34, .8) 34%, transparent 38%); }
+.st-paint .mapframe .tl { left: 2px; top: 2px; } .st-paint .mapframe .tr { right: 2px; top: 2px; } .st-paint .mapframe .bl { left: 2px; bottom: 2px; } .st-paint .mapframe .br { right: 2px; bottom: 2px; }
+.st-paint body[data-era="trees"] #map { filter: saturate(.75) brightness(.85); }
+
+/* =====================================================================
+ * 小朋友模式（html.kids）
+ * ===================================================================== */
+.intro-btns button.kid { background: #2f7a4a; border-color: #6cc08a; color: #fff; }
+.intro-btns button.kid:hover { background: #3a9058; }
+.intro-btns button.kid small { color: #d8f0d8; }
+.kidb.on { background: #f4c430 !important; color: #3a2a10 !important; border-color: #fff3b0 !important; }
+.khit { fill: transparent; stroke: none; display: none; }
+.kids .khit { display: block; }
+.kids .pl.minor, .kids .advo { display: none; }
+.kids .pl .ic2 { transform: scale(calc(var(--icz, 1) * 1.05)); }
+.kids .pl:hover .ic2 { transform: scale(calc(var(--icz, 1) * 1.3)); }
+.kids .pl .pl-n { font-size: 1.15em; }
+.kids .pl.k-target .ic2 { animation: kBounce .7s ease-in-out infinite; }
+@keyframes kBounce { 0%, 100% { transform: scale(calc(var(--icz, 1) * 1.1)) translateY(0); } 50% { transform: scale(calc(var(--icz, 1) * 1.45)) translateY(-6px); } }
+.kids .debut-box { display: none; }
+.kids-box { position: absolute; left: 14px; bottom: 14px; z-index: 6; width: min(430px, calc(100% - 28px)); padding: 12px 14px 12px; border-radius: 18px;
+  background: linear-gradient(180deg, #fffaf0, #f6ecd2); color: #3a2a18; box-shadow: 0 0 0 3px #f4c430, 0 0 0 6px #8a5a14, 0 14px 30px rgba(0, 0, 0, .4);
+  font-family: "Noto Serif SC", "PingFang SC", "Microsoft YaHei", sans-serif; animation: kIn .5s cubic-bezier(.2, 1.3, .4, 1) both; }
+@keyframes kIn { from { transform: translateY(30px) scale(.9); opacity: 0; } }
+.k-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.k-stars { font-size: 18px; color: #b07a10; letter-spacing: .04em; }
+.k-btns button { width: 38px; height: 38px; border-radius: 50%; border: 2px solid #e0c890; background: #fff; font-size: 18px; margin-left: 6px; cursor: pointer; line-height: 1; }
+.k-btns button:hover { background: #fff3c8; }
+.k-q { display: flex; gap: 10px; align-items: center; }
+.k-face { flex: none; width: 66px; height: 66px; border-radius: 50%; overflow: hidden; background: #f0dca8; box-shadow: 0 0 0 3px #fff, 0 0 0 5px #e0b44a; }
+.k-face svg { width: 100%; height: auto; display: block; }
+.k-tx { flex: 1; min-width: 0; }
+.k-tx small { display: inline-block; background: #e8553f; color: #fff; border-radius: 10px; padding: 1px 9px; font-size: 12px; margin-bottom: 3px; }
+.k-tx p { margin: 0; font-size: 16.5px; line-height: 1.5; }
+.k-tx b { color: #b0300a; font-size: 1.08em; }
+.k-goal { flex: none; width: 58px; height: 58px; border-radius: 14px; background: #e8f0e0; border: 2px dashed #8ab070; display: grid; place-items: center; }
+.k-ic { width: 100%; height: 100%; display: block; overflow: visible; }
+.k-goal .k-ic { width: 46px; height: 46px; }
+.k-msg { margin: 10px 0 6px; padding: 8px 12px; border-radius: 12px; background: #eef6ff; color: #24507a; font-size: 15px; line-height: 1.5; }
+.k-msg.no { background: #fff0e6; color: #8a3a10; animation: kShake .4s; }
+@keyframes kShake { 25% { transform: translateX(-6px); } 50% { transform: translateX(6px); } 75% { transform: translateX(-3px); } }
+.k-arrow { display: inline-block; font-style: normal; color: #e8553f; font-size: 20px; vertical-align: middle; }
+.k-row { display: flex; gap: 8px; justify-content: center; margin: 6px 0 8px; }
+.k-hint, .k-go { border: 0; border-radius: 22px; padding: 9px 18px; font-size: 16px; font-weight: 700; cursor: pointer; font-family: inherit; }
+.k-hint { background: #fff3c8; color: #6a4a10; box-shadow: 0 3px 0 #d8b048; }
+.k-go { background: #3a9a58; color: #fff; box-shadow: 0 4px 0 #22683a; animation: kPulse 1.4s ease-in-out infinite; }
+.k-hint:active, .k-go:active { transform: translateY(3px); box-shadow: none; }
+@keyframes kPulse { 50% { transform: scale(1.06); } }
+.k-st { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; padding-top: 8px; border-top: 2px dotted #d8c08a; }
+.k-sl { aspect-ratio: 1; border-radius: 50%; background: #efe4c8; border: 2px solid #d8c08a; display: grid; place-items: center; color: #b8a070; font-size: 13px; }
+.k-sl.got { background: #fff; border-color: #f4c430; box-shadow: 0 0 6px rgba(244, 196, 48, .7); }
+.k-sl.got .k-ic { width: 82%; height: 82%; }
+.k-sl.now { border-color: #e8553f; border-style: dashed; }
+.k-win { display: flex; gap: 12px; align-items: center; }
+.k-win h3 { margin: 0 0 4px; font-size: 19px; color: #2f7a4a; }
+.k-win p { margin: 0; font-size: 15.5px; line-height: 1.55; }
+.k-big { flex: none; width: 76px; height: 76px; border-radius: 50%; background: radial-gradient(circle, #fff 40%, #ffe9a0); box-shadow: 0 0 0 3px #f4c430; display: grid; place-items: center; }
+.k-big .k-ic { width: 62px; height: 62px; }
+.k-big.pop { animation: kPop .7s cubic-bezier(.2, 1.6, .4, 1) both; }
+@keyframes kPop { from { transform: scale(.2) rotate(-40deg); } }
+.k-done { text-align: center; }
+.k-done h3 { font-size: 24px; color: #b0300a; margin: 2px 0 4px; }
+.k-done p { margin: 0 0 8px; font-size: 15px; }
+.k-medal { font-size: 54px; animation: kPop .9s cubic-bezier(.2, 1.6, .4, 1) both; }
+.k-done .k-go { margin-top: 10px; }
+.kids-fx { position: absolute; inset: 0; pointer-events: none; z-index: 7; overflow: hidden; }
+.k-cf { position: absolute; top: 60%; width: 10px; height: 14px; border-radius: 2px; font-style: normal; font-size: 22px; animation: kCf 1.8s cubic-bezier(.2, .7, .4, 1) both; }
+@keyframes kCf { to { transform: translate(var(--dx), var(--dy)) rotate(var(--r)); opacity: 0; } }
+/* 小朋友人物卡 */
+.card.k-card { width: min(380px, calc(100% - 28px)); border-radius: 18px; }
+.k-char { display: flex; gap: 12px; align-items: center; }
+.k-cpt { flex: none; width: 110px; }
+.k-cpt svg { width: 100%; height: auto; display: block; }
+.k-char h3 { margin: 0 0 6px; font-size: 20px; }
+.k-bubble { position: relative; margin: 0 0 8px; padding: 10px 12px; background: #fff; border: 2px solid #e0c890; border-radius: 14px; font-size: 16px; line-height: 1.55; color: #3a2a18; }
+.k-say { border: 0; border-radius: 18px; padding: 6px 14px; font-size: 15px; background: #4aa3df; color: #fff; box-shadow: 0 3px 0 #2a6a9a; cursor: pointer; }
+@media (max-width: 860px) {
+  .kids-box { left: 8px; right: 8px; bottom: 8px; width: auto; padding: 10px 11px; border-radius: 14px; }
+  .k-face { width: 50px; height: 50px; } .k-goal { width: 46px; height: 46px; } .k-goal .k-ic { width: 36px; height: 36px; }
+  .k-tx p { font-size: 15px; } .k-msg { font-size: 14px; margin: 7px 0 4px; } .k-btns button { width: 34px; height: 34px; font-size: 16px; }
+  .kids .compass, .kids .legend-key { display: none; }
+  .kidb { padding: 2px 6px; }
+}
+@media (prefers-reduced-motion: reduce) { .k-go, .kids .pl.k-target .ic2, .k-cf { animation: none; } }
+.kids .stage > .panel { display: none; }
+.kids .ptog { visibility: hidden; }
+.kids .pl.k-target .khit { fill: rgba(255, 226, 90, .3); stroke: #ffd84a; stroke-width: 3; r: 24px; animation: kRing 1s ease-in-out infinite; }
+@keyframes kRing { 50% { r: 30px; fill: rgba(255, 226, 90, .12); } }
+.k-jh { margin: 0 0 10px; font-size: 19px; }
+.k-who { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 8px; }
+.k-who button { border: 2px solid #e0c890; border-radius: 14px; background: #fff; padding: 6px 4px 4px; cursor: pointer; font: inherit; }
+.k-who button:hover { border-color: #f4c430; transform: translateY(-2px); }
+.k-who svg { width: 100%; height: auto; display: block; }
+.k-who b { display: block; font-size: 13px; margin-top: 2px; }
+@media (max-width: 860px) {
+  .k-st { gap: 3px; padding-top: 6px; } .k-sl { font-size: 10px; }
+  .k-hint, .k-go { padding: 7px 14px; font-size: 14.5px; } .k-row { margin: 4px 0 6px; }
+  .k-top { margin-bottom: 4px; } .k-stars { font-size: 16px; }
+}

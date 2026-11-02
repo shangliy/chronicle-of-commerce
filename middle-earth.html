@@ -19,7 +19,7 @@
       if (l === "en") document.write('<script src="js/me-en.js"><\/script>');
       var sq = new URLSearchParams(location.search).get("style"), sm = null;
       try { sm = localStorage.getItem("me-style"); } catch (e) {}
-      var st = (sq || sm) === "parch" ? "parch" : "h3"; window.ME_STYLE = st;
+      var st = sq || sm; if (st !== "parch" && st !== "h3") st = "paint"; window.ME_STYLE = st;
       document.documentElement.classList.add("st-" + st);
     })();
   </script>
@@ -37,6 +37,7 @@
         <button data-start="begin" class="pri">从头开始 ▸<small>自动播放全部纪元</small></button>
         <button data-start="war">直接去魔戒大战<small>跟着弗罗多出发</small></button>
         <button data-start="battle">身临战场 ⚔<small>六场主要战役</small></button>
+        <button data-start="kids" class="kid">小朋友寻宝 🧒<small>跟着弗罗多找地方、集贴纸</small></button>
       </div>
       <p class="intro-note">空格 播放/暂停 · ← → 逐个事件 · 滚轮/双指 缩放地图 · 点击地名查看历史</p>
     </div>
@@ -48,6 +49,7 @@
     <nav>
       <a href="index.html">首页</a><a href="family.html">家族版</a><a href="fashion.html">时尚版</a>
     </nav>
+    <button id="kidsBtn" class="lang kidb" aria-label="小朋友模式">🧒 小朋友</button>
     <button id="styleBtn" class="lang sty" aria-label="Map style / 地图风格"></button>
     <button id="langBtn" class="lang" aria-label="Language / 语言">EN</button>
     <button id="panelToggle" class="ptog" aria-label="切换侧栏">☰</button>
@@ -143,5 +145,6 @@
   <script src="js/me-scene.js"></script>
   <script src="js/me-i18n.js"></script>
   <script src="js/me.js"></script>
+  <script src="js/me-kids.js"></script>
 </body>
 </html>
