@@ -147,6 +147,7 @@
       <filter id="blur6"><feGaussianBlur stdDeviation="6"/></filter>
       <filter id="gold" x="-200%" y="-200%" width="500%" height="500%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
       ${["elf", "man", "dwarf", "dark", "rohan"].map((c) => `<radialGradient id="rg-${c}"><stop offset="0" class="rg-${c}" stop-opacity=".55"/><stop offset=".75" class="rg-${c}" stop-opacity=".22"/><stop offset="1" class="rg-${c}" stop-opacity="0"/></radialGradient>`).join("")}
+      <linearGradient id="beam" x1="1" x2="0" y1="0" y2="0"><stop offset="0" stop-color="#ff8a20" stop-opacity=".9"/><stop offset="1" stop-color="#ff5a10" stop-opacity="0"/></linearGradient>
       ${chibiDefs()}
       <pattern id="seaHatch" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(-18)"><path d="M0 7h6" class="sea-h"/></pattern>`;
     el("rect", { x: BX, y: BY, width: BW, height: BH, class: "sea" }, svg);
@@ -266,6 +267,7 @@
       el("text", { class: "edge-n", "text-anchor": e.side === "w" ? "start" : "end" }, s).textContent = e.n;
       el("text", { class: "edge-en", y: 13, "text-anchor": e.side === "w" ? "start" : "end" }, s).textContent = e.en;
     });
+    lifeDeco();
     // 旅程
     L.jr = el("g", { class: "journeys" }, svg);
     JR.forEach((j) => {
@@ -305,7 +307,33 @@
     el("circle", { r: 9, class: "ring-glow", filter: "url(#gold)" }, rs);
     el("circle", { r: 4.2, class: "ring-o" }, rs);
     el("text", { x: 10, y: 14, class: "ring-n" }, rs).textContent = "至尊戒";
+    L.won = el("g", { class: "wonders" }, svg);
+    (LIFE.WONDERS || []).forEach((o) => lifeItem(o, L.won, "won k-" + o.k));
     L.fx = el("g", { class: "fx" }, svg);
+  }
+  /* ——地标、生灵、奇观—— */
+  const LIFE = window.ME_LIFE || {};
+  L.tw = [];
+  function lifeItem(o, parent, cls) {
+    const g = el("g", { class: cls, transform: `translate(${o.x},${o.y})` }, parent);
+    const s = el("g", { class: "sc" }, g), z = el("g", { class: "lz" }, s);
+    const inner = el("g", { class: "li" + (o.fly ? " drift" : ""), transform: `scale(${(o.s || 1) * (o.flip ? -1 : 1)},${o.s || 1})` }, z);
+    if (o.fly) inner.style.animationDuration = (o.d || 60) + "s";
+    inner.style.animationDelay = `-${(rnd() * 20).toFixed(1)}s`;
+    inner.innerHTML = (LIFE.ART || {})[o.k] || "";
+    if (o.from != null || o.to != null) { g.dataset.from = o.from ?? -1e9; g.dataset.to = o.to ?? 1e9; L.tw.push(g); }
+    if (o.n) el("title", {}, g).textContent = o.n;
+    return g;
+  }
+  function lifeDeco() {
+    L.life = el("g", { class: "life" }, svg);
+    (LIFE.LIFE || []).forEach((o) => lifeItem(o, L.life, "lf k-" + o.k));
+    L.lm = el("g", { class: "landmarks" }, svg);
+    (LIFE.LANDMARKS || []).forEach((m) => {
+      const g = lifeItem(m, L.lm, "lm k-" + m.k);
+      el("text", { class: "lm-n", y: 16, "text-anchor": "middle" }, g.firstChild).textContent = m.n;
+      g.addEventListener("click", (ev) => { ev.stopPropagation(); openCard(`<div class="pc-k">地标 · 典故</div><h3>${esc(m.n)}</h3><p>${esc(m.d)}</p>`); pulse(m.x, m.y); });
+    });
   }
 
   /* ——旅程解析—— */
@@ -354,6 +382,7 @@
     L.bel.classList.toggle("gone", t >= 587.5);
     L.nu.classList.toggle("gone", t < 622 || t >= 3909.3);
     L.roads.classList.toggle("off", t < 591); L.timed.forEach((g) => g.classList.toggle("off", t < +g.dataset.from));
+    L.tw.forEach((g) => g.classList.toggle("off", t < +g.dataset.from || t >= +g.dataset.to));
     svg.querySelectorAll(".sea-o[data-from]").forEach((g) => g.classList.toggle("off", t < +g.dataset.from || t >= +g.dataset.to));
     const veiled = t >= 3909.3; L.aman.classList.toggle("veiled", veiled);
     L.trees.classList.toggle("dead", t >= -40);
@@ -406,6 +435,15 @@
     const k = cam.w / cw; svg.style.setProperty("--k", k.toFixed(4));
     svg.style.setProperty("--icz", clamp(640 / cam.w, 0.8, 2.4).toFixed(3));
     svg.classList.toggle("far", cam.w > 1150); svg.classList.toggle("near", cam.w < 620);
+    scaleBar(k);
+  }
+  function scaleBar(k) { // 100 里格 ≈ 125 地图单位
+    const sb = document.getElementById("scalebar"); if (!sb) return;
+    let lg = 100; while (lg > 10 && (lg * 1.25) / k > 150) lg /= 2;
+    if ((lg * 1.25) / k < 40) lg *= 2;
+    const px = (lg * 1.25) / k;
+    sb.querySelector("i").style.width = px.toFixed(0) + "px";
+    sb.querySelector("b").textContent = `${lg} 里格 ≈ ${Math.round(lg * 4.8)} 公里`;
   }
   let flyRaf = 0, userMoved = 0;
   function flyTo(x, y, w, ms = 1300) { // (x,y) 为目标中心
@@ -454,6 +492,7 @@
   }
   function openCard(html) { const c = $("#card"); c.innerHTML = `<button class="x" aria-label="关闭">×</button>` + html; c.hidden = false; }
   $("#card").addEventListener("click", (e) => { if (e.target.closest(".x")) return ($("#card").hidden = true);
+    const bm = e.target.closest(".bio-more"); if (bm) { const open = bm.closest(".bio").classList.toggle("open"); bm.textContent = open ? "收起 ▴" : "展开完整传记 ▾"; return; }
     const fo = e.target.closest("[data-follow]"); if (fo) return followJ(fo.dataset.follow);
     const ho = e.target.closest("[data-home]"); if (ho) { pause(); setT(+ho.dataset.home + 1e-4); const a = ho.dataset.at, [x, y] = a.includes(",") ? a.split(",").map(Number) : xy(a); flyTo(x, y, fine(T) ? 420 : 640); userMoved = Date.now(); pulse(x, y, "k-ring"); return; } const li = e.target.closest("[data-t]"); if (li) { const ev = D.EVENTS.find((x) => x.t === +li.dataset.t); if (ev) goEvent(ev); } });
 
@@ -609,10 +648,19 @@
     const inB = (b) => b.units.some((u) => [...(CH.HEROES[b.id + "." + u.id] || []), ...((CH.TROOPS || {})[b.id + "." + u.id]?.lead || [])].includes(id));
     const bs = BATTLES.filter(inB).sort((a, b) => a.t - b.t);
     const homes = (c.homes || []).map(([at, from, to, hn]) => `<li data-home="${from}" data-at="${Array.isArray(at) ? at.join(",") : at}"><b>${esc(fmt(from))} — ${esc(fmt(to))}</b>${esc(hn || placeName(at))}</li>`).join("");
-    openCard(`<div class="cc"><div class="cc-pt">${PT(c)}</div><div><div class="pc-k">${esc(RACE[c.r] || "")} · ${esc(c.en)}</div><h3>${esc(c.n)}</h3></div></div><p class="cc-bio">${esc(c.bio)}</p>` +
+    openCard(`<div class="cc"><div class="cc-pt">${PT(c)}</div><div><div class="pc-k">${esc(RACE[c.r] || "")} · ${esc(c.en)}</div><h3>${esc(c.n)}</h3></div></div><p class="cc-bio">${esc(c.bio)}</p>` + bioHtml(id) +
       (homes ? `<h5 class="cc-h">居所</h5><ul class="pc-ev">${homes}</ul>` : "") +
       (bs.length ? `<h5 class="cc-h">参战</h5><div class="cc-js">${bs.map((x) => `<button class="go-b" data-b="${x.id}" style="--c:#8a2a1a">⚔ ${esc(x.n)}<small>${esc(x.age)}</small></button>`).join("")}</div>` : "") +
       (js.length ? `<h5 class="cc-h">足迹 · 点一下跟着走</h5><div class="cc-js">${js.map((j) => `<button data-follow="${j.id}" style="--c:${j.c}">▶ ${esc(j.n)}<small>${esc(fmt(j.P[0].t, hasDay(j.P[0].t)))}</small></button>`).join("")}</div>` : ""));
+  }
+  function bioHtml(id) {
+    const b = (window.ME_BIO || {})[id]; if (!b) return "";
+    return `<div class="bio">` +
+      (b.line ? `<blockquote class="bio-q">“${esc(b.line)}”</blockquote>` : "") +
+      `<dl class="bio-m">${b.alias ? `<dt>称号</dt><dd>${esc(b.alias)}</dd>` : ""}${b.life ? `<dt>生平</dt><dd>${esc(b.life)}</dd>` : ""}${b.kin ? `<dt>亲族</dt><dd>${esc(b.kin)}</dd>` : ""}</dl>` +
+      `<h5 class="cc-h">传记</h5><ol class="bio-ch">${(b.chapters || []).map(([h, tx], i) => `<li${i > 1 ? ' class="fold"' : ""}><b>${esc(h)}</b><p>${esc(tx)}</p></li>`).join("")}</ol>` +
+      ((b.chapters || []).length > 2 ? `<button class="bio-more">展开完整传记 ▾</button>` : "") +
+      (b.fate ? `<p class="bio-f"><b>结局</b>${esc(b.fate)}</p>` : "") + `</div>`;
   }
   function showJourney(j) {
     const who = j.curWho || whoAt(j, T);

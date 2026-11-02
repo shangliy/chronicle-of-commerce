@@ -504,3 +504,81 @@ svg.far .res .sc, svg.far .jmk .sc { transform: scale(calc(var(--k, 1) * .72)); 
   .cc-pt { width: 84px; }
 }
 @media (prefers-reduced-motion: reduce) { .debut, .debut::after, .db-pt { animation: none; } }
+
+/* ——地标、生灵、奇观—— */
+.lz { transform: scale(calc(var(--icz) * .8)); }
+.lm { cursor: pointer; }
+.lm .li { transition: transform .2s; }
+.lm:hover .lz { filter: drop-shadow(0 0 3px #fff6c0); }
+.lm-n { font-size: 8.5px; font-family: "Noto Serif SC", serif; fill: #4a3420; paint-order: stroke; stroke: rgba(244, 233, 206, .9); stroke-width: 2.4px; display: none; pointer-events: none; }
+#map.near .lm-n { display: block; }
+.lm:hover .lm-n { display: block; }
+#map.far .life, #map.far .landmarks { display: none; }
+#map:not(.near) .lf.k-sheep, #map:not(.near) .lf.k-cow, #map:not(.near) .lf.k-pony, #map:not(.near) .lf.k-cart, #map:not(.near) .lf.k-web, #map:not(.near) .lf.k-deer { display: none; }
+.life, .wonders { pointer-events: none; }
+.wonders .won { pointer-events: auto; }
+.lf.off, .lm.off, .won.off { display: none; }
+#map.far .won .lz { transform: scale(1.3); }
+
+.graze { animation: graze 5s ease-in-out infinite; transform-origin: 3px 0; }
+@keyframes graze { 0%, 60%, 100% { transform: rotate(0); } 70%, 90% { transform: rotate(7deg); } }
+.walk { animation: walk 14s ease-in-out infinite alternate; }
+@keyframes walk { from { transform: translateX(-6px); } to { transform: translateX(6px); } }
+.trot { animation: trot 22s linear infinite; }
+@keyframes trot { 0% { transform: translateX(-26px); opacity: 0; } 10%, 90% { opacity: 1; } 100% { transform: translateX(26px); opacity: 0; } }
+.smk circle { animation: smk 4s ease-out infinite; opacity: 0; }
+.smk circle:nth-child(2) { animation-delay: -1.3s; } .smk circle:nth-child(3) { animation-delay: -2.6s; }
+@keyframes smk { 0% { opacity: 0; transform: translate(0, 2px) scale(.5); } 30% { opacity: .55; } 100% { opacity: 0; transform: translate(4px, -8px) scale(1.4); } }
+.ffly circle { animation: ffly 2.6s ease-in-out infinite; }
+@keyframes ffly { 0%, 100% { opacity: .1; transform: translate(0, 0); } 50% { opacity: 1; transform: translate(1px, -2px); } }
+.bobsea { animation: bobsea 3.4s ease-in-out infinite; }
+@keyframes bobsea { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(1px) rotate(2deg); } }
+.drift { animation: drift 60s linear infinite; }
+@keyframes drift { 0% { transform: translate(-90px, 20px); opacity: 0; } 8%, 92% { opacity: .85; } 100% { transform: translate(90px, -20px); opacity: 0; } }
+.fly path { animation: flap .6s ease-in-out infinite alternate; transform-box: fill-box; transform-origin: center; }
+.fly.fast path { animation-duration: .3s; }
+@keyframes flap { to { transform: scaleY(.4); } }
+.circle, .orbit { animation: orbit 16s linear infinite; }
+.orbit { animation-duration: var(--d, 12s); }
+.orbit > g { transform: translateX(var(--r, 20px)) rotate(90deg); }
+@keyframes orbit { to { transform: rotate(360deg); } }
+.fire { animation: fire .5s ease-in-out infinite alternate; transform-box: fill-box; transform-origin: left center; }
+@keyframes fire { from { transform: scaleX(.5); opacity: .6; } to { transform: scaleX(1.3); opacity: 1; } }
+.sweep { animation: sweep 9s ease-in-out infinite alternate; }
+@keyframes sweep { from { transform: rotate(-35deg); } to { transform: rotate(40deg); } }
+.lava { animation: lava 1.6s ease-in-out infinite alternate; }
+@keyframes lava { from { opacity: .5; } to { opacity: 1; } }
+.swirl { animation: orbit 30s linear infinite reverse; }
+.burn path { animation: fire .4s ease-in-out infinite alternate; transform-box: fill-box; transform-origin: bottom center; }
+.march { animation: march 8s linear infinite; }
+@keyframes march { from { transform: translate(14px, -10px); } to { transform: translate(-10px, 12px); } }
+.flood { animation: flood 3s ease-in-out infinite alternate; }
+@keyframes flood { from { transform: scale(.85); } to { transform: scale(1.1); } }
+.crawl { animation: walk 6s ease-in-out infinite alternate; }
+.sail { animation: walk 18s ease-in-out infinite alternate; }
+.fall { stroke-dasharray: 2 2; animation: fall .6s linear infinite; }
+@keyframes fall { to { stroke-dashoffset: -4; } }
+.foam { animation: lava 1.2s ease-in-out infinite alternate; }
+.ghost { animation: ffly 3s ease-in-out infinite; }
+
+.scalebar { position: absolute; left: 118px; bottom: 16px; z-index: 3; font-size: 10.5px; color: #4a3420; background: rgba(239, 228, 200, .85); border: 1px solid #b9a37a; border-radius: 3px; padding: 4px 8px 3px; pointer-events: none; }
+.scalebar i { display: block; height: 5px; border: 1px solid #4a3420; border-top: 0; background: repeating-linear-gradient(90deg, #4a3420 0 25%, transparent 25% 50%); margin-bottom: 2px; transition: width .2s; }
+.scalebar b { font-weight: 500; font-family: "Noto Serif SC", serif; }
+@media (max-width: 860px) { .scalebar { display: none; } }
+@media (prefers-reduced-motion: reduce) { .graze, .walk, .trot, .smk circle, .ffly circle, .drift, .orbit, .circle, .sweep, .swirl, .march, .sail, .crawl, .fly path { animation: none !important; } .smk circle { opacity: .4; } }
+
+/* ——人物传记—— */
+.bio { margin-top: 6px; }
+.bio-q { margin: 6px 0 8px; padding: 6px 10px; border-left: 3px solid #b08a3a; font-style: italic; color: #5a4020; background: rgba(176, 138, 58, .08); font-family: "Noto Serif SC", serif; }
+.bio-m { display: grid; grid-template-columns: auto 1fr; gap: 3px 8px; margin: 0 0 6px; font-size: 12px; }
+.bio-m dt { color: #8a6a3a; font-weight: 600; }
+.bio-m dd { margin: 0; }
+.bio-ch { list-style: none; margin: 0; padding: 0 0 0 12px; border-left: 1px dashed #b9a37a; }
+.bio-ch li { position: relative; margin: 0 0 8px; }
+.bio-ch li::before { content: ""; position: absolute; left: -16.5px; top: 5px; width: 8px; height: 8px; border-radius: 50%; background: #efe4c8; border: 1.5px solid #8a6a3a; }
+.bio-ch b { display: block; font-size: 12.5px; color: #6a3a1a; font-family: "Noto Serif SC", serif; }
+.bio-ch p { margin: 2px 0 0; font-size: 12.5px; line-height: 1.7; }
+.bio:not(.open) .bio-ch li.fold { display: none; }
+.bio-more { display: block; margin: 0 0 8px 12px; background: none; border: 1px solid #b9a37a; border-radius: 12px; padding: 2px 12px; font: inherit; font-size: 12px; color: #6a4a20; cursor: pointer; }
+.bio-more:hover { background: rgba(176, 138, 58, .15); }
+.bio-f { font-size: 12.5px; margin: 4px 0 8px; } .bio-f b { color: #8a2a1a; margin-right: 6px; }
