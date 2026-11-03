@@ -348,126 +348,187 @@
   window.ME_CHARS = { CHARS, HEROES, RACES, SOLDIERS, TROOPS };
 })();
 
-/* ======== Q 版小人绘制（返回 SVG 片段；脚底在 0,0，头顶约 -44）======== */
+
+/* ======== Q 版小人绘制（返回 SVG 片段；脚底在 0,0，头顶约 -44）========
+ * 绘法：左上主光、右下冷阴影；每个部件用渐变上色，再叠褶皱、高光与轮廓。
+ * 渐变定义内嵌在片段里（<use> 引用时同样有效），id 逐个递增避免冲突。 */
 window.CHIBI = (function () {
-  const INK = "#3a2414";
-  const ln = (d, c, w, extra = "") => `<path d="${d}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" ${extra}/>`;
-  function face(o, eye = "#2a1a10", mouth = true) {
-    let s = `<ellipse cx="-4" cy="-30" rx="1.6" ry="2.1" fill="${eye}"/><ellipse cx="4" cy="-30" rx="1.6" ry="2.1" fill="${eye}"/><circle cx="-3.4" cy="-30.9" r=".6" fill="#fff"/><circle cx="4.6" cy="-30.9" r=".6" fill="#fff"/>`;
-    s += `<circle cx="-7.4" cy="-26.4" r="1.9" fill="#ff8a7a" opacity=".35"/><circle cx="7.4" cy="-26.4" r="1.9" fill="#ff8a7a" opacity=".35"/>`;
-    if (mouth) s += ln("M-1.6,-25.4 Q0,-24 1.6,-25.4", INK, 0.7);
-    return s;
+  const INK = "#2a1810";
+  let uid = 0;
+  function hx(c) { c = (c || "#888").replace("#", ""); if (c.length === 3) c = c.split("").map((x) => x + x).join(""); return [0, 2, 4].map((i) => parseInt(c.slice(i, i + 2), 16)); }
+  function mix(a, b, k) { const A = hx(a), B = hx(b); return "#" + A.map((v, i) => Math.round(v + (B[i] - v) * k).toString(16).padStart(2, "0")).join(""); }
+  const dk = (c, k = 0.3) => mix(c, "#000000", k), lt = (c, k = 0.3) => mix(c, "#ffffff", k);
+  const hi = (c, k = 0.3) => mix(c, "#fff1cf", k), sh = (c, k = 0.3) => mix(c, "#1b1222", k);
+  const ln = (d, c, w, extra = "") => `<path d="${d}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" ${extra}/>`;
+  const P = (d, f, extra = "") => `<path d="${d}" fill="${f}" ${extra}/>`;
+  // 每个小人一个材质上下文
+  function ctx() {
+    const u = "cb" + uid++ + "_", D = []; let n = 0;
+    const lin = (stops, x1 = 0, y1 = 0, x2 = 1, y2 = 0.4) => { const i = u + n++; D.push(`<linearGradient id="${i}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}">${stops.map(([o, c]) => `<stop offset="${o}" stop-color="${c}"/>`).join("")}</linearGradient>`); return `url(#${i})`; };
+    const rad = (stops, cx = 0.38, cy = 0.32, r = 0.78) => { const i = u + n++; D.push(`<radialGradient id="${i}" cx="${cx}" cy="${cy}" r="${r}">${stops.map(([o, c]) => `<stop offset="${o}" stop-color="${c}"/>`).join("")}</radialGradient>`); return `url(#${i})`; };
+    const M = {};
+    const memo = (k, f) => M[k] || (M[k] = f());
+    return {
+      D,
+      skin: (c) => memo("s" + c, () => rad([[0, hi(c, 0.28)], [0.5, c], [1, sh(c, 0.36)]])),
+      cloth: (c) => memo("c" + c, () => lin([[0, hi(c, 0.22)], [0.45, c], [1, sh(c, 0.45)]])),
+      metal: (c) => memo("m" + c, () => lin([[0, sh(c, 0.4)], [0.22, hi(c, 0.55)], [0.4, c], [0.65, sh(c, 0.45)], [0.85, hi(c, 0.2)], [1, sh(c, 0.55)]], 0, 0, 1, 0.6)),
+      hair: (c) => memo("h" + c, () => lin([[0, hi(c, 0.25)], [0.45, c], [1, sh(c, 0.5)]], 0.2, 0, 0.7, 1)),
+      gold: () => memo("gold", () => lin([[0, "#7a5212"], [0.3, "#f6dc80"], [0.55, "#c9962a"], [0.8, "#f8e8a8"], [1, "#7a5212"]], 0, 0, 1, 0.7)),
+      gem: (c) => memo("g" + c, () => rad([[0, lt(c, 0.7)], [0.45, c], [1, dk(c, 0.5)]], 0.35, 0.3, 0.7)),
+    };
   }
-  function item(L, front) {
+  function face(L, X) {
+    const s = L.s || "#f4d6b8", eye = L.eye || "#2a1a10", mouth = !L.b;
+    let o = "";
+    // 眼：眼白 + 虹膜 + 瞳 + 高光，眉
+    [[-4.2, 1], [4.2, -1]].forEach(([x, d]) => {
+      o += `<ellipse cx="${x}" cy="-30" rx="2.1" ry="2.4" fill="#fbf7f0"/><ellipse cx="${x + d * 0.2}" cy="-29.8" rx="1.45" ry="1.9" fill="${eye}"/><ellipse cx="${x + d * 0.2}" cy="-29.6" rx=".8" ry="1.2" fill="#0a0604"/><circle cx="${x + 0.5}" cy="-30.8" r=".65" fill="#fff"/>`;
+      o += ln(`M${x - 2.2},-30.6 Q${x},-33 ${x + 2.2},-30.6`, INK, 0.7);
+    });
+    if (L.eye === "#c02010") o += `<circle cx="-4.2" cy="-30" r="3" fill="#ff3010" opacity=".3"/><circle cx="4.2" cy="-30" r="3" fill="#ff3010" opacity=".3"/>`;
+    const bc = sh(L.bc && L.b ? L.bc : L.h || "#4a3a2a", 0.3);
+    o += ln("M-6.6,-34.2 Q-4.2,-35.6 -1.8,-34.4 M1.8,-34.4 Q4.2,-35.6 6.6,-34.2", bc, L.b ? 1.1 : 0.8);
+    // 鼻、嘴、腮红、下巴影
+    o += ln("M0,-29 Q-1,-26.4 0.4,-26", sh(s, 0.5), 0.6, 'opacity=".8"');
+    o += `<ellipse cx="-7.6" cy="-26.6" rx="2.2" ry="1.4" fill="#ff8a7a" opacity=".3"/><ellipse cx="7.6" cy="-26.6" rx="2.2" ry="1.4" fill="#ff8a7a" opacity=".22"/>`;
+    if (mouth) o += ln("M-1.8,-24.6 Q0,-23 1.8,-24.6", mix(s, "#8a3030", 0.6), 0.8);
+    return o;
+  }
+  function item(L, front, X) {
     const ic = L.ic, it = L.it;
     if (!front) {
-      if (it === "bow") return ln("M-10,-27 Q-19,-13 -10,1", "#7a5a2a", 1.8) + ln("M-10,-27 L-10,1", "#e8e0c8", 0.5);
-      if (it === "pack") return `<rect x="-11" y="-22" width="8" height="14" rx="2" fill="#8a6a3a" stroke="${INK}" stroke-width=".6"/><path d="M-12,-8 h9" stroke="#5a3a1a" stroke-width="2"/>`;
+      if (it === "bow") return ln("M-10,-28 Q-20,-13 -10,1", "#4a3018", 2.4) + ln("M-10,-28 Q-20,-13 -10,1", "#8a6a3a", 1.4) + ln("M-10,-28 L-10,1", "#e8e0c8", 0.5) + ln("M-12,-20 L-7,-33 M-10.5,-20 L-5,-32", "#7a5a2a", 1) + `<path d="M-7,-33 l1,-2.5 l1,2.8z M-5,-32 l1,-2.5 l1,2.8z" fill="#e8e8e8"/>`;
+      if (it === "pack") return `<rect x="-12" y="-23" width="9" height="15" rx="2.5" fill="${X.cloth("#8a6a3a")}" stroke="${INK}" stroke-width=".6"/><rect x="-12" y="-23" width="9" height="4" rx="2" fill="#6a8a4a"/><path d="M-13,-9 h11" stroke="#5a3a1a" stroke-width="2"/><rect x="-8.5" y="-16" width="2" height="3" rx=".5" fill="${X.gold()}"/>`;
+      if (it === "spear") return ln("M12,2 L12,-50", "#4a3018", 2) + ln("M12,2 L12,-50", "#8a6a3a", 1.1) + `<path d="M12,-57 L14.5,-49 L9.5,-49 Z" fill="${X.metal(ic || "#d8dde2")}" stroke="#444" stroke-width=".4"/><path d="M9.6,-48 L14.4,-48 L12,-43 Z" fill="#8a2a1a"/>`;
+      if (it === "axe") return ln("M12,-4 L16,-34", "#4a3018", 2.2) + ln("M12,-4 L16,-34", "#8a6a3a", 1.2) + `<path d="M14.5,-34.5 Q25,-37 23,-25 Q19,-28 15.8,-25.5 Z" fill="${X.metal("#c0c6cc")}" stroke="#333" stroke-width=".5"/>` + ln("M16.5,-33 Q22,-33 22,-27", "#fff", 0.6, 'opacity=".7"');
       return "";
     }
     switch (it) {
-      case "staff": return ln("M11.5,0 L11.5,-44", "#6a4a2a", 1.9) + `<circle cx="11.5" cy="-45" r="2.4" fill="${ic || "#ddd"}" stroke="${INK}" stroke-width=".5"/>`;
-      case "sword": return ln("M9,-10 L17,-31", ic || "#d8dde2", 2.1) + ln("M6.6,-12.6 L12,-8.4", "#8a6a2a", 1.7);
-      case "axe": return ln("M9,-7 L13.5,-31", "#6a4a2a", 1.9) + `<path d="M12,-31 Q21,-33 19,-23 Q16,-25.5 13.6,-23.6 Z" fill="#c0c6cc" stroke="#555" stroke-width=".5"/>`;
-      case "spear": return ln("M11,1 L11,-48", "#6a4a2a", 1.5) + `<path d="M11,-54 L13,-47 L9,-47 Z" fill="${ic || "#d8dde2"}"/>`;
-      case "star": return `<circle cx="11" cy="-13" r="5.5" fill="${ic || "#fff6c0"}" opacity=".45" class="glowit"/><path d="M11,-17.5 L12,-14 L15.5,-13 L12,-12 L11,-8.5 L10,-12 L6.5,-13 L10,-14 Z" fill="#fff"/>`;
-      case "harp": return `<path d="M8,-6 Q6,-20 14,-22 L15,-6 Z" fill="none" stroke="#c99a2e" stroke-width="1.4"/>` + ln("M10,-8 L11,-18 M12.5,-7 L13,-19", "#f0e0a0", 0.4);
-      case "pipe": return ln("M1.5,-25 L8,-22.5 L8,-25.5", "#6a4a2a", 1.2) + `<circle cx="9" cy="-29" r="1.5" fill="#ccc" opacity=".5"/><circle cx="10.5" cy="-33" r="2" fill="#ccc" opacity=".35"/>`;
-      case "shield": return `<circle cx="-9.5" cy="-11" r="6.2" fill="${ic || "#7a2a1a"}" stroke="#d8dde2" stroke-width="1.2"/><circle cx="-9.5" cy="-11" r="1.4" fill="#d8dde2"/>` + ln("M9,-10 L16,-29", "#d8dde2", 2);
+      case "staff": return ln("M11.5,0 L11.5,-44", "#3a2412", 2.6) + ln("M11.5,0 L11.5,-44", "#7a5a32", 1.5) + ln("M11,-2 Q10.6,-20 11,-40", hi("#7a5a32", 0.4), 0.5, 'opacity=".6"') + `<circle cx="11.5" cy="-45.5" r="5" fill="${ic || "#fff"}" opacity=".2" class="glowit"/><circle cx="11.5" cy="-45.5" r="2.6" fill="${X.gem(ic || "#ddd")}" stroke="${INK}" stroke-width=".4"/><circle cx="10.6" cy="-46.4" r=".7" fill="#fff"/>`;
+      case "sword": return `<path d="M9.4,-11 L16.4,-33 L18.2,-32.6 L11.6,-10.2 Z" fill="${X.metal(ic || "#d8dde2")}" stroke="#2a2a2a" stroke-width=".35"/>` + ln("M10.4,-11 L17,-32", hi(ic || "#d8dde2", 0.7), 0.4, 'opacity=".9"') + ln("M6.4,-13 L13,-8", X.gold(), 1.8) + `<circle cx="9.2" cy="-8" r="1.3" fill="${X.gold()}" stroke="#5a3a0a" stroke-width=".3"/>`;
+      case "axe": return ln("M9,-7 L13.5,-31", "#3a2412", 2.4) + ln("M9,-7 L13.5,-31", "#8a6a3a", 1.3) + `<path d="M12,-31.5 Q22,-34 20,-23 Q16.5,-26 13.4,-23.6 Z" fill="${X.metal("#c0c6cc")}" stroke="#333" stroke-width=".5"/>` + ln("M14,-30 Q19,-30 19,-25", "#fff", 0.6, 'opacity=".7"');
+      case "spear": return ln("M11,1 L11,-48", "#3a2412", 2.1) + ln("M11,1 L11,-48", "#8a6a3a", 1.1) + `<path d="M11,-55 L13.4,-47 L8.6,-47 Z" fill="${X.metal(ic || "#d8dde2")}" stroke="#444" stroke-width=".4"/><path d="M8.8,-46 L13.2,-46 L11,-41 Z" fill="#8a2a1a"/>`;
+      case "star": return `<circle cx="11" cy="-13" r="6.5" fill="${ic || "#fff6c0"}" opacity=".35" class="glowit"/><circle cx="11" cy="-13" r="3.6" fill="${ic || "#fff6c0"}" opacity=".5"/><path d="M11,-18 L12.2,-14.2 L16,-13 L12.2,-11.8 L11,-8 L9.8,-11.8 L6,-13 L9.8,-14.2 Z" fill="#fff"/>`;
+      case "harp": return `<path d="M8,-6 Q6,-20 14,-22 L15,-6 Z" fill="none" stroke="${X.gold()}" stroke-width="1.6"/>` + ln("M10,-8 L11,-18 M12.5,-7 L13,-19", "#f6ecc0", 0.4);
+      case "pipe": return ln("M1.5,-25 L8.5,-22.5", "#4a2a12", 1.4) + `<path d="M7.6,-25.8 L10,-25.8 L9.8,-21.4 L7.4,-21.4 Z" fill="#5a3a1a"/>` + `<circle cx="9.6" cy="-29.5" r="1.4" fill="#ccc" opacity=".5"/><circle cx="11.4" cy="-33.5" r="2.1" fill="#ccc" opacity=".35"/>`;
+      case "shield": { const sc = ic || "#7a2a1a"; return `<circle cx="-9.5" cy="-11" r="7" fill="${X.metal("#c8ccd2")}" stroke="#333" stroke-width=".5"/><circle cx="-9.5" cy="-11" r="5.6" fill="${X.cloth(sc)}"/><circle cx="-9.5" cy="-11" r="1.8" fill="${X.metal("#d8dde2")}" stroke="#444" stroke-width=".3"/><circle cx="-10" cy="-11.5" r=".6" fill="#fff" opacity=".8"/><circle cx="-9.5" cy="-11" r="4" fill="none" stroke="${X.gold()}" stroke-width=".6"/>` + `<path d="M9.4,-11 L15.6,-30 L17.4,-29.6 L11.6,-10.2 Z" fill="${X.metal("#d8dde2")}" stroke="#2a2a2a" stroke-width=".35"/>` + ln("M6.6,-13 L12.6,-8.4", X.gold(), 1.6); }
       default: return "";
     }
   }
-  function hairBack(L) {
-    if (L.hs === "long" || L.hs === "longs") return `<path d="M-12.5,-32 Q-14,-17 -9,-13 L9,-13 Q14,-17 12.5,-32 Z" fill="${L.h}"/>`;
+  function hairBack(L, X) {
+    const h = L.h || "#4a3a2a";
+    if (L.hs === "long" || L.hs === "longs") return `<path d="M-12.8,-32 Q-14.5,-17 -9.5,-12 L9.5,-12 Q14.5,-17 12.8,-32 Z" fill="${X.hair(h)}"/>` + ln("M-11,-26 Q-11.6,-18 -9.6,-14 M11,-26 Q11.6,-18 9.6,-14", sh(h, 0.5), 0.6, 'opacity=".6"');
     return "";
   }
-  function hairFront(L) {
-    const h = L.h;
+  function hairFront(L, X) {
+    const h = L.h || "#4a3a2a", f = X.hair(h), hd = sh(h, 0.5), hl = hi(h, 0.55);
     switch (L.hs) {
       case "bald": return "";
-      case "curly": return [[-10, -36], [-5.5, -41], [0, -42.5], [5.5, -41], [10, -36], [-11.5, -31.5], [11.5, -31.5]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="4.3" fill="${h}"/>`).join("");
-      case "longs": return `<path d="M-12.4,-31 Q-12.6,-44.5 0,-44.5 Q12.6,-44.5 12.4,-31 L12.4,-21 L9.4,-21 L9.4,-34 Q0,-39 -9.4,-34 L-9.4,-21 L-12.4,-21 Z" fill="${h}"/>`;
-      default: return `<path d="M-12.4,-31 Q-12.6,-44.5 0,-44.5 Q12.6,-44.5 12.4,-31 Q10,-37 5,-37.5 Q2.5,-34.5 -0.5,-37.5 Q-6,-38.5 -12.4,-31 Z" fill="${h}"/>`;
+      case "curly": return [[-10, -36], [-5.5, -41], [0, -42.5], [5.5, -41], [10, -36], [-11.5, -31.5], [11.5, -31.5], [-5, -37], [5, -37]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="4.3" fill="${f}" stroke="${hd}" stroke-width=".35"/>` + ln(`M${x - 1.6},${y - 1.8} q1.2,-1 2.4,-0.2`, hl, 0.5, 'opacity=".7"')).join("");
+      case "longs": return `<path d="M-12.4,-31 Q-12.6,-44.5 0,-44.5 Q12.6,-44.5 12.4,-31 L12.4,-21 L9.4,-21 L9.4,-34 Q0,-39 -9.4,-34 L-9.4,-21 L-12.4,-21 Z" fill="${f}"/>` + ln("M-10.8,-30 L-10.8,-22 M10.8,-30 L10.8,-22 M-3,-43 Q-7,-41 -9,-36 M3,-43.5 Q7,-41 9,-36", hd, 0.5, 'opacity=".6"') + ln("M-7,-42 Q-2,-44 2,-43.5", hl, 0.8, 'opacity=".55"');
+      default: return `<path d="M-12.4,-31 Q-12.6,-44.5 0,-44.5 Q12.6,-44.5 12.4,-31 Q10,-37 5,-37.5 Q2.5,-34.5 -0.5,-37.5 Q-6,-38.5 -12.4,-31 Z" fill="${f}"/>` + ln("M-4,-43 Q-8,-41 -10.5,-35 M4,-43 Q8,-41.5 10,-36 M0,-43.5 Q-1.5,-40 -1,-38", hd, 0.5, 'opacity=".6"') + ln("M-7.5,-42 Q-3,-44 1.5,-43.6", hl, 0.8, 'opacity=".55"');
     }
   }
-  function beard(L) {
-    const c = L.bc || L.h;
-    if (L.b === "short") return `<path d="M-9.5,-28 Q-9,-18.5 0,-17.5 Q9,-18.5 9.5,-28 Q5,-23.8 0,-24.4 Q-5,-23.8 -9.5,-28 Z" fill="${c}"/>`;
-    if (L.b === "long" || L.b === "braid") return `<path d="M-9.8,-28 Q-11,-13 0,-5 Q11,-13 9.8,-28 Q5,-23.6 0,-24.4 Q-5,-23.6 -9.8,-28 Z" fill="${c}" stroke="${INK}" stroke-width=".4"/>` + (L.b === "braid" ? ln("M-3,-19 L-2.5,-9 M3,-19 L2.5,-9", INK, 0.5, 'opacity=".45"') : "") + `<path d="M-5,-25.6 Q0,-27.4 5,-25.6" fill="none" stroke="${c}" stroke-width="1.8"/>`;
+  function beard(L, X) {
+    const c = L.bc || L.h || "#4a3a2a", f = X.hair(c), cd = sh(c, 0.5), cl = hi(c, 0.5);
+    if (L.b === "short") return `<path d="M-9.5,-28 Q-9,-18.5 0,-17.5 Q9,-18.5 9.5,-28 Q5,-23.8 0,-24.4 Q-5,-23.8 -9.5,-28 Z" fill="${f}"/>` + ln("M-6,-25 Q-5,-21 -2,-19.5 M6,-25 Q5,-21 2,-19.5", cd, 0.5, 'opacity=".6"') + ln("M-5.6,-23 Q-5,-20.5 -3,-19.4", cl, 0.5, 'opacity=".5"') + `<path d="M-4,-25.6 Q0,-27.6 4,-25.6 Q2,-24.6 0,-24.8 Q-2,-24.6 -4,-25.6Z" fill="${f}"/>`;
+    if (L.b === "long" || L.b === "braid") return `<path d="M-9.8,-28 Q-11,-13 0,-5 Q11,-13 9.8,-28 Q5,-23.6 0,-24.4 Q-5,-23.6 -9.8,-28 Z" fill="${f}" stroke="${cd}" stroke-width=".4"/>` + ln("M-6,-24 Q-6,-14 -2,-8 M6,-24 Q6,-14 2,-8 M0,-22 L0,-7", cd, 0.5, 'opacity=".6"') + ln("M-4.6,-22 Q-4.6,-13 -1.6,-8.6", cl, 0.5, 'opacity=".5"') +
+      (L.b === "braid" ? [-3.2, 3.2].map((x) => ln(`M${x},-19 L${x},-8`, cd, 1.6) + ln(`M${x},-19 L${x},-8`, c, 1) + `<rect x="${x - 1.2}" y="-13" width="2.4" height="1.2" fill="${X.gold()}"/><rect x="${x - 1.2}" y="-9.5" width="2.4" height="1.2" fill="${X.gold()}"/>`).join("") : "") + `<path d="M-5,-25.8 Q0,-28 5,-25.8 Q2.5,-24.6 0,-24.8 Q-2.5,-24.6 -5,-25.8 Z" fill="${f}"/>`;
     return "";
   }
-  function hat(L) {
-    const hc = L.hc || L.c;
+  function hat(L, X) {
+    const hc = L.hc || L.c || "#6a6a6a", hd = sh(hc, 0.5), hl = hi(hc, 0.5);
     switch (L.hat) {
-      case "wizard": return `<path d="M-16,-37.5 Q0,-33.5 16,-37.5 Q0,-42 -16,-37.5 Z" fill="${hc}" stroke="${INK}" stroke-width=".5"/><path d="M-9,-39.5 Q-2,-52 3,-66 Q4,-52 9.5,-39.5 Z" fill="${hc}" stroke="${INK}" stroke-width=".6"/>`;
-      case "tall": return `<path d="M-14,-38 Q0,-35 14,-38 Q0,-41 -14,-38 Z" fill="${hc}"/><path d="M-8,-39.5 L-7,-54 L7,-54 L8,-39.5 Z" fill="${hc}" stroke="${INK}" stroke-width=".5"/>` + ln("M6,-52 Q14,-60 10,-66", "#3a8a5a", 1.6);
-      case "crown": return `<path d="M-8.5,-41.5 L-8.5,-48 L-4.2,-44 L0,-50 L4.2,-44 L8.5,-48 L8.5,-41.5 Z" fill="${hc}" stroke="${INK}" stroke-width=".5"/>`;
-      case "circlet": return ln("M-11.8,-36.5 Q0,-40.5 11.8,-36.5", hc, 1.4) + `<circle cx="0" cy="-39" r="1.7" fill="${L.gem || "#bfe8ff"}"/>`;
-      case "helm": return `<path d="M-12.8,-30.5 Q-13,-45.5 0,-45.5 Q13,-45.5 12.8,-30.5 L9.6,-30.5 L9.6,-35.5 L-9.6,-35.5 L-9.6,-30.5 Z" fill="${hc}" stroke="${INK}" stroke-width=".7"/>` + ln("M0,-45.5 L0,-35.5", INK, 0.5) + (L.plume ? `<path d="M0,-45 Q-10,-52 -16,-40 Q-8,-46 0,-42 Z" fill="${L.plume}"/>` : "");
-      case "hood": return `<path d="M-14.6,-30 Q-14.5,-47 0,-47 Q14.5,-47 14.6,-30 Q12,-41.5 0,-42.5 Q-12,-41.5 -14.6,-30 Z" fill="${hc}" stroke="${INK}" stroke-width=".5"/>`;
+      case "wizard": { const f = X.cloth(hc); return `<path d="M-16.5,-37.5 Q0,-33 16.5,-37.5 Q0,-42.5 -16.5,-37.5 Z" fill="${f}" stroke="${hd}" stroke-width=".5"/><path d="M-9,-39.5 Q-3,-52 2,-62 Q6,-70 12,-70 Q6,-66 5,-56 Q6,-48 9.5,-39.5 Z" fill="${f}" stroke="${hd}" stroke-width=".5"/>` + ln("M-1,-42 Q-0.5,-50 1.5,-56", hd, 0.5, 'opacity=".55"') + ln("M-6.5,-41 Q-3,-48 -1,-53", hl, 0.6, 'opacity=".45"') + ln("M-8.5,-39.8 Q0,-37.5 9,-39.8", dk(hc, 0.5), 1.4); }
+      case "tall": { const f = X.cloth(hc); return `<path d="M-14,-38 Q0,-34.5 14,-38 Q0,-41.5 -14,-38 Z" fill="${f}" stroke="${hd}" stroke-width=".4"/><path d="M-8,-39.5 L-7,-55 Q0,-57 7,-55 L8,-39.5 Z" fill="${f}" stroke="${hd}" stroke-width=".5"/>` + ln("M-5.5,-53 L-5,-42", hl, 1, 'opacity=".35"') + `<rect x="-7.6" y="-44.5" width="15.2" height="2.6" fill="${X.gold()}"/>` + ln("M6,-52 Q14,-60 10,-66", "#3a8a5a", 1.6) + ln("M7.5,-53 Q12,-58 11,-63", "#6ab080", 0.7); }
+      case "crown": { const f = X.metal(hc); return `<path d="M-8.5,-41 L-8.5,-49 L-4.2,-44.5 L0,-51 L4.2,-44.5 L8.5,-49 L8.5,-41 Z" fill="${f}" stroke="${hd}" stroke-width=".5"/>` + ln("M-7.5,-42 L7.5,-42", hl, 0.6, 'opacity=".7"') + [-5, 0, 5].map((x) => `<circle cx="${x}" cy="-43" r="1" fill="${X.gem(L.gem || "#e04040")}"/>`).join("") + `<circle cx="0" cy="-50.6" r=".8" fill="${hl}"/>`; }
+      case "circlet": return ln("M-11.8,-36.5 Q0,-40.8 11.8,-36.5", X.metal(hc), 1.5) + ln("M-10.5,-36.6 Q0,-40.4 10.5,-36.6", hl, 0.4, 'opacity=".7"') + `<path d="M0,-41.2 l1.6,2.2 l-1.6,2.2 l-1.6,-2.2 z" fill="${X.gem(L.gem || "#bfe8ff")}"/><circle cx="-0.4" cy="-39.6" r=".4" fill="#fff"/>`;
+      case "helm": { const f = X.metal(hc); return `<path d="M-12.8,-30.5 Q-13,-45.5 0,-45.5 Q13,-45.5 12.8,-30.5 L9.6,-30.5 L9.6,-35.5 L-9.6,-35.5 L-9.6,-30.5 Z" fill="${f}" stroke="${hd}" stroke-width=".6"/>` + `<path d="M-1,-35.5 L1,-35.5 L0.6,-28 L-0.6,-28 Z" fill="${f}" stroke="${hd}" stroke-width=".4"/>` + ln("M0,-45.5 L0,-35.5", hd, 0.6) + ln("M-0.8,-44.5 L-0.8,-36.5", hl, 0.4, 'opacity=".8"') + ln("M-11.5,-36.5 Q0,-39.5 11.5,-36.5", hl, 0.7, 'opacity=".8"') + ln("M-11.8,-35.6 Q0,-38.4 11.8,-35.6", hd, 0.4) + `<ellipse cx="-5" cy="-41.5" rx="3" ry="1.6" fill="#fff" opacity=".35" transform="rotate(-30 -5 -41.5)"/>` + [-9, 0, 9].map((x) => `<circle cx="${x}" cy="-36.3" r=".55" fill="${hl}"/>`).join("") + (L.plume ? `<path d="M0,-45.5 Q-9,-54 -17,-42 Q-10,-48 -1,-43 Z" fill="${X.cloth(L.plume)}"/>` + ln("M-2,-45 Q-9,-49 -14,-44", sh(L.plume, 0.3), 0.5, 'opacity=".5"') : ""); }
+      case "hood": { const f = X.cloth(hc); return `<path d="M-14.6,-30 Q-14.5,-47 0,-47 Q14.5,-47 14.6,-30 Q12,-41.5 0,-42.5 Q-12,-41.5 -14.6,-30 Z" fill="${f}" stroke="${hd}" stroke-width=".5"/>` + ln("M-13,-32 Q-11,-41 0,-42.5 Q11,-41 13,-32", sh(hc, 0.7), 1.2, 'opacity=".5"') + ln("M-10,-44 Q-4,-46.5 2,-46", hl, 0.7, 'opacity=".45"'); }
       default: return "";
     }
   }
-  function person(L) {
-    const s = L.s || "#f4d6b8", c = L.c || "#6b4a2a", t = L.t || "#c8b48a", bw = L.wide ? 11.5 : 9;
-    let o = item(L, false) + hairBack(L);
-    if (L.hat === "hood") o += `<circle cx="0" cy="-31" r="14.6" fill="${L.hc || c}"/>`;
-    if (L.feet === "bare") o += `<ellipse cx="-4.8" cy="-1.5" rx="4.4" ry="2.1" fill="${s}" stroke="${INK}" stroke-width=".6"/><ellipse cx="4.8" cy="-1.5" rx="4.4" ry="2.1" fill="${s}" stroke="${INK}" stroke-width=".6"/>` + ln("M-7,-3 l1,-1.5 M-5,-3 l1,-1.5 M3,-3 l1,-1.5 M5,-3 l1,-1.5", L.h || INK, 0.8);
-    else o += `<ellipse cx="-4" cy="-1.6" rx="3.6" ry="2.1" fill="${L.feet === "boots" ? "#d8b030" : "#3a2a1a"}"/><ellipse cx="4" cy="-1.6" rx="3.6" ry="2.1" fill="${L.feet === "boots" ? "#d8b030" : "#3a2a1a"}"/>`;
-    o += `<path d="M-${bw},-2 Q-${bw + 1},-14 -6,-20 L6,-20 Q${bw + 1},-14 ${bw},-2 Z" fill="${c}" stroke="${INK}" stroke-width=".7"/>`;
-    o += `<path d="M-3.6,-20 L3.6,-20 L4.6,-2.5 L-4.6,-2.5 Z" fill="${t}"/><rect x="-5.2" y="-11.4" width="10.4" height="1.7" fill="#4a3018"/>`;
-    o += `<circle cx="-8.8" cy="-10" r="2.5" fill="${s}" stroke="${INK}" stroke-width=".6"/><circle cx="8.8" cy="-10" r="2.5" fill="${s}" stroke="${INK}" stroke-width=".6"/>`;
-    if (L.ear) o += `<path d="M-11,-33.5 L-17.5,-39 L-10.6,-28 Z" fill="${s}" stroke="${INK}" stroke-width=".6"/><path d="M11,-33.5 L17.5,-39 L10.6,-28 Z" fill="${s}" stroke="${INK}" stroke-width=".6"/>`;
-    o += `<circle cx="0" cy="-31" r="12" fill="${s}" stroke="${INK}" stroke-width=".8"/>`;
-    o += face(L, L.eye, !L.b);
-    o += beard(L) + hairFront(L) + hat(L);
-    if (L.fl) o += `<circle cx="-9" cy="-39" r="2.2" fill="#f4f4ff"/><circle cx="-9" cy="-39" r=".9" fill="#f0d060"/><circle cx="-5" cy="-42" r="1.7" fill="#f4f4ff"/>`;
-    o += item(L, true);
+  function person(L, X) {
+    const s = L.s || "#f4d6b8", c = L.c || "#6b4a2a", t = L.t || "#c8b48a", bw = L.wide ? 11.5 : 9, armor = L.hat === "helm";
+    const sd = sh(s, 0.45), cd = sh(c, 0.6);
+    let o = item(L, false, X) + hairBack(L, X);
+    if (L.hat === "hood") o += `<circle cx="0" cy="-31" r="14.6" fill="${X.cloth(L.hc || c)}"/>`;
+    // 脚
+    if (L.feet === "bare") o += `<ellipse cx="-4.8" cy="-1.5" rx="4.4" ry="2.1" fill="${X.skin(s)}" stroke="${sd}" stroke-width=".5"/><ellipse cx="4.8" cy="-1.5" rx="4.4" ry="2.1" fill="${X.skin(s)}" stroke="${sd}" stroke-width=".5"/>` + ln("M-7,-3 l1,-1.5 M-5,-3 l1,-1.5 M3,-3 l1,-1.5 M5,-3 l1,-1.5", L.h || INK, 0.8);
+    else { const bc = L.feet === "boots" ? "#c8a030" : "#3a2a1a"; o += [-4, 4].map((x) => `<ellipse cx="${x}" cy="-1.4" rx="3.7" ry="2.1" fill="${X.cloth(bc)}" stroke="${sh(bc, 0.5)}" stroke-width=".4"/><ellipse cx="${x - 0.8}" cy="-2.4" rx="1.6" ry=".6" fill="${hi(bc, 0.5)}" opacity=".5"/>`).join(""); }
+    // 斗篷
+    o += `<path d="M-${bw},-2 Q-${bw + 1},-14 -6,-20 L6,-20 Q${bw + 1},-14 ${bw},-2 Z" fill="${X.cloth(c)}" stroke="${cd}" stroke-width=".6"/>`;
+    o += ln(`M-${bw - 2.5},-3 Q-${bw - 2},-11 -5,-17 M${bw - 3},-3 Q${bw - 2.4},-11 ${bw - 6},-16`, sh(c, 0.55), 0.6, 'opacity=".55"') + ln(`M-${bw - 4.6},-3.4 Q-${bw - 4.4},-10 -4,-15.6`, hi(c, 0.5), 0.5, 'opacity=".5"');
+    o += `<path d="M${bw - 5},-16 Q${bw - 1},-10 ${bw - 0.6},-3 L${bw},-2 Q${bw + 1},-14 6,-20 Z" fill="${sh(c, 0.6)}" opacity=".3"/>`;
+    // 内衣 / 胸甲
+    if (armor) { const mc = L.hc || "#9aa0a8"; o += `<path d="M-4,-20 L4,-20 L5,-2.5 L-5,-2.5 Z" fill="${X.metal(mc)}" stroke="${sh(mc, 0.5)}" stroke-width=".4"/>` + ln("M-2.5,-18 L-2.5,-5", hi(mc, 0.6), 0.6, 'opacity=".6"') + ln("M0,-19 L0,-4", sh(mc, 0.4), 0.4, 'opacity=".5"') + [-7.2, 7.2].map((x) => `<path d="M${x > 0 ? 5 : -5},-20 Q${x * 1.4},-21 ${x * 1.25},-15 Q${x},-16 ${x > 0 ? 4 : -4},-17 Z" fill="${X.metal(mc)}" stroke="${sh(mc, 0.5)}" stroke-width=".4"/>`).join(""); }
+    else { o += `<path d="M-3.8,-20 L3.8,-20 L4.8,-2.5 L-4.8,-2.5 Z" fill="${X.cloth(t)}"/>` + ln("M0,-18 L0,-12", sh(t, 0.45), 0.5, 'opacity=".5"') + ln("M-2.2,-19 L-2.6,-5", hi(t, 0.4), 0.5, 'opacity=".4"'); }
+    // 腰带 + 扣
+    o += `<rect x="-5.4" y="-11.6" width="10.8" height="1.9" fill="#4a3018"/><rect x="-5.4" y="-11.6" width="10.8" height=".6" fill="${hi("#4a3018", 0.4)}" opacity=".6"/><rect x="-1.3" y="-11.9" width="2.6" height="2.5" rx=".4" fill="${X.gold()}" stroke="#3a2a0a" stroke-width=".25"/>`;
+    // 手
+    o += [-8.8, 8.8].map((x) => `<circle cx="${x}" cy="-10" r="2.6" fill="${X.skin(s)}" stroke="${sd}" stroke-width=".5"/>`).join("");
+    // 脖子与头下阴影
+    o += `<rect x="-3" y="-22" width="6" height="4" fill="${sh(s, 0.4)}"/><ellipse cx="0" cy="-19.5" rx="7" ry="2" fill="${cd}" opacity=".35"/>`;
+    if (L.ear) o += `<path d="M-11,-33.5 L-17.5,-39 L-10.6,-28 Z" fill="${X.skin(s)}" stroke="${sd}" stroke-width=".5"/><path d="M11,-33.5 L17.5,-39 L10.6,-28 Z" fill="${X.skin(s)}" stroke="${sd}" stroke-width=".5"/>`;
+    else o += `<ellipse cx="-11.6" cy="-30" rx="1.6" ry="2.2" fill="${X.skin(s)}" stroke="${sd}" stroke-width=".4"/><ellipse cx="11.6" cy="-30" rx="1.6" ry="2.2" fill="${X.skin(s)}" stroke="${sd}" stroke-width=".4"/>`;
+    // 头
+    o += `<circle cx="0" cy="-31" r="12" fill="${X.skin(s)}" stroke="${sd}" stroke-width=".7"/>` + `<path d="M6,-40 Q12.4,-33 7,-21.5 Q10,-29 6,-40 Z" fill="${sh(s, 0.5)}" opacity=".3"/><ellipse cx="-4" cy="-36" rx="4.5" ry="2.4" fill="${hi(s, 0.6)}" opacity=".35"/>`;
+    o += face(L, X);
+    o += beard(L, X) + hairFront(L, X) + hat(L, X);
+    if (L.fl) o += `<circle cx="-9" cy="-39" r="2.2" fill="#f4f4ff"/><circle cx="-9" cy="-39" r=".9" fill="#f0d060"/><circle cx="-5" cy="-42" r="1.7" fill="#f4f4ff"/><circle cx="-5" cy="-42" r=".7" fill="#f0d060"/>`;
+    o += item(L, true, X);
     return o;
   }
   const SP = {
-    gollum: () => `<path d="M-7,-1 Q-9,-10 -5,-16 L5,-16 Q9,-10 7,-1 Z" fill="#c8c8a8" stroke="${INK}" stroke-width=".6"/><path d="M-5,-8 h10 l-1,4 h-8z" fill="#6a5a3a"/>` + ln("M-6,-12 L-12,-4 M6,-12 L12,-4 M-4,-1 L-7,0 M4,-1 L7,0", "#c8c8a8", 2.2) +
-      `<circle cx="0" cy="-27" r="11.5" fill="#d0d0b0" stroke="${INK}" stroke-width=".8"/><ellipse cx="-4.5" cy="-27" rx="3.6" ry="4" fill="#cfe8ff" stroke="${INK}" stroke-width=".5"/><ellipse cx="4.5" cy="-27" rx="3.6" ry="4" fill="#cfe8ff" stroke="${INK}" stroke-width=".5"/><circle cx="-4" cy="-26.5" r="1.6" fill="#1a1a1a"/><circle cx="5" cy="-26.5" r="1.6" fill="#1a1a1a"/>` +
-      ln("M-2,-38 Q-1,-42 0,-38.5 M2,-38 Q4,-42 4,-38", "#555", 0.6) + `<path d="M-11,-30 L-17,-34 L-11,-25 Z M11,-30 L17,-34 L11,-25 Z" fill="#d0d0b0" stroke="${INK}" stroke-width=".5"/>` + ln("M-2,-20.5 Q0,-19 2,-20.5", INK, 0.6),
-    wraith: (L) => `<path d="M-11.5,0 Q-12.5,-20 -10.5,-34 Q-8,-48 0,-49 Q8,-48 10.5,-34 Q12.5,-20 11.5,0 L7,-3 L3.5,0 L0,-3 L-3.5,0 L-7,-3 Z" fill="#141010" stroke="#3a3030" stroke-width=".7"/><ellipse cx="0" cy="-33" rx="7" ry="8" fill="#000"/><circle cx="-2.7" cy="-33" r="1.3" fill="#ff3a2a"/><circle cx="2.7" cy="-33" r="1.3" fill="#ff3a2a"/>` + ln("M9,-12 L16,-30", "#9aa0a8", 1.8) +
-      (L.crown ? `<path d="M-7,-45 L-7,-51 L-3.5,-47 L0,-53 L3.5,-47 L7,-51 L7,-45 Z" fill="#7a7a80" stroke="#1a1a1a" stroke-width=".5"/>` : ""),
-    eye: () => `<path d="M-12,0 L-7,-28 L7,-28 L12,0 Z" fill="#1a1210" stroke="#000" stroke-width=".6"/><path d="M-7,-28 L-10,-34 M7,-28 L10,-34" stroke="#1a1210" stroke-width="2.5"/>` +
-      `<ellipse cx="0" cy="-42" rx="18" ry="11" fill="#ff7a1a" opacity=".35" class="glowit"/><path d="M-15,-42 Q0,-55 15,-42 Q0,-29 -15,-42 Z" fill="#ffa030" stroke="#c03a10" stroke-width=".8"/><ellipse cx="0" cy="-42" rx="2.2" ry="7" fill="#1a0500"/>`,
-    dragon: (L) => `<path d="M-4,-17 L-20,-36 L-15,-25 L-23,-27 L-14,-17 Z" fill="${L.c2}" stroke="${INK}" stroke-width=".5" opacity="${L.c === "#c9a23a" ? 0 : 1}"/>` +
-      `<path d="M-16,-3 Q-21,-15 -8,-17 Q4,-19 6,-9 Q8,-1 18,-4" fill="none" stroke="${L.c}" stroke-width="8" stroke-linecap="round"/><path d="M-16,-3 Q-21,-15 -8,-17 Q4,-19 6,-9 Q8,-1 18,-4" fill="none" stroke="${L.c2}" stroke-width="2" stroke-dasharray="2 3" opacity=".7"/>` +
-      `<ellipse cx="7" cy="-26" rx="10" ry="7.5" fill="${L.c}" stroke="${INK}" stroke-width=".7"/><path d="M2,-32 L-1,-40 L5,-33 M9,-32.5 L10,-41 L12,-32" fill="${L.c2}" stroke="${INK}" stroke-width=".5"/><circle cx="10" cy="-27.5" r="1.8" fill="#ffe040"/><ellipse cx="10" cy="-27.5" rx=".6" ry="1.5" fill="#000"/>` +
-      `<circle cx="16" cy="-23" r=".9" fill="${INK}"/>` + (L.c === "#b0342a" ? `<path d="M17,-22 Q24,-22 30,-17 Q24,-19 19,-19" fill="#ffa030" opacity=".8" class="glowit"/>` : ""),
-    balrog: () => `<path d="M-6,-24 L-24,-42 L-18,-28 L-26,-30 L-12,-16 Z M6,-24 L24,-42 L18,-28 L26,-30 L12,-16 Z" fill="#1a0c08" stroke="#4a1a0a" stroke-width=".6"/>` +
-      `<path d="M-11,0 Q-13,-18 -9,-26 L9,-26 Q13,-18 11,0 Z" fill="#2a1410" stroke="#000" stroke-width=".7"/><path d="M-9,-28 Q-12,-46 -4,-50 Q-2,-44 0,-52 Q3,-45 5,-50 Q12,-44 9,-28 Z" fill="#ff6a1a" opacity=".85" class="glowit"/>` +
-      `<circle cx="0" cy="-31" r="9.5" fill="#2a1410" stroke="#000" stroke-width=".7"/><path d="M-6,-38 L-10,-46 L-3,-39 M6,-38 L10,-46 L3,-39" stroke="#1a0c08" stroke-width="2" fill="none"/><circle cx="-3.3" cy="-31" r="1.5" fill="#ffd040"/><circle cx="3.3" cy="-31" r="1.5" fill="#ffd040"/>` +
-      ln("M10,-12 Q22,-6 18,6", "#ff8a2a", 1.4),
-    ent: () => `<path d="M-8.5,0 L-7,-30 L7,-30 L8.5,0 L4,-1 L2,0 L-2,-1 Z" fill="#6a4a2a" stroke="#3a2414" stroke-width=".8"/>` + ln("M-4,-4 L-3,-26 M3,-6 L2.5,-24", "#4a3018", 0.6) +
-      ln("M-7,-18 L-16,-26 L-19,-24 M7,-18 L16,-28 L19,-26", "#6a4a2a", 2) +
-      [[-9, -36, 8], [0, -44, 9], [9, -36, 8], [0, -34, 7], [-14, -29, 4.5], [14, -30, 4.5]].map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="#5f7a33" stroke="#3a4a1a" stroke-width=".5"/>`).join("") +
-      `<ellipse cx="-3" cy="-22" rx="1.4" ry="1.8" fill="#1a1a10"/><ellipse cx="3" cy="-22" rx="1.4" ry="1.8" fill="#1a1a10"/><circle cx="-2.6" cy="-22.6" r=".5" fill="#c8e0a0"/><circle cx="3.4" cy="-22.6" r=".5" fill="#c8e0a0"/>` +
-      `<path d="M-4,-18 Q-4,-9 0,-7 Q4,-9 4,-18 Q0,-16 -4,-18 Z" fill="#8a9a5a" opacity=".85"/>`,
-    spider: () => [-1, 1].map((k) => [0, 1, 2, 3].map((i) => ln(`M${k * 5},${-10 + i * 2} Q${k * (16 + i * 2)},${-22 + i * 5} ${k * (20 + i)},${-2 + i}`, "#1a1410", 1.6)).join("")).join("") +
-      `<ellipse cx="0" cy="-14" rx="11" ry="9" fill="#1a1410" stroke="#000" stroke-width=".6"/><circle cx="0" cy="-24" r="6" fill="#1a1410"/>` + [[-2.5, -25], [2.5, -25], [-1.2, -27.5], [1.2, -27.5]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="1" fill="#ff3a2a"/>`).join("") + `<path d="M-5,-15 h10" stroke="#5a3a2a" stroke-width=".8"/>`,
-    morgoth: () => `<path d="M-14,0 Q-16,-16 -10,-24 L10,-24 Q16,-16 14,0 Z" fill="#141018" stroke="#000" stroke-width=".8"/><path d="M-3,-22 L3,-22 L4,-2 L-4,-2 Z" fill="#2a2430"/>` +
-      ln("M12,-6 L18,-36", "#3a3a40", 2.4) + `<rect x="13" y="-42" width="11" height="8" rx="1.5" fill="#3a3a40" stroke="#000" stroke-width=".6" transform="rotate(18 18 -38)"/>` +
-      `<circle cx="0" cy="-33" r="11" fill="#c8c0b8" stroke="#000" stroke-width=".8"/><path d="M-11,-35 Q-11,-46 0,-46 Q11,-46 11,-35 L8,-35 L8,-30 L-8,-30 L-8,-35 Z" fill="#1a1a20"/>` +
-      `<ellipse cx="-3.8" cy="-31.5" rx="1.6" ry="1.4" fill="#ff3a2a"/><ellipse cx="3.8" cy="-31.5" rx="1.6" ry="1.4" fill="#ff3a2a"/>` +
-      `<path d="M-10,-44 L-10,-53 L-5,-47 L0,-56 L5,-47 L10,-53 L10,-44 Z" fill="#2a2a30" stroke="#000" stroke-width=".6"/>` + [-6, 0, 6].map((x) => `<circle cx="${x}" cy="-47.5" r="1.6" fill="#fffbe0" class="glowit"/>`).join(""),
-    sauron: () => `<path d="M-11,0 Q-13,-14 -8,-21 L8,-21 Q13,-14 11,0 Z" fill="#1a1416" stroke="#000" stroke-width=".7"/><path d="M-8,-21 L-13,-25 L-8,-17 M8,-21 L13,-25 L8,-17" fill="#2a2428" stroke="#000" stroke-width=".6"/>` +
-      ln("M10,-8 L15,-30", "#3a3a40", 2) + `<circle cx="15.5" cy="-31" r="3.4" fill="#2a2a30" stroke="#000" stroke-width=".5"/>` +
-      `<path d="M-12,-30 Q-12.5,-45 0,-46 Q12.5,-45 12,-30 Q12,-21 0,-20 Q-12,-21 -12,-30 Z" fill="#2a2428" stroke="#000" stroke-width=".8"/>` +
-      `<path d="M-9,-44 L-12,-55 L-5,-46 L0,-58 L5,-46 L12,-55 L9,-44 Z" fill="#1a1416" stroke="#000" stroke-width=".5"/><path d="M-7,-32 L-2,-30 M7,-32 L2,-30" stroke="#ff8a2a" stroke-width="2" stroke-linecap="round" class="glowit"/>` +
-      `<circle cx="-9" cy="-10" r="1.8" fill="#e8b830"/>`
+    gollum: (L, X) => `<path d="M-7,-1 Q-9,-10 -5,-16 L5,-16 Q9,-10 7,-1 Z" fill="${X.skin("#c8c8a8")}" stroke="#6a6a58" stroke-width=".5"/><path d="M-5,-8 h10 l-1,4 h-8z" fill="#6a5a3a"/>` + ln("M-6,-12 L-12,-4 M6,-12 L12,-4 M-4,-1 L-7,0 M4,-1 L7,0", "#c0c0a0", 2.2) + ln("M-4,-6 Q0,-5 4,-6 M-3.5,-11 Q0,-10 3.5,-11", "#8a8a74", 0.5, 'opacity=".7"') +
+      `<circle cx="0" cy="-27" r="11.5" fill="${X.skin("#d0d0b0")}" stroke="#6a6a58" stroke-width=".7"/><path d="M5,-36 Q12,-28 6,-17 Q9,-26 5,-36 Z" fill="#6a6a58" opacity=".35"/><ellipse cx="-4.5" cy="-27" rx="3.8" ry="4.2" fill="#eef6ff" stroke="#6a6a58" stroke-width=".4"/><ellipse cx="4.5" cy="-27" rx="3.8" ry="4.2" fill="#eef6ff" stroke="#6a6a58" stroke-width=".4"/><circle cx="-4" cy="-26.5" r="2.2" fill="${X.gem("#5a9ab8")}"/><circle cx="5" cy="-26.5" r="2.2" fill="${X.gem("#5a9ab8")}"/><circle cx="-4" cy="-26.5" r="1.1" fill="#0a1418"/><circle cx="5" cy="-26.5" r="1.1" fill="#0a1418"/><circle cx="-3.2" cy="-27.6" r=".6" fill="#fff"/><circle cx="5.8" cy="-27.6" r=".6" fill="#fff"/>` +
+      ln("M-2,-38 Q-1,-42 0,-38.5 M2,-38 Q4,-42 4,-38 M-4,-37.5 Q-5,-41 -3,-38.5", "#555", 0.6) + `<path d="M-11,-30 L-17,-34 L-11,-25 Z M11,-30 L17,-34 L11,-25 Z" fill="${X.skin("#d0d0b0")}" stroke="#6a6a58" stroke-width=".5"/>` + ln("M-2.5,-20.5 Q0,-19 2.5,-20.5", INK, 0.6) + `<rect x="-1.4" y="-20.6" width="1" height="1.2" fill="#f4f0d8"/><rect x="0.6" y="-20.6" width="1" height="1.2" fill="#f4f0d8"/>`,
+    wraith: (L, X) => `<path d="M-11.5,0 Q-12.5,-20 -10.5,-34 Q-8,-48 0,-49 Q8,-48 10.5,-34 Q12.5,-20 11.5,0 L7,-3 L3.5,0 L0,-3 L-3.5,0 L-7,-3 Z" fill="${X.cloth("#1a1416")}" stroke="#3a3030" stroke-width=".6"/>` + ln("M-7,-30 Q-8,-14 -7.5,-2 M7,-30 Q8,-14 7.5,-2 M0,-20 L0,-3", "#0a0608", 0.7, 'opacity=".8"') + ln("M-4,-32 Q-4.5,-16 -4,-4", "#4a4044", 0.5, 'opacity=".5"') +
+      `<ellipse cx="0" cy="-33" rx="7" ry="8" fill="#000"/><circle cx="-2.7" cy="-33" r="1.3" fill="#ff3a2a" class="glowit"/><circle cx="2.7" cy="-33" r="1.3" fill="#ff3a2a" class="glowit"/>` + `<path d="M9.2,-12 L15.8,-30 L17.2,-29.6 L10.8,-11.4 Z" fill="${X.metal("#9aa0a8")}" stroke="#222" stroke-width=".3"/>` + ln("M7,-13.5 L12.5,-9.5", "#3a3a40", 1.5) +
+      (L.crown ? `<path d="M-7,-45 L-7,-52 L-3.5,-47.5 L0,-54 L3.5,-47.5 L7,-52 L7,-45 Z" fill="${X.metal("#8a8a90")}" stroke="#1a1a1a" stroke-width=".5"/>` + ln("M-6,-46 L6,-46", "#d8d8e0", 0.4, 'opacity=".6"') : ""),
+    eye: (L, X) => `<path d="M-12,0 L-7,-28 L7,-28 L12,0 Z" fill="${X.cloth("#1a1210")}" stroke="#000" stroke-width=".6"/><path d="M-7,-28 L-10,-34 M7,-28 L10,-34" stroke="#1a1210" stroke-width="2.5"/>` + ln("M-4,-2 L-1,-26", "#3a3028", 0.6, 'opacity=".6"') +
+      `<ellipse cx="0" cy="-42" rx="18" ry="11" fill="#ff7a1a" opacity=".35" class="glowit"/><path d="M-15,-42 Q0,-55 15,-42 Q0,-29 -15,-42 Z" fill="#ffa030" stroke="#c03a10" stroke-width=".8"/><path d="M-9,-42 Q0,-50 9,-42 Q0,-34 -9,-42 Z" fill="#ffd060"/><ellipse cx="0" cy="-42" rx="2.2" ry="7" fill="#1a0500"/>`,
+    dragon: (L, X) => { const c1 = L.c || "#b0342a", c2 = L.c2 || "#e0a040", cd = sh(c1, 0.5); return `<path d="M-4,-17 L-20,-36 L-15,-25 L-23,-27 L-14,-17 Z" fill="${X.cloth(c2)}" stroke="${cd}" stroke-width=".5" opacity="${c1 === "#c9a23a" ? 0 : 1}"/>` + (c1 === "#c9a23a" ? "" : ln("M-6,-19 L-16,-31 M-8,-18 L-18,-25", dk(c2, 0.4), 0.5)) +
+      `<path d="M-16,-3 Q-21,-15 -8,-17 Q4,-19 6,-9 Q8,-1 18,-4" fill="none" stroke="${cd}" stroke-width="9" stroke-linecap="round"/><path d="M-16,-3 Q-21,-15 -8,-17 Q4,-19 6,-9 Q8,-1 18,-4" fill="none" stroke="${X.cloth(c1)}" stroke-width="7.4" stroke-linecap="round"/><path d="M-16,-4 Q-20,-14 -8,-16 Q3,-18 5,-9" fill="none" stroke="${hi(c1, 0.4)}" stroke-width="1.6" stroke-linecap="round" opacity=".5"/><path d="M-16,-3 Q-21,-15 -8,-17 Q4,-19 6,-9 Q8,-1 18,-4" fill="none" stroke="${c2}" stroke-width="2" stroke-dasharray="1.6 2.6" opacity=".8"/>` +
+      `<ellipse cx="7" cy="-26" rx="10" ry="7.5" fill="${X.skin(c1)}" stroke="${cd}" stroke-width=".6"/><path d="M12,-20 Q16,-19 17,-23 Q14,-20 12,-20Z" fill="${dk(c1, 0.3)}"/><path d="M2,-32 L-1,-40 L5,-33 M9,-32.5 L10,-41 L12,-32" fill="${X.cloth(c2)}" stroke="${cd}" stroke-width=".5"/><ellipse cx="10" cy="-27.5" rx="2.2" ry="1.9" fill="${X.gem("#ffe040")}"/><ellipse cx="10.2" cy="-27.5" rx=".6" ry="1.5" fill="#000"/><circle cx="9.4" cy="-28.4" r=".5" fill="#fff"/>` + ln("M3,-22 q3,2 6,0 M3,-25 q3,1.5 6,0", cd, 0.5, 'opacity=".6"') +
+      `<circle cx="16" cy="-23" r=".9" fill="${INK}"/>` + (c1 === "#b0342a" ? `<path d="M17,-22 Q24,-22 30,-17 Q24,-19 19,-19" fill="#ffa030" opacity=".8" class="glowit"/><path d="M18,-21.5 Q23,-21.5 27,-18.5" fill="#ffe060" opacity=".8" class="glowit"/>` : ""); },
+    balrog: (L, X) => `<path d="M-6,-24 L-24,-42 L-18,-28 L-26,-30 L-12,-16 Z M6,-24 L24,-42 L18,-28 L26,-30 L12,-16 Z" fill="${X.cloth("#1a0c08")}" stroke="#4a1a0a" stroke-width=".6"/>` + ln("M-8,-22 L-20,-36 M8,-22 L20,-36", "#3a1a10", 0.5) +
+      `<path d="M-11,0 Q-13,-18 -9,-26 L9,-26 Q13,-18 11,0 Z" fill="${X.skin("#2a1410")}" stroke="#000" stroke-width=".7"/><path d="M-9,-28 Q-12,-46 -4,-50 Q-2,-44 0,-52 Q3,-45 5,-50 Q12,-44 9,-28 Z" fill="#ff6a1a" opacity=".85" class="glowit"/><path d="M-5,-30 Q-6,-42 -2,-46 Q0,-40 2,-46 Q6,-42 5,-30 Z" fill="#ffd040" opacity=".8" class="glowit"/>` + ln("M-5,-4 L-6,-20 M5,-4 L6,-20", "#ff7020", 0.8, 'opacity=".6"') +
+      `<circle cx="0" cy="-31" r="9.5" fill="${X.skin("#2a1410")}" stroke="#000" stroke-width=".7"/><path d="M-6,-38 L-10,-46 L-3,-39 M6,-38 L10,-46 L3,-39" stroke="#1a0c08" stroke-width="2" fill="none"/><ellipse cx="-3.3" cy="-31" rx="1.9" ry="1.2" fill="#ffd040" class="glowit"/><ellipse cx="3.3" cy="-31" rx="1.9" ry="1.2" fill="#ffd040" class="glowit"/>` + ln("M-3,-26 Q0,-24.5 3,-26", "#ffb040", 0.8) +
+      ln("M10,-12 Q22,-6 18,6", "#ff8a2a", 1.6) + ln("M10,-12 Q22,-6 18,6", "#ffe080", 0.6, 'opacity=".7"'),
+    ent: (L, X) => `<path d="M-8.5,0 L-7,-30 L7,-30 L8.5,0 L4,-1 L2,0 L-2,-1 Z" fill="${X.cloth("#6a4a2a")}" stroke="#3a2414" stroke-width=".7"/>` + ln("M-4,-4 L-3,-26 M3,-6 L2.5,-24 M0,-3 L0,-27", "#4a3018", 0.6) + ln("M-5.5,-5 L-5,-24", hi("#6a4a2a", 0.4), 0.5, 'opacity=".5"') +
+      ln("M-7,-18 L-16,-26 L-19,-24 M7,-18 L16,-28 L19,-26", "#6a4a2a", 2.2) + ln("M-9,-20 L-15,-25 M9,-20 L15,-27", "#4a3018", 0.6) +
+      [[-9, -36, 8], [0, -44, 9], [9, -36, 8], [0, -34, 7], [-14, -29, 4.5], [14, -30, 4.5]].map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${X.skin("#5f7a33")}" stroke="#3a4a1a" stroke-width=".5"/>`).join("") + [[-11, -38], [-2, -46], [7, -39], [12, -31]].map(([x, y]) => `<ellipse cx="${x}" cy="${y}" rx="2.4" ry="1.2" fill="#8ab050" opacity=".8" transform="rotate(-30 ${x} ${y})"/>`).join("") +
+      `<ellipse cx="-3" cy="-22" rx="1.5" ry="1.9" fill="#1a1a10"/><ellipse cx="3" cy="-22" rx="1.5" ry="1.9" fill="#1a1a10"/><circle cx="-2.6" cy="-22.6" r=".55" fill="#c8e0a0"/><circle cx="3.4" cy="-22.6" r=".55" fill="#c8e0a0"/>` + ln("M-5,-25 Q-3,-26 -1,-25 M1,-25 Q3,-26 5,-25", "#3a2414", 0.8) +
+      `<path d="M-4,-18 Q-4,-9 0,-7 Q4,-9 4,-18 Q0,-16 -4,-18 Z" fill="${X.cloth("#8a9a5a")}" opacity=".9"/>` + ln("M-2,-16 L-1.5,-9 M2,-16 L1.5,-9", "#5a6a3a", 0.4),
+    spider: (L, X) => [-1, 1].map((k) => [0, 1, 2, 3].map((i) => ln(`M${k * 5},${-10 + i * 2} Q${k * (16 + i * 2)},${-22 + i * 5} ${k * (20 + i)},${-2 + i}`, "#1a1410", 1.7) + ln(`M${k * 5},${-10 + i * 2} Q${k * (16 + i * 2)},${-22 + i * 5} ${k * (20 + i)},${-2 + i}`, "#4a4050", 0.5, 'opacity=".5" transform="translate(0,-.5)"')).join("")).join("") +
+      `<ellipse cx="0" cy="-14" rx="11" ry="9" fill="${X.skin("#1e1a22")}" stroke="#000" stroke-width=".6"/><ellipse cx="-3" cy="-17" rx="4" ry="2.4" fill="#5a5060" opacity=".4"/><circle cx="0" cy="-24" r="6" fill="${X.skin("#24202a")}"/>` + [[-2.5, -25, 1.1], [2.5, -25, 1.1], [-1.2, -27.5, 0.8], [1.2, -27.5, 0.8], [-4, -22.5, 0.6], [4, -22.5, 0.6]].map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="#9ae060"/><circle cx="${x - r * 0.3}" cy="${y - r * 0.3}" r="${r * 0.3}" fill="#fff"/>`).join("") + `<path d="M-2,-20 l-1,3 l1.5,-1 z M2,-20 l1,3 l-1.5,-1 z" fill="#c8c8b0"/>`,
+    morgoth: (L, X) => `<path d="M-14,0 Q-16,-16 -10,-24 L10,-24 Q16,-16 14,0 Z" fill="${X.cloth("#141018")}" stroke="#000" stroke-width=".8"/>` + ln("M-9,-2 Q-10,-14 -7,-21 M9,-2 Q10,-14 7,-21", "#000", 0.7, 'opacity=".8"') + `<path d="M-3.5,-22 L3.5,-22 L4.5,-2 L-4.5,-2 Z" fill="${X.metal("#2a2430")}"/><path d="M-10,-24 Q-15,-26 -16,-19 Q-12,-21 -8,-20 Z M10,-24 Q15,-26 16,-19 Q12,-21 8,-20 Z" fill="${X.metal("#2a2430")}" stroke="#000" stroke-width=".5"/>` +
+      ln("M12,-6 L18,-36", "#3a3a40", 2.6) + ln("M12.5,-7 L18,-34", "#6a6a74", 0.6, 'opacity=".5"') + `<rect x="13" y="-42" width="11" height="8" rx="1.5" fill="${X.metal("#3a3a40")}" stroke="#000" stroke-width=".6" transform="rotate(18 18 -38)"/><rect x="14.5" y="-40.5" width="8" height="1" fill="#6a6a74" opacity=".6" transform="rotate(18 18 -38)"/>` +
+      `<circle cx="0" cy="-33" r="11" fill="${X.skin("#c8c0b8")}" stroke="#000" stroke-width=".8"/><path d="M-11,-35 Q-11,-46 0,-46 Q11,-46 11,-35 L8,-35 L8,-30 L-8,-30 L-8,-35 Z" fill="${X.metal("#1a1a20")}"/>` + ln("M-9,-38 Q0,-41 9,-38", "#5a5a68", 0.5, 'opacity=".6"') +
+      `<ellipse cx="-3.8" cy="-31.5" rx="1.7" ry="1.3" fill="#ff3a2a" class="glowit"/><ellipse cx="3.8" cy="-31.5" rx="1.7" ry="1.3" fill="#ff3a2a" class="glowit"/>` +
+      `<path d="M-10,-44 L-10,-54 L-5,-48 L0,-57 L5,-48 L10,-54 L10,-44 Z" fill="${X.metal("#2a2a30")}" stroke="#000" stroke-width=".6"/>` + [-6, 0, 6].map((x) => `<circle cx="${x}" cy="-47.5" r="2.4" fill="#fffbe0" opacity=".3" class="glowit"/><circle cx="${x}" cy="-47.5" r="1.3" fill="#fffbe0" class="glowit"/>`).join(""),
+    sauron: (L, X) => `<path d="M-11,0 Q-13,-14 -8,-21 L8,-21 Q13,-14 11,0 Z" fill="${X.cloth("#1a1416")}" stroke="#000" stroke-width=".7"/>` + ln("M-6,-2 Q-7,-12 -5,-19 M6,-2 Q7,-12 5,-19", "#000", 0.6, 'opacity=".8"') + `<path d="M-8,-21 L-13,-26 L-8,-16 M8,-21 L13,-26 L8,-16" fill="${X.metal("#2a2428")}" stroke="#000" stroke-width=".5"/><path d="M-3,-21 L3,-21 L3.5,-5 L-3.5,-5 Z" fill="${X.metal("#2a2428")}"/>` +
+      ln("M10,-8 L15,-30", "#3a3a40", 2.2) + `<circle cx="15.5" cy="-31.5" r="3.6" fill="${X.metal("#2a2a30")}" stroke="#000" stroke-width=".5"/><path d="M15.5,-35 l1,2 l-1,2 l-1,-2z" fill="#6a6a74"/>` +
+      `<path d="M-12,-30 Q-12.5,-45 0,-46 Q12.5,-45 12,-30 Q12,-21 0,-20 Q-12,-21 -12,-30 Z" fill="${X.metal("#2a2428")}" stroke="#000" stroke-width=".8"/>` + ln("M-9,-28 Q-9,-40 -2,-43", "#6a6070", 0.6, 'opacity=".5"') +
+      `<path d="M-9,-44 L-12,-56 L-5,-46 L0,-59 L5,-46 L12,-56 L9,-44 Z" fill="${X.metal("#1a1416")}" stroke="#000" stroke-width=".5"/><path d="M-7,-32 L-2,-30 M7,-32 L2,-30" stroke="#ff8a2a" stroke-width="2" stroke-linecap="round" class="glowit"/><ellipse cx="0" cy="-31" rx="8" ry="3" fill="#ff6a10" opacity=".2" class="glowit"/>` +
+      `<circle cx="-9" cy="-10" r="2.2" fill="#ffd040" opacity=".3"/><circle cx="-9" cy="-10" r="1.4" fill="none" stroke="${X.gold()}" stroke-width=".9"/>`
   };
-  const HORSE = (c = "#7a5a3a") => `<g class="horse">` + ln("M-9,-4 L-10,6 M-4,-4 L-4,6 M5,-4 L6,6 M10,-4 L11,6", "#3a2414", 1.8) +
-    `<ellipse cx="0" cy="-6" rx="13" ry="6.5" fill="${c}" stroke="#3a2414" stroke-width=".7"/><path d="M9,-9 Q14,-20 18,-21 Q22,-20 22,-16 L16,-12 Z" fill="${c}" stroke="#3a2414" stroke-width=".7"/>` +
-    ln("M-13,-7 Q-19,-3 -17,4", "#3a2414", 2) + `<circle cx="18.5" cy="-18" r=".9" fill="#000"/></g>`;
+  function HORSE(c = "#7a5a3a") {
+    const X = ctx(), cd = sh(c, 0.55), cl = hi(c, 0.4);
+    return `<g class="horse">${X.D.join("")}` + ln("M-9,-4 L-10,6 M-4,-4 L-4,6 M5,-4 L6,6 M10,-4 L11,6", "#2a1810", 2.2) + ln("M-9,-4 L-10,6 M-4,-4 L-4,6 M5,-4 L6,6 M10,-4 L11,6", mix(c, "#000", 0.25), 1.2) + [-10, -4, 6, 11].map((x) => `<ellipse cx="${x}" cy="6.3" rx="1.4" ry=".7" fill="#1a1008"/>`).join("") +
+      `<ellipse cx="0" cy="-6" rx="13" ry="6.5" fill="${X.cloth(c)}" stroke="${cd}" stroke-width=".6"/><ellipse cx="-3" cy="-8.5" rx="6" ry="2.4" fill="${cl}" opacity=".35"/><path d="M-6,-12 Q0,-14 6,-12 L6,-6 Q0,-5 -6,-6 Z" fill="${X.cloth("#8a2a1a")}" stroke="#4a1a0a" stroke-width=".4"/><path d="M-5,-6 L-5,-1 M5,-6 L5,-1" stroke="#4a2a14" stroke-width=".8"/>` +
+      `<path d="M9,-9 Q14,-20 18,-21 Q22,-20 22,-16 L16,-12 Z" fill="${X.cloth(c)}" stroke="${cd}" stroke-width=".6"/><path d="M11,-12 Q13,-20 18,-21 Q14,-21 10,-17 Z" fill="${cd}"/><path d="M17.5,-22 l1,-2.5 l1.5,2.2z" fill="${cd}"/>` + ln("M13,-10 Q17,-11 19,-14", "#3a2414", 0.5, 'opacity=".7"') +
+      ln("M-13,-7 Q-19,-3 -17,4", "#2a1810", 2.4) + ln("M-13,-7 Q-19,-3 -17,4", cd, 1.2) + `<circle cx="18.5" cy="-18" r="1" fill="#000"/><circle cx="18.2" cy="-18.3" r=".35" fill="#fff"/><circle cx="21.4" cy="-16.6" r=".4" fill="${cd}"/></g>`;
+  }
   function chibi(L) {
-    const sz = L.sz || 1;
-    return `<g transform="scale(${sz})"><ellipse cx="0" cy="0" rx="10" ry="2.6" fill="#000" opacity=".2"/>${L.sp ? SP[L.sp](L) : person(L)}</g>`;
+    const sz = L.sz || 1, X = ctx();
+    const body = L.sp ? SP[L.sp](L, X) : person(L, X);
+    return `<g transform="scale(${sz})">${X.D.join("")}<ellipse cx="0" cy="0" rx="10" ry="2.6" fill="#000" opacity=".22"/><ellipse cx="0" cy=".2" rx="6" ry="1.4" fill="#000" opacity=".2"/>${body}</g>`;
   }
   chibi.horse = HORSE;
-  chibi.sail = `<path d="M1,-64 L1,-4 L26,-10 Q20,-38 1,-64 Z" fill="#f4ecd6" stroke="#5a4326" stroke-width=".8"/>`;
-  chibi.hull = `<path d="M-30,-4 L32,-4 L24,7 L-24,7 Z" fill="#7a5a3a" stroke="#3a2414" stroke-width=".8"/><path d="M-26,-1 H28" stroke="#c8a870" stroke-width="1"/>`;
+  chibi.sail = `<path d="M1,-64 L1,-4 L26,-10 Q20,-38 1,-64 Z" fill="#f4ecd6" stroke="#5a4326" stroke-width=".8"/><path d="M3,-56 Q16,-40 22,-12 L3,-8 Z" fill="#d8ccb0" opacity=".45"/><path d="M2,-60 L2,-6" stroke="#fff" stroke-width=".8" opacity=".6"/>`;
+  chibi.hull = `<path d="M-30,-4 L32,-4 L24,7 L-24,7 Z" fill="#7a5a3a" stroke="#3a2414" stroke-width=".8"/><path d="M-30,-4 L32,-4 L30,-1 L-28,-1 Z" fill="#9a7a52"/><path d="M-26,-1 H28" stroke="#c8a870" stroke-width="1"/><path d="M-27,2 H26 M-25,5 H24" stroke="#4a3018" stroke-width=".5" opacity=".6"/>`;
   return chibi;
 })();
