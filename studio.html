@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>店报工坊 · 商海时报</title>
+  <meta name="description" content="不写代码：填五个问题、传几张照片，生成一份可以翻页、带购买票根和扫码立牌的店报。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;600;900&family=UnifrakturMaguntia&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/studio.css" />
+</head>
+<body>
+  <header class="st-head paper">
+    <div class="st-head-in">
+      <div>
+        <span class="kicker">商海时报 · 店报工坊</span>
+        <h1>把你的店，做成一份可以翻页的报纸</h1>
+        <p class="muted">填五个问题、传几张照片，三分钟生成一份带时光机、翻页阅读、购买票根和扫码立牌的店报。所有内容只存在你的浏览器里，不会上传。</p>
+      </div>
+      <nav class="st-nav">
+        <a class="link" href="shop.html" target="_blank">看样板《山海茶事》 ›</a>
+        <a class="link" href="index.html">‹ 返回主报</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="st-main">
+    <form id="f" class="st-form" autocomplete="off" onsubmit="return false">
+
+      <section class="st-sec paper" id="secHead">
+        <h2><span class="num">一</span>报头 <small>这份报纸叫什么</small></h2>
+        <div class="grid2">
+          <label>店名 / 报名 <small>报头大字，2–6 个字最好看</small><input data-k="title" placeholder="山海茶事" maxlength="12" /></label>
+          <label>英文名 <small>可选，报头下的哥特体小字</small><input data-k="en" placeholder="Shanhai Tea Chronicle" /></label>
+          <label>开张那一年<input data-k="min" type="number" placeholder="1984" /></label>
+          <label>讲到哪一年<input data-k="max" type="number" placeholder="2026" /></label>
+          <label>报头右耳的一句话 <small>老报纸写“定价”，你可以写招牌</small><input data-k="price" placeholder="定价：一泡肉桂" /></label>
+          <label>文件名 <small>英文或拼音，下载数据文件时用</small><input data-k="slug" placeholder="shanhai" pattern="[a-z0-9-]*" /></label>
+          <label class="span2">结语 <small>时光机播到最后一年时出现</small><input data-k="end" placeholder="四十年，三代人，一泡茶。谢谢你翻到这里。" /></label>
+        </div>
+      </section>
+
+      <section class="st-sec paper" id="secSteps">
+        <h2><span class="num">二</span>五个问题 <small>每个问题就是报纸里的一站，想到更多就继续加</small></h2>
+        <ol class="hints">
+          <li>哪一年、在哪里开始的？第一天是什么样子？</li>
+          <li>第一个客户、第一笔像样的收入是怎么来的？</li>
+          <li>最难的一年发生了什么，怎么撑过来的？</li>
+          <li>哪一次转折让店变成了今天的样子（搬店、上网、新品）？</li>
+          <li>今天的店是什么样子，接下来想做什么？</li>
+        </ol>
+        <p class="muted small">大白话就行。写不长也没关系，右边的「AI 润色」能把几句话扩成有年代感的报刊段落。</p>
+        <div id="steps"></div>
+        <button type="button" class="btn" id="addStep">+ 再加一站</button>
+      </section>
+
+      <section class="st-sec paper" id="secChapters">
+        <h2><span class="num">三</span>章节与时代 <small>报纸怎么分栏</small></h2>
+        <div class="grid2">
+          <label class="span2">章节 <small>用顿号分隔；每个章节是一本可翻页的小报，上面每一站可以归到一个章节</small><input data-k="chapters" placeholder="创业史、手艺、上网" /></label>
+          <label class="check span2"><input type="checkbox" data-k="bg" checked /> 自动配上当年的时代背景 <small>内置 1978–2026 年中国商业大事（南方谈话、淘宝上线、微信、直播元年、疫情…），作为“号外”穿插在你的故事之间</small></label>
+        </div>
+      </section>
+
+      <section class="st-sec paper" id="secPeople">
+        <h2><span class="num">四</span>家谱 <small>可选。老字号、父子店、夫妻店填这里，时光机下面会长出一棵家族树</small></h2>
+        <div id="people"></div>
+        <button type="button" class="btn" id="addPerson">+ 加一个人</button>
+      </section>
+
+      <section class="st-sec paper" id="secCta">
+        <h2><span class="num">五</span>购买票根 <small>读者被故事打动的那一秒，能点到哪里</small></h2>
+        <div class="grid2">
+          <label>商品 / 服务名<input data-k="cta.label" placeholder="林氏岩茶 · 老丛水仙礼盒" /></label>
+          <label>一句说明<input data-k="cta.note" placeholder="你手里扫码翻开本报的那一盒" /></label>
+          <label>价格文案<input data-k="cta.price" placeholder="¥ 368" /></label>
+          <label>购买链接 <small>微店、淘宝、小程序链接都行</small><input data-k="cta.link" placeholder="https://" /></label>
+          <label>微信号 <small>读者可一键复制</small><input data-k="cta.wechat" placeholder="shanhai_tea" /></label>
+          <label>按钮文字<input data-k="cta.go" placeholder="立即入手 ›" /></label>
+        </div>
+        <div class="tk-preview"><span class="muted small">票根预览</span><div id="tkPreview"></div></div>
+      </section>
+
+      <section class="st-sec paper" id="secCard">
+        <h2><span class="num">六</span>扫码立牌 <small>打印出来放在收银台，或者贴在礼盒、塞进快递箱</small></h2>
+        <div class="grid2">
+          <label class="span2">店报网址 <small>把下载的数据文件放到你的网站后，这份报纸的地址；现在可以先填样板地址试试</small><input data-k="card.url" placeholder="https://你的域名/shop.html?d=shanhai" /></label>
+          <label>立牌上的一句话<input data-k="card.slogan" placeholder="扫码穿越四十年，看这泡茶从哪里来" /></label>
+          <label>角标文字<input data-k="card.tag" placeholder="创刊号" /></label>
+        </div>
+        <div class="card-wrap">
+          <canvas id="card" width="1000" height="1500"></canvas>
+          <div class="card-ops">
+            <button type="button" class="btn" id="drawCard">生成立牌</button>
+            <button type="button" class="btn primary" id="dlCard">下载 PNG（10×15cm 可打印）</button>
+            <p class="muted small">二维码在本机生成，不经过任何服务器。</p>
+          </div>
+        </div>
+      </section>
+    </form>
+
+    <aside class="st-side">
+      <div class="st-actions paper">
+        <button type="button" class="btn primary big" id="preview">▶ 预览我的店报</button>
+        <button type="button" class="btn" id="download">⤓ 下载数据文件</button>
+        <button type="button" class="btn" id="aiPrompt">✦ AI 润色：复制提示词</button>
+        <button type="button" class="btn" id="aiImport">⤒ 导入 AI 返回的内容</button>
+        <div class="row">
+          <button type="button" class="link" id="loadSample">载入样板</button>
+          <button type="button" class="link" id="clearAll">清空</button>
+        </div>
+        <p id="status" class="status muted small">草稿会自动保存在这台设备的浏览器里。</p>
+      </div>
+      <div class="st-help paper">
+        <h3>怎么用</h3>
+        <ol>
+          <li><b>填</b>：报头 + 五个问题，传几张手机照片。</li>
+          <li><b>润色</b>（可选）：点「AI 润色」复制提示词，贴进任何 AI 对话框，再把它回的内容「导入」回来。</li>
+          <li><b>预览</b>：随时点「预览」，在新标签页看完整的翻页店报。</li>
+          <li><b>上线</b>：点「下载数据文件」，把两个 .js 文件和这个仓库一起放到任何静态空间（GitHub Pages、Vercel、阿里云 OSS）。访问 <code>shop.html?d=你的文件名</code>。</li>
+          <li><b>线下</b>：生成扫码立牌，打印后放在店里、贴在礼盒上。</li>
+        </ol>
+        <p class="muted small">适合：茶庄酒馆、老字号、独立设计师、手作工作室、民宿、买手店。</p>
+      </div>
+    </aside>
+  </main>
+
+  <dialog id="dlg" class="paper">
+    <form method="dialog" class="dlg-in">
+      <h3 id="dlgTitle">导入 AI 返回的内容</h3>
+      <p class="muted small" id="dlgHint">把 AI 回复里的 JSON 整段粘贴进来（有多余的文字也没关系，会自动找到大括号部分）。</p>
+      <textarea id="dlgText" rows="12" spellcheck="false"></textarea>
+      <div class="row">
+        <button class="btn primary" id="dlgOk" value="ok">导入</button>
+        <button class="btn" value="cancel">取消</button>
+      </div>
+    </form>
+  </dialog>
+
+  <template id="tplStep">
+    <div class="step paper-2">
+      <div class="step-head">
+        <span class="step-no"></span>
+        <input class="w-year" data-s="year" type="number" placeholder="年份" />
+        <input class="w-place" data-s="place" placeholder="地点（武夷山）" />
+        <select data-s="chapter" class="w-chap"></select>
+        <span class="grow"></span>
+        <button type="button" class="link" data-act="up" title="上移">↑</button>
+        <button type="button" class="link" data-act="down" title="下移">↓</button>
+        <button type="button" class="link danger" data-act="del">删除</button>
+      </div>
+      <input data-s="title" placeholder="标题：这一站发生了什么（第一担茶下山）" />
+      <textarea data-s="text" rows="3" placeholder="正文：用大白话讲，发生了什么、谁、为什么重要"></textarea>
+      <input data-s="lesson" placeholder="一句启示（可选）：这件事教会你什么" />
+      <div class="step-foot">
+        <label class="photo">
+          <span class="thumb"></span>
+          <span class="photo-ops">
+            <input type="file" accept="image/*" data-s="file" hidden />
+            <button type="button" class="btn sm" data-act="pick">传照片</button>
+            <input data-s="imgurl" placeholder="或贴图片网址" class="w-url" />
+          </span>
+        </label>
+        <label class="check"><input type="checkbox" data-s="cta.on" /> 这一站挂购买票根</label>
+      </div>
+      <div class="step-cta" hidden>
+        <input data-s="cta.label" placeholder="商品名" />
+        <input data-s="cta.price" placeholder="价格" class="w-year" />
+        <input data-s="cta.link" placeholder="链接 https://" />
+        <input data-s="cta.note" placeholder="一句说明" />
+      </div>
+    </div>
+  </template>
+
+  <template id="tplPerson">
+    <div class="person">
+      <input data-p="name" placeholder="姓名" class="w-place" />
+      <input data-p="born" type="number" placeholder="出生年" class="w-year" />
+      <input data-p="died" type="number" placeholder="去世年" class="w-year" />
+      <select data-p="parent" class="w-chap"></select>
+      <input data-p="note" placeholder="一句话（第二代掌柜，守住炭焙）" class="grow" />
+      <button type="button" class="link danger" data-act="del">删除</button>
+    </div>
+  </template>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js" crossorigin="anonymous"></script>
+  <script src="js/family-tea.js"></script>
+  <script src="js/family-tea-images.js"></script>
+  <script src="js/studio.js"></script>
+</body>
+</html>

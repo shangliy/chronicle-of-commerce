@@ -455,3 +455,28 @@ body.docked .m-headwrap { left: calc(32px + var(--lab)); right: 32px; top: 6px; 
   body.docked .m-headwrap { left: calc(12px + var(--lab)); right: 12px; }
 }
 @media (prefers-reduced-motion: reduce) { body.docked .m-axis { animation: none; } }
+
+/* ---------- 店报：复古票根（购买 / 引流卡）、本店栏、草稿条 ---------- */
+.ticket { display: grid; grid-template-columns: 1fr auto; margin: 16px 0 0; border: 1.5px solid var(--rule); position: relative; font-family: var(--serif); color: var(--ink); background: var(--paper); box-shadow: 2px 3px 0 rgba(40, 25, 10, .18); }
+.ticket .tk-l, .ticket .tk-r { color: inherit; text-decoration: none; display: flex; flex-direction: column; justify-content: center; }
+.ticket .tk-l { padding: 10px 14px; border-right: 2px dashed var(--rule); gap: 2px; }
+.ticket .tk-k { font-size: 11px; letter-spacing: 3px; color: var(--red); }
+.ticket .tk-l b { font-size: 17px; font-weight: 900; line-height: 1.3; }
+.ticket .tk-l i { font-style: normal; font-size: 12px; color: var(--ink-2); }
+.ticket .tk-wx { font-size: 12px; color: var(--ink-2); margin-top: 2px; }
+.ticket .tk-wx b { font-size: 12px; font-weight: 600; color: var(--ink); }
+.ticket .tk-r { padding: 10px 16px; text-align: center; background: var(--paper-2); position: relative; min-width: 96px; }
+.ticket .tk-r::before, .ticket .tk-r::after { content: ""; position: absolute; left: -8px; width: 14px; height: 14px; border-radius: 50%; background: var(--paper); border: 1.5px solid var(--rule); }
+.ticket .tk-r::before { top: -9px; border-top-color: transparent; border-left-color: transparent; border-right-color: transparent; }
+.ticket .tk-r::after { bottom: -9px; border-bottom-color: transparent; border-left-color: transparent; border-right-color: transparent; }
+.ticket .tk-price { font-size: 20px; font-weight: 900; color: var(--red); white-space: nowrap; }
+.ticket .tk-go { display: inline-block; font-size: 12px; letter-spacing: 2px; border: 1px solid var(--red); color: var(--red); padding: 2px 8px; margin-top: 4px; transition: background .2s, color .2s; }
+a.tk-r:hover .tk-go { background: var(--red); color: var(--paper); }
+.shopcard { margin-top: 22px; }
+.shopcard:empty { display: none; }
+.shopcard h3 { margin: 0 0 8px; font-size: 18px; border-bottom: 2px solid var(--rule); padding-bottom: 4px; letter-spacing: 4px; }
+.shopcard h3 small { font-weight: 400; letter-spacing: 0; font-size: 12px; color: var(--ink-2); margin-left: 8px; }
+.shopcard .ticket { max-width: 640px; }
+.draftbar { position: sticky; top: 0; z-index: 30; background: var(--red); color: var(--paper); font-size: 13px; padding: 6px 14px; display: flex; gap: 14px; align-items: center; justify-content: center; }
+.draftbar a { color: inherit; }
+@media (max-width: 860px) { .ticket { grid-template-columns: 1fr; } .ticket .tk-l { border-right: none; border-bottom: 2px dashed var(--rule); } .ticket .tk-r::before, .ticket .tk-r::after { display: none; } }

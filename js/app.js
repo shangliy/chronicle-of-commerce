@@ -15,6 +15,26 @@
   }, window.SITE || {});
   const MIN_YEAR = SITE.min, MAX_YEAR = SITE.max;
 
+  /* 店报：报头、刊尾与购买卡都可以由数据文件里的 SITE 决定（shop.html 用） */
+  const setText = (id, v) => { const el = $(id); if (el && v != null) el.textContent = v; };
+  if (SITE.title) { setText("mhTitle", SITE.title); document.title = SITE.title + (SITE.en ? " · " + SITE.en : ""); }
+  setText("mhEn", SITE.en); setText("mhPeriod", SITE.period); setText("mhPrice", SITE.price); setText("mhKicker", SITE.kicker); setText("colophon", SITE.colophon);
+  /* 复古票根：购买 / 引流卡。cta = { label, note, price, link, wechat } */
+  function ticket(c, kicker = "入手同款") {
+    if (!c || !(c.label || c.link || c.wechat)) return "";
+    const wx = c.wechat ? `<span class="tk-wx">微信 <b>${esc(c.wechat)}</b> <button class="link" type="button" data-copy="${esc(c.wechat)}">复制</button></span>` : "";
+    const tag = c.link ? "a" : "span", href = c.link ? ` href="${esc(c.link)}" target="_blank" rel="noopener"` : "";
+    return `<div class="ticket"><${tag} class="tk-l"${href}><span class="tk-k">${esc(c.kicker || kicker)}</span><b>${esc(c.label || "")}</b>${c.note ? `<i>${esc(c.note)}</i>` : ""}${wx}</${tag}>
+      <${tag} class="tk-r"${href}>${c.price ? `<span class="tk-price">${esc(c.price)}</span>` : ""}<span class="tk-go">${esc(c.go || (c.link ? "立即入手 ›" : "到店品鉴"))}</span></${tag}></div>`;
+  }
+  document.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-copy]");
+    if (!b) return;
+    e.preventDefault(); e.stopPropagation();
+    navigator.clipboard?.writeText(b.dataset.copy).then(() => { const t = b.textContent; b.textContent = "已复制"; setTimeout(() => (b.textContent = t), 1500); });
+  }, true);
+  if (SITE.cta && $("shopcard")) $("shopcard").innerHTML = `<h3>本店 <small>读完故事，带一份走</small></h3>${ticket(SITE.cta, SITE.cta.kicker || "本报推荐")}`;
+
   const storyById = Object.fromEntries(STORIES.map((s) => [s.id, s]));
   const eraOf = (y) => ERAS.find((e) => y >= e.start && y < e.end) || ERAS[ERAS.length - 1];
 
@@ -391,7 +411,7 @@
     const st = s.steps[pg - 1];
     const year = st ? st.year : pg === 0 ? s.steps[0].year : s.steps.at(-1).year;
     return side === "L"
-      ? `<div class="runhead"><span>商海時報</span><span>${esc(s.title)}</span></div>`
+      ? `<div class="runhead"><span>${esc(SITE.masthead || "商海時報")}</span><span>${esc(s.title)}</span></div>`
       : `<div class="runhead"><span>${year} 年</span><span>${esc(eraOf(year).name)}</span></div>`;
   }
   const folio = (pg, side) => `<div class="folio">— 第 ${pg * 2 + (side === "L" ? 1 : 2)} 页 —</div>`;
@@ -426,6 +446,7 @@
         <h2>${esc(s.title)}</h2>
         <p class="deck">${esc(s.subtitle)}</p>
         <div>${s.tags.map((t) => `<span class="tag">${esc(t)}</span>`).join("")}</div>
+        ${ticket(s.cta, "本期同款")}
         <ul class="toc">${s.steps.map((x, i) => `<li data-go="${i + 1}"><span class="y">${x.year}</span>${esc(x.title)}<span class="pg">${esc(x.place)}</span></li>`).join("")}</ul>
       </div>`;
     } else if (pg === n - 1) {
@@ -438,6 +459,7 @@
           <p class="muted" style="margin:0">${esc(nx.subtitle)}</p>
           <span class="more">翻开下一期 ›</span>
         </div>
+        ${ticket(s.cta || SITE.cta, "读完带一份走")}
         <p class="muted small" style="margin-top:14px">或 <button class="link" data-home>返回头版</button> 看看其他故事。</p>
       </div>`;
     } else {
@@ -447,6 +469,7 @@
         <h2>${esc(st.title)}</h2>
         <p class="body${/^[“"「《（(]/.test(st.text) ? "" : " dropcap"}">${esc(st.text)}</p>
         ${st.lesson ? `<blockquote>${esc(st.lesson)}</blockquote>` : ""}
+        ${ticket(st.cta)}
         <div class="seq">第 ${pg} / ${s.steps.length} 站${s.steps[pg] ? ` · 下一站：${s.steps[pg].year} ${esc(s.steps[pg].place)}` : ""}</div>
         ${sameTime(s, st)}
       </div>`;
@@ -739,6 +762,8 @@
   function syncUrl() {
     if (!booted) return;
     const p = new URLSearchParams();
+    const cur = new URLSearchParams(location.search);
+    ["d", "draft"].forEach((k) => { if (cur.has(k)) p.set(k, cur.get(k)); });
     if (state.story) { p.set("story", state.story); p.set("page", state.pg); }
     if (state.modalHash) { const [k, v] = state.modalHash.split("="); p.set(k, v); }
     const qs = p.toString();
@@ -752,7 +777,7 @@
   if (params.get("event")) openEvent(+params.get("event"));
   booted = true;
   // 供扩展模块（如家谱）调用
-  window.APP = { esc, pic, credit, isContain, showModal, closeModal, pauseMachine, setYear, openKey, year: () => M.year, eraOf };
+  window.APP = { esc, pic, credit, isContain, showModal, closeModal, pauseMachine, setYear, openKey, ticket, year: () => M.year, eraOf };
   syncUrl();
   // 首次进入头版自动播放一段历史变迁
   if (!state.story && !params.has("year") && !params.get("event") && !reduceMotion) setTimeout(() => { if (!M.playing && M.year === MIN_YEAR && !state.story) playMachine(); }, 1200);

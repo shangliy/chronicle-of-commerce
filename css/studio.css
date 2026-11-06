@@ -1,0 +1,90 @@
+/* 店报工坊 · 表单页 */
+.st-head { border-bottom: 4px double var(--rule); }
+.st-head-in { max-width: 1240px; margin: 0 auto; padding: 22px 20px 18px; display: flex; justify-content: space-between; gap: 20px; align-items: flex-start; }
+.st-head h1 { margin: 8px 0 6px; font-family: "Ma Shan Zheng", var(--serif); font-weight: 400; font-size: clamp(30px, 4.5vw, 52px); line-height: 1.1; letter-spacing: 4px; }
+.st-head p { margin: 0; max-width: 680px; line-height: 1.7; font-size: 14px; }
+.st-nav { display: flex; flex-direction: column; gap: 8px; white-space: nowrap; font-size: 14px; padding-top: 6px; }
+
+.st-main { max-width: 1240px; margin: 0 auto; padding: 20px; display: grid; grid-template-columns: 1fr 300px; gap: 20px; align-items: start; }
+.st-form { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.st-sec { padding: 20px 22px 22px; box-shadow: var(--shadow); }
+.st-sec h2 { margin: 0 0 14px; font-size: 22px; letter-spacing: 2px; display: flex; align-items: baseline; gap: 10px; border-bottom: 2px solid var(--rule); padding-bottom: 8px; }
+.st-sec h2 .num { font-family: "Ma Shan Zheng", var(--serif); font-weight: 400; color: var(--red); font-size: 30px; }
+.st-sec h2 small { font-weight: 400; letter-spacing: 0; font-size: 13px; color: var(--ink-2); }
+
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 18px; }
+.span2 { grid-column: span 2; }
+label { display: flex; flex-direction: column; gap: 4px; font-size: 14px; font-weight: 600; }
+label small { font-weight: 400; color: var(--ink-2); font-size: 12px; }
+label.check { flex-direction: row; align-items: baseline; gap: 8px; font-weight: 400; }
+label.check input { width: auto; }
+input, textarea, select { font: inherit; font-size: 14px; color: var(--ink); background: rgba(255, 255, 255, .55); border: 1px solid var(--paper-3); border-bottom: 1.5px solid var(--rule); padding: 7px 9px; border-radius: 0; width: 100%; min-width: 0; }
+input:focus, textarea:focus, select:focus { outline: none; border-bottom-color: var(--red); background: #fff; }
+textarea { resize: vertical; line-height: 1.7; }
+input[type="number"] { -moz-appearance: textfield; }
+
+.hints { margin: 0 0 8px; padding-left: 22px; font-size: 14px; line-height: 1.9; color: var(--ink-2); }
+.btn { font: inherit; font-size: 14px; border: 1.5px solid var(--rule); background: var(--paper); color: var(--ink); padding: 7px 14px; cursor: pointer; letter-spacing: 1px; }
+.btn:hover { background: var(--paper-2); }
+.btn.primary { background: var(--red); color: var(--paper); border-color: var(--red); }
+.btn.primary:hover { background: #7e2118; }
+.btn.big { font-size: 17px; padding: 12px 14px; }
+.btn.sm { padding: 4px 10px; font-size: 13px; }
+.link.danger { color: var(--ink-2); }
+.link.danger:hover { color: var(--red); }
+
+#steps { display: flex; flex-direction: column; gap: 14px; margin: 10px 0 14px; }
+.step { padding: 12px 14px; border: 1px solid var(--paper-3); border-left: 4px solid var(--gold); display: flex; flex-direction: column; gap: 8px; background: rgba(255, 255, 255, .3); }
+.step-head { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.step-no { font-family: "Ma Shan Zheng", var(--serif); color: var(--red); font-size: 22px; width: 26px; }
+.w-year { width: 96px; flex: none; }
+.w-place { width: 160px; flex: none; }
+.w-chap { width: 140px; flex: none; }
+.w-url { flex: 1; }
+.grow { flex: 1; }
+.step-foot { display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; }
+.photo { flex-direction: row; align-items: center; gap: 10px; font-weight: 400; flex: 1; }
+.thumb { width: 64px; height: 48px; flex: none; background: var(--paper-2); border: 1px solid var(--paper-3); background-size: cover; background-position: center; }
+.photo-ops { display: flex; gap: 8px; align-items: center; flex: 1; }
+.step-cta { display: grid; grid-template-columns: 1fr 96px 1fr 1fr; gap: 8px; padding-top: 6px; border-top: 1px dotted var(--paper-3); }
+
+#people { display: flex; flex-direction: column; gap: 8px; margin: 8px 0 12px; }
+.person { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+.tk-preview { margin-top: 14px; }
+.tk-preview .ticket { max-width: 560px; }
+
+.card-wrap { display: grid; grid-template-columns: 260px 1fr; gap: 18px; align-items: start; margin-top: 10px; }
+#card { width: 100%; height: auto; box-shadow: var(--shadow); background: var(--paper); }
+.card-ops { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
+
+.st-side { position: sticky; top: 16px; display: flex; flex-direction: column; gap: 14px; }
+.st-actions { padding: 16px; display: flex; flex-direction: column; gap: 8px; box-shadow: var(--shadow); }
+.st-actions .row { display: flex; gap: 14px; justify-content: center; font-size: 13px; margin-top: 4px; }
+.status { margin: 6px 0 0; line-height: 1.6; min-height: 1.6em; }
+.status.ok { color: #4e7a3a; }
+.status.err { color: var(--red); }
+.st-help { padding: 16px; font-size: 13px; line-height: 1.7; }
+.st-help h3 { margin: 0 0 6px; font-size: 16px; letter-spacing: 3px; border-bottom: 2px solid var(--rule); padding-bottom: 4px; }
+.st-help ol { padding-left: 20px; margin: 0; }
+.st-help code { font-size: 12px; background: var(--paper-2); padding: 0 4px; }
+
+dialog { border: 1.5px solid var(--rule); box-shadow: var(--shadow); width: min(680px, calc(100% - 32px)); padding: 0; }
+dialog::backdrop { background: rgba(30, 20, 10, .55); }
+.dlg-in { padding: 20px 22px; display: flex; flex-direction: column; gap: 10px; }
+.dlg-in h3 { margin: 0; font-size: 20px; }
+.dlg-in .row { display: flex; gap: 10px; justify-content: flex-end; }
+.dlg-in textarea { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; }
+
+@media (max-width: 960px) {
+  .st-main { grid-template-columns: 1fr; }
+  .st-side { position: static; }
+  .st-head-in { flex-direction: column; }
+  .st-nav { flex-direction: row; gap: 16px; }
+  .grid2 { grid-template-columns: 1fr; }
+  .span2 { grid-column: auto; }
+  .card-wrap { grid-template-columns: 1fr; }
+  #card { max-width: 320px; }
+  .step-cta { grid-template-columns: 1fr 1fr; }
+  .w-place, .w-chap { width: calc(50% - 20px); }
+}
