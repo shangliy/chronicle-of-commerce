@@ -110,10 +110,10 @@
     });
   }
   const SEA_ART = {
-    ship: `<g class="bobsea"><path d="M-12,0L12,0L8,5H-8Z" fill="#8a6a4a" stroke="#3a2a1a" stroke-width=".7"/><path d="M0,0V-16" stroke="#3a2a1a" stroke-width=".8"/><path d="M0.6,-15Q8,-10 0.6,-3Z" fill="#f2ead6" stroke="#3a2a1a" stroke-width=".6"/><path d="M-0.6,-13Q-6,-9 -0.6,-4Z" fill="#e8dcc0" stroke="#3a2a1a" stroke-width=".5"/><path d="M0,-16L4,-17.4L0,-18.4" fill="#a03a2a"/><path d="M-16,6q3,-2 6,0t6,0M8,6q3,-2 6,0" fill="none" stroke="#7f8f88" stroke-width=".7"/></g>`,
-    serpent: `<g class="bobsea"><path d="M-22,2Q-18,-8 -12,2Q-6,-8 0,2Q6,-8 12,2" fill="none" stroke="#4a6a5a" stroke-width="3" stroke-linecap="round"/><path d="M12,2Q15,-8 20,-8Q25,-8 24,-4L19,-3" fill="#5a7a6a" stroke="#2a3a32" stroke-width=".8"/><circle cx="21" cy="-6.4" r=".8" fill="#e8e0a0"/><path d="M-12,-3l-1,-3l2,1M0,-3l-1,-3l2,1" fill="none" stroke="#2a3a32" stroke-width=".7"/><path d="M-26,4q4,-2 8,0t8,0t8,0t8,0t8,0" fill="none" stroke="#7f8f88" stroke-width=".7"/></g>`,
-    whirl: `<path d="M0,0m-8,0a8,5 0 1,1 16,0a6,3.6 0 1,1 -12,0a4,2.4 0 1,1 8,0a2,1.2 0 1,1 -4,0" fill="none" stroke="#7f8f88" stroke-width=".8"/>`,
-    whale: `<g class="bobsea"><path d="M-14,0Q-12,-8 0,-8Q12,-8 14,0Z" fill="#6a7a80" stroke="#2a3a40" stroke-width=".7"/><path d="M14,0L20,-5L19,2Z" fill="#6a7a80" stroke="#2a3a40" stroke-width=".7"/><circle cx="-8" cy="-4" r=".8" fill="#1a1a1a"/><path d="M-6,-9Q-8,-14 -10,-13M-6,-9Q-4,-14 -2,-13" fill="none" stroke="#9fb4ba" stroke-width=".8"/></g>`
+    ship: `<g class="bobsea"><ellipse cx="0" cy="5.5" rx="14" ry="2.2" fill="#000" opacity=".18"/><path d="M-13,-1Q-14,-5 -11,-7Q-9,-4 -9,0L9,0Q11,-4 13,-6Q13,-1 10,4.8H-9.5Z" fill="#7c5a38" stroke="#3a2514" stroke-width=".7"/><path d="M-9.5,2.2H10" stroke="#c89e52" stroke-width=".6"/><path d="M0,0V-18M-5,0L0,-15M5,0L0,-15" stroke="#3a2514" stroke-width=".6"/><path d="M0.5,-16.5Q10,-11 0.5,-2.5Z" fill="#f7f0de" stroke="#3a2514" stroke-width=".6"/><path d="M2.2,-12.5Q5.5,-9.5 2.2,-6.5" fill="none" stroke="#c89e52" stroke-width=".6"/><path d="M-0.5,-14.5Q-7.5,-10 -0.5,-3.5Z" fill="#ebe0c5" stroke="#3a2514" stroke-width=".55"/><path d="M0,-18L5.5,-19.4L0,-20.8Z" fill="#b03a28"/><path d="M-17,6q3.5,-2.2 7,0t7,0t7,0M6,6.8q3,-1.8 6,0" fill="none" stroke="#f6f1e4" stroke-width=".75" opacity=".75"/></g>`,
+    serpent: `<g class="bobsea"><path d="M-24,2.5Q-19,-9 -13,2.5Q-7,-9 -1,2.5Q5,-9 11,2.5" fill="none" stroke="#2a4236" stroke-width="4.2" stroke-linecap="round"/><path d="M-24,2.5Q-19,-9 -13,2.5Q-7,-9 -1,2.5Q5,-9 11,2.5" fill="none" stroke="#567a68" stroke-width="2.6" stroke-linecap="round"/><path d="M-19,-3.5l-1.5,-3.8l2.5,1.4l1,-2.6l1,3M-7,-3.5l-1.5,-3.8l2.5,1.4l1,-2.6l1,3M5,-3.5l-1.5,-3.5l2.5,1.5" fill="#88a894" stroke="#2a3a32" stroke-width=".55"/><path d="M11,2.5Q14,-9 20,-9.5Q26,-9.5 25,-4.5L19.5,-3.5L23.5,-1.5L18,-1" fill="#4e7260" stroke="#24342c" stroke-width=".75"/><circle cx="21" cy="-7" r="1" fill="#ffd86b"/><path d="M24.5,-3.5l3.5,-1l-2,1.8l2.5,1" fill="none" stroke="#c43c28" stroke-width=".65"/><path d="M-28,4.2q4,-2.2 8,0t8,0t8,0t8,0t8,0" fill="none" stroke="#f4eee0" stroke-width=".75" opacity=".7"/></g>`,
+    whirl: `<g><circle r="10" fill="#2a4854" opacity=".18"/><path d="M0,0m-9,0a9,5.6 0 1,1 18,0a6.8,4.2 0 1,1 -13.6,0a4.5,2.8 0 1,1 9,0a2.2,1.4 0 1,1 -4.4,0" fill="none" stroke="#5d7874" stroke-width=".9"/><path d="M-7,-2a7,4.2 0 0,1 12,1M-4,2.2a4.5,2.6 0 0,0 7.5,-0.8" fill="none" stroke="#f5efe0" stroke-width=".65" stroke-dasharray="2 2"/></g>`,
+    whale: `<g class="bobsea"><path d="M-15,0.5Q-13,-9.5 0,-9Q11,-8.5 15,0.5Z" fill="#526670" stroke="#223038" stroke-width=".75"/><path d="M-12,0.5Q-4,-2.5 8,0.5" fill="none" stroke="#9ab0b8" stroke-width=".7"/><path d="M14.5,0.5L21,-5.5L19.5,-0.5L22,3.5L15,1.5Z" fill="#465862" stroke="#223038" stroke-width=".7"/><circle cx="-8.5" cy="-4.2" r=".9" fill="#151c20"/><circle cx="-8.8" cy="-4.5" r=".3" fill="#fff"/><path d="M-6.5,-9.5Q-8.5,-15.5 -11.5,-14M-6.5,-9.5Q-4.5,-15.5 -1.5,-14M-6.5,-9.5V-15" fill="none" stroke="#eef6fa" stroke-width=".85" stroke-linecap="round"/><path d="M-18,1.5q4,-1.8 8,0t8,0t8,0" fill="none" stroke="#f4eee0" stroke-width=".7" opacity=".7"/></g>`
   };
   function texture(list, cls, draw, sd) {
     list.forEach((a, i) => {
@@ -294,8 +294,13 @@
     { let d = ""; seed = 41; for (let i = 0; i < 60; i++) { const x = lerp(-900, -695, rnd()), y = lerp(-118, -72, rnd()); if (inPoly(x, y, W.land.ice)) d += `M${x.toFixed(1)},${y.toFixed(1)}l${(4 + rnd() * 5).toFixed(1)},${(-2 - rnd() * 3).toFixed(1)}`; } el("path", { d, class: "ice-h" }, L.bel); }
     // 双圣树
     { const tp = D.PLACES.find((q) => q.id === "twotrees"); L.trees = el("g", { class: "trees2", transform: `translate(${tp.x},${tp.y - 4}) scale(1.6)` }, L.aman);
-      el("circle", { cx: -14, cy: -6, r: 26, class: "tglow tel" }, L.trees); el("circle", { cx: 14, cy: -6, r: 26, class: "tglow tla" }, L.trees);
-      [[-12, "tel"], [12, "tla"]].forEach(([x, c]) => { el("path", { d: `M${x},4L${x},-10`, class: "ttrunk" }, L.trees); el("circle", { cx: x, cy: -14, r: 7, class: "tcrown " + c }, L.trees); }); }
+      el("circle", { cx: -13, cy: -10, r: 28, class: "tglow tel" }, L.trees); el("circle", { cx: 13, cy: -10, r: 28, class: "tglow tla" }, L.trees);
+      el("ellipse", { cx: 0, cy: 5, rx: 22, ry: 3.5, fill: "rgba(60,85,40,.35)" }, L.trees);
+      [[-12, "tel", -1], [12, "tla", 1]].forEach(([x, c, dir]) => {
+        el("path", { d: `M${x - 3 * dir},5Q${x - dir},1 ${x},-3Q${x + 1.5 * dir},-8 ${x},-13M${x},-6L${x - 5 * dir},-12M${x},-9L${x + 4 * dir},-15`, class: "ttrunk" }, L.trees);
+        [[-5, -13, 5.2], [4, -13, 5], [-2, -18, 5.6], [3, -17, 4.8], [0, -14, 6.8]].forEach(([dx, dy, r]) => el("circle", { cx: x + dx, cy: dy, r, class: "tcrown " + c }, L.trees));
+        [[-7, -7], [6, -6], [0, -22]].forEach(([dx, dy]) => el("circle", { cx: x + dx, cy: dy, r: 0.9, fill: c === "tel" ? "#ffffff" : "#fff2a8" }, L.trees));
+      }); }
     L.veil = el("g", { class: "veil-l", transform: "translate(-1060,560)" }, L.aman);
     { const s2 = el("g", { class: "sc" }, L.veil); el("text", { class: "veil-n" }, s2).textContent = tr("已移出世界之圈 · 唯有精灵的船走笔直航道"); el("text", { class: "veil-en", y: 13 }, s2).textContent = "REMOVED FROM THE CIRCLES OF THE WORLD · SA 3319"; }
     el("rect", { x: BX, y: BY, width: BW, height: BH, filter: "url(#paper)", class: "paper", "pointer-events": "none" }, svg);
@@ -964,21 +969,33 @@
     const defs = el("defs", {}, s);
     defs.innerHTML = `<pattern id="bp-w" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" class="bpw"/><circle cx="4" cy="4" r="1.3" class="bpd"/></pattern>
       <pattern id="bp-e" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" class="bpe"/><path d="M2 2l4 4M6 2l-4 4" class="bpd"/></pattern>
-      <pattern id="bp-n" width="10" height="10" patternUnits="userSpaceOnUse"><rect width="10" height="10" class="bpn"/></pattern>
+      <pattern id="bp-n" width="10" height="10" patternUnits="userSpaceOnUse"><rect width="10" height="10" class="bpn"/><circle cx="5" cy="5" r="1.2" class="bpd"/></pattern>
+      <pattern id="bt-grid" width="80" height="80" patternUnits="userSpaceOnUse"><path d="M80 0H0V80" fill="none" stroke="rgba(240,212,138,.05)" stroke-width="1"/><path d="M40 0V80M0 40H80" fill="none" stroke="rgba(240,212,138,.025)" stroke-width=".7" stroke-dasharray="3 3"/></pattern>
+      <radialGradient id="bt-parch" cx="50%" cy="45%" r="65%"><stop offset="0%" stop-color="#584b33"/><stop offset="65%" stop-color="#483d28"/><stop offset="100%" stop-color="#362c1c"/></radialGradient>
+      <radialGradient id="bt-vig" cx="50%" cy="50%" r="72%"><stop offset="55%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#090503" stop-opacity=".65"/></radialGradient>
       <filter id="bblur"><feGaussianBlur stdDeviation="14"/></filter>
       <radialGradient id="bglow"><stop offset="0" stop-color="#ffb347" stop-opacity=".9"/><stop offset=".5" stop-color="#ff5a1f" stop-opacity=".35"/><stop offset="1" stop-color="#ff5a1f" stop-opacity="0"/></radialGradient>
-      <marker id="bah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" class="bah"/></marker>`;
+      <marker id="bah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0L10,5L0,10L2.5,5z" class="bah"/></marker>`;
     const scene = el("g", { class: "scene" }, s);
     b.terrain.forEach((tr) => {
-      if (tr.k === "poly") { el("path", { d: tr.pts.length <= 4 ? "M" + tr.pts.join("L") + "Z" : cr(tr.pts, true), class: "bt-" + tr.f }, scene); if (tr.f === "cliff" || tr.f === "dark") { seed = tr.pts.length * 31; const g = el("g", { class: "bt-hatch" + (tr.f === "dark" ? " dk" : "") }, scene); const xs = tr.pts.map((p) => p[0]), ys = tr.pts.map((p) => p[1]); for (let i = 0; i < 160; i++) { const x = lerp(Math.min(...xs), Math.max(...xs), rnd()), y = lerp(Math.min(...ys), Math.max(...ys), rnd()); if (inPoly(x, y, tr.pts)) el("path", { d: `M${x - 7},${y + 5}L${x},${y - 6}L${x + 7},${y + 5}` }, g); } } if (tr.f === "marsh") { const g = el("g", { class: "bt-reeds" }, scene); seed = 99; const xs = tr.pts.map((p) => p[0]), ys = tr.pts.map((p) => p[1]); for (let i = 0; i < 90; i++) { const x = lerp(Math.min(...xs), Math.max(...xs), rnd()), y = lerp(Math.min(...ys), Math.max(...ys), rnd()); if (inPoly(x, y, tr.pts)) el("path", { d: `M${x - 5},${y}h10M${x - 2},${y - 4}v4M${x + 2},${y - 3}v3` }, g); } } }
+      if (tr.k === "poly") {
+        const d = tr.pts.length <= 4 ? "M" + tr.pts.join("L") + "Z" : cr(tr.pts, true);
+        el("path", { d, class: "bt-" + tr.f }, scene);
+        if (tr.f === "hill" && tr.pts.length > 4) { const c = centroid(tr.pts); [0.72, 0.45].forEach((sc) => el("path", { d: cr(tr.pts.map((p) => [lerp(c[0], p[0], sc), lerp(c[1], p[1], sc)]), true), class: "bt-hill-in" }, scene)); }
+        if (tr.f === "water" && tr.pts.length > 4) { const c = centroid(tr.pts); el("path", { d: cr(tr.pts.map((p) => [lerp(c[0], p[0], 0.82), lerp(c[1], p[1], 0.82)]), true), class: "bt-water-in" }, scene); }
+        if (tr.f === "cliff" || tr.f === "dark") { seed = tr.pts.length * 31; const g = el("g", { class: "bt-hatch" + (tr.f === "dark" ? " dk" : "") }, scene); const xs = tr.pts.map((p) => p[0]), ys = tr.pts.map((p) => p[1]); for (let i = 0; i < 160; i++) { const x = lerp(Math.min(...xs), Math.max(...xs), rnd()), y = lerp(Math.min(...ys), Math.max(...ys), rnd()); if (inPoly(x, y, tr.pts)) el("path", { d: `M${x - 7},${y + 5}L${x},${y - 6}L${x + 7},${y + 5}M${x},${y - 6}L${x},${y + 3}` }, g); } }
+        if (tr.f === "marsh") { const g = el("g", { class: "bt-reeds" }, scene); seed = 99; const xs = tr.pts.map((p) => p[0]), ys = tr.pts.map((p) => p[1]); for (let i = 0; i < 90; i++) { const x = lerp(Math.min(...xs), Math.max(...xs), rnd()), y = lerp(Math.min(...ys), Math.max(...ys), rnd()); if (inPoly(x, y, tr.pts)) el("path", { d: `M${x - 5},${y}h10M${x - 2},${y - 4}v4M${x + 2},${y - 3}v3` }, g); } }
+      }
       else if (tr.k === "line") el("path", { d: cr(tr.pts), class: "bl-" + tr.s }, scene);
-      else if (tr.k === "tower") { const g = el("g", { class: "b-tower", transform: `translate(${tr.x},${tr.y})` }, scene); el("circle", { r: tr.r }, g); el("circle", { r: tr.r * 0.45, class: "in" }, g); }
-      else if (tr.k === "city") { const g = el("g", { class: "b-city", transform: `translate(${tr.x},${tr.y})` }, scene); for (let i = 7; i >= 1; i--) el("path", { d: `M0,${-tr.r * i / 7}A${tr.r * i / 7},${tr.r * i / 7} 0 0,1 0,${tr.r * i / 7}`, class: "tier" }, g); el("path", { d: `M0,-6L${tr.r * 0.95},0L0,6Z`, class: "prow" }, g); }
-      else if (tr.k === "gate") { const g = el("g", { class: "b-gate", transform: `translate(${tr.x},${tr.y})` }, scene); el("rect", { x: -9, y: -6, width: 18, height: 12 }, g); }
-      else if (tr.k === "peak") { const g = el("g", { class: "b-peak" + (tr.fire ? " fire" : ""), transform: `translate(${tr.x},${tr.y})` }, scene); el("path", { d: `M${-tr.h},${tr.h * 0.5}L-6,${-tr.h * 0.5}L6,${-tr.h * 0.5}L${tr.h},${tr.h * 0.5}Z` }, g); }
+      else if (tr.k === "tower") { const g = el("g", { class: "b-tower", transform: `translate(${tr.x},${tr.y})` }, scene); el("circle", { r: tr.r }, g); el("circle", { r: tr.r * 0.78, class: "cren" }, g); el("circle", { r: tr.r * 0.45, class: "in" }, g); }
+      else if (tr.k === "city") { const g = el("g", { class: "b-city", transform: `translate(${tr.x},${tr.y})` }, scene); el("circle", { r: tr.r * 1.04, class: "base" }, g); for (let i = 7; i >= 1; i--) el("path", { d: `M0,${-tr.r * i / 7}A${tr.r * i / 7},${tr.r * i / 7} 0 0,1 0,${tr.r * i / 7}`, class: "tier" }, g); el("path", { d: `M-6,-8L${tr.r * 1.02},0L-6,8Z`, class: "prow" }, g); el("circle", { cx: tr.r * 0.22, cy: 0, r: 3.5, fill: "#fff8e7" }, g); }
+      else if (tr.k === "gate") { const g = el("g", { class: "b-gate", transform: `translate(${tr.x},${tr.y})` }, scene); el("rect", { x: -11, y: -7, width: 22, height: 14, rx: 1.5 }, g); el("path", { d: "M-6,-7V7M-2,-7V7M2,-7V7M6,-7V7M-11,0H11", class: "bars" }, g); }
+      else if (tr.k === "peak") { const g = el("g", { class: "b-peak" + (tr.fire ? " fire" : ""), transform: `translate(${tr.x},${tr.y})` }, scene), h = tr.h; el("path", { d: `M${-h},${h * 0.5}L${-h * 0.35},${-h * 0.25}L-7,${-h * 0.55}L7,${-h * 0.55}L${h * 0.4},${-h * 0.2}L${h},${h * 0.5}L0,${h * 0.62}Z` }, g); el("path", { d: `M-7,${-h * 0.55}L-2,${h * 0.1}L${-h * 0.45},${h * 0.48}M7,${-h * 0.55}L4,${h * 0.15}L${h * 0.45},${h * 0.45}`, class: "ridge" }, g); if (tr.fire) el("ellipse", { cx: 0, cy: -h * 0.52, rx: 7, ry: 3.2, class: "crater" }, g); }
       if (tr.n) { const c = tr.k === "poly" ? centroid(tr.pts) : tr.k === "line" ? tr.pts[Math.floor(tr.pts.length / 2)] : [tr.x, tr.y + (tr.r || tr.h || 10) + 14]; el("text", { x: c[0], y: c[1], class: "b-tn" + (tr.k === "line" ? " ln" : "") }, scene).textContent = tr.n; }
       if (tr.k === "label") el("text", { x: tr.x, y: tr.y, class: "b-tn lb" }, scene).textContent = tr.n;
     });
+    el("rect", { x: -200, y: -200, width: 1400, height: 1000, class: "bt-grid" }, scene);
+    el("rect", { x: 0, y: 0, width: 1000, height: 600, class: "bt-vig" }, scene);
     B.arrows = el("g", { class: "b-arrows" }, scene);
     B.units = {};
     const ug = el("g", { class: "b-units" }, scene);
@@ -1055,7 +1072,7 @@
     Object.values(B.units).forEach((U) => { U.x = U.u.x; U.y = U.u.y; U.o = U.u.o ?? 1; });
     for (let i = 0; i <= k; i++) Object.entries(b.phases[i].set || {}).forEach(([id, v]) => { const U = B.units[id]; if (!U) return; if (Array.isArray(v)) { U.x = v[0]; U.y = v[1]; } else { if (v.x != null) U.x = v.x; if (v.y != null) U.y = v.y; if (v.o != null) U.o = v.o; } });
     B.arrows.innerHTML = "";
-    Object.values(B.units).forEach((U) => { const [px, py, po] = prevPos[U.u.id]; if (k === B.k + 1 && po > 0.2 && U.o > 0.2 && Math.hypot(U.x - px, U.y - py) > 24) el("path", { d: `M${px},${py}L${U.x},${U.y}`, class: "mv s-" + U.u.side, "marker-end": "url(#bah)" }, B.arrows); place(U); });
+    Object.values(B.units).forEach((U) => { const [px, py, po] = prevPos[U.u.id]; if (k === B.k + 1 && po > 0.2 && U.o > 0.2 && Math.hypot(U.x - px, U.y - py) > 24) { const mx = (px + U.x) / 2 - (U.y - py) * 0.14, my = (py + U.y) / 2 + (U.x - px) * 0.14; el("path", { d: `M${px},${py}Q${mx.toFixed(1)},${my.toFixed(1)} ${U.x},${U.y}`, class: "mv s-" + U.u.side, "marker-end": "url(#bah)" }, B.arrows); } place(U); });
     B.k = k; const p = b.phases[k];
     camB(p.cam || [0, 0, 1000]); setFx(p.fx || []);
     if (p.sfx) sound.fx(p.sfx);
@@ -1083,7 +1100,7 @@
       if (kind === "arrows" || kind === "clash") {
         const [a, b2] = arg.split(kind === "arrows" ? ">" : ","); const A = B.units[a], Bb = B.units[b2]; if (!A || !Bb) return;
         if (kind === "arrows") for (let i = 0; i < 9; i++) { const ox = (i - 4) * 9, p = el("path", { d: `M${A.x + ox},${A.y}Q${(A.x + Bb.x) / 2 + ox},${Math.min(A.y, Bb.y) - 80} ${Bb.x + ox * 1.6},${Bb.y}`, class: "volley", style: `animation-delay:${(i * 0.13).toFixed(2)}s` }, B.fx); p.setAttribute("pathLength", 100); }
-        else { const mx = (A.x + Bb.x) / 2, my = (A.y + Bb.y) / 2; for (let i = 0; i < 7; i++) el("path", { d: "M-5,0L5,0M0,-5L0,5M-3.5,-3.5L3.5,3.5M3.5,-3.5L-3.5,3.5", class: "spark", transform: `translate(${mx + (rnd() - 0.5) * 50},${my + (rnd() - 0.5) * 40})`, style: `animation-delay:${(rnd() * 1.5).toFixed(2)}s` }, B.fx); }
+        else { const mx = (A.x + Bb.x) / 2, my = (A.y + Bb.y) / 2, cg = el("g", { transform: `translate(${mx},${my})` }, B.fx); el("circle", { r: 16, class: "clash-ring" }, cg); el("path", { d: "M-9,-9L9,9M9,-9L-9,9M-9,-4L-4,-9M9,-4L4,-9", class: "spark" }, cg); for (let i = 0; i < 7; i++) el("path", { d: "M-5,0L5,0M0,-5L0,5M-3.5,-3.5L3.5,3.5M3.5,-3.5L-3.5,3.5", class: "spark", transform: `translate(${mx + (rnd() - 0.5) * 50},${my + (rnd() - 0.5) * 40})`, style: `animation-delay:${(rnd() * 1.5).toFixed(2)}s` }, B.fx); }
       }
     });
   }

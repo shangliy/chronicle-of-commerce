@@ -165,13 +165,16 @@ window.ME_SCENE = (function () {
         `<use href="#chb-${id}" transform="translate(${x} ${a.gy}) scale(${sc * k * flip} ${sc * k})"/></g>`;
     }).join("");
     const s = a.s.replace(/url\(#gFog\)/g, `url(#${u}f)`);
+    const fg = `<path d="M0 520V380L48 415L86 465L150 495L240 520ZM1200 520V370L1145 410L1105 460L1035 492L950 520Z" fill="#050304" opacity=".68"/>` +
+      `<path d="M${a.x0 - 40} ${a.gy}Q600 ${a.gy - 6} ${a.x1 + 40} ${a.gy}" stroke="${c.fog}" stroke-opacity=".28" stroke-width="2" fill="none"/>`;
     return `<svg class="scene" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs>
       <linearGradient id="${u}s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c.sky[0]}"/><stop offset=".6" stop-color="${c.sky[1]}"/><stop offset="1" stop-color="${c.sky[2]}"/></linearGradient>
       <radialGradient id="${u}f"><stop offset="0" stop-color="${c.fog}" stop-opacity=".9"/><stop offset="1" stop-color="${c.fog}" stop-opacity="0"/></radialGradient>
-      <radialGradient id="${u}v" cx=".5" cy=".5" r=".75"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".7"/></radialGradient></defs>
-      <rect width="${W}" height="${H}" fill="url(#${u}s)"/><ellipse cx="600" cy="${a.gy - 60}" rx="520" ry="200" fill="url(#${u}f)" opacity=".35" class="sc-glow"/>
+      <radialGradient id="${u}v" cx=".5" cy=".5" r=".75"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".72"/></radialGradient></defs>
+      <rect width="${W}" height="${H}" fill="url(#${u}s)"/><ellipse cx="600" cy="${a.gy - 60}" rx="520" ry="200" fill="url(#${u}f)" opacity=".38" class="sc-glow"/>
       <g class="sc-far">${particles(c.p === "rain" || c.p === "star" ? c.p : "", c)}</g>
-      <g class="sc-mid">${s}</g>${fig}<g class="sc-near">${c.p !== "rain" && c.p !== "star" ? particles(c.p, c) : ""}</g>
-      <rect width="${W}" height="${H}" fill="url(#${u}v)"/></svg>`;
+      <g class="sc-mid">${s}</g>${fig}<g class="sc-near">${fg}${c.p !== "rain" && c.p !== "star" ? particles(c.p, c) : ""}</g>
+      <rect width="${W}" height="${H}" fill="url(#${u}v)"/>
+      <rect x="10" y="10" width="${W - 20}" height="${H - 20}" rx="4" fill="none" stroke="${c.fog}" stroke-opacity=".16" stroke-width="1"/></svg>`;
   };
 })();
