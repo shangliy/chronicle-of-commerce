@@ -60,7 +60,17 @@
         <h2><span class="num">三</span>章节与时代 <small>报纸怎么分栏</small></h2>
         <div class="grid2">
           <label class="span2">章节 <small>用顿号分隔；每个章节是一本可翻页的小报，上面每一站可以归到一个章节</small><input data-k="chapters" placeholder="创业史、手艺、上网" /></label>
-          <label class="check span2"><input type="checkbox" data-k="bg" checked /> 自动配上当年的时代背景 <small>内置 1978–2026 年中国商业大事（南方谈话、淘宝上线、微信、直播元年、疫情…），作为“号外”穿插在你的故事之间</small></label>
+          <label class="check span2"><input type="checkbox" data-k="bg" checked /> 自动配上当年的时代背景 <small>内置 1978–2026 年中国商业大事（南方谈话、淘宝上线、微信、直播元年、疫情…），点下方标签可增删“号外”</small></label>
+        </div>
+        <div id="bgWrap" class="bg-wrap">
+          <div id="bgList" class="bg-list"></div>
+          <div class="bg-add">
+            <input id="bgYear" type="number" class="w-year" placeholder="年份(1999)" />
+            <input id="bgPlace" class="w-place" placeholder="地点(武夷山)" />
+            <input id="bgTitle" class="w-chap" placeholder="事件标题(申遗成功)" />
+            <input id="bgText" class="grow" placeholder="一句话说明这场时代大事对小店的影响" />
+            <button type="button" class="btn sm" id="addBg">+ 加号外</button>
+          </div>
         </div>
       </section>
 
@@ -89,6 +99,13 @@
           <label class="span2">店报网址 <small>把下载的数据文件放到你的网站后，这份报纸的地址；现在可以先填样板地址试试</small><input data-k="card.url" placeholder="https://你的域名/shop.html?d=shanhai" /></label>
           <label>立牌上的一句话<input data-k="card.slogan" placeholder="扫码穿越四十年，看这泡茶从哪里来" /></label>
           <label>角标文字<input data-k="card.tag" placeholder="创刊号" /></label>
+          <label class="span2">立牌版式
+            <select data-k="card.style">
+              <option value="classic">经典报头款（旧报纸双线 + 报耳 + 店史节点）</option>
+              <option value="dark">黑金牌匾款（乌木底金线，适合茶馆/酒馆/手作）</option>
+              <option value="ticket">复古票根款（齿孔邮戳，适合礼盒内页/伴手礼卡）</option>
+            </select>
+          </label>
         </div>
         <div class="card-wrap">
           <canvas id="card" width="1000" height="1500"></canvas>
@@ -108,8 +125,12 @@
         <button type="button" class="btn" id="aiPrompt">✦ AI 润色：复制提示词</button>
         <button type="button" class="btn" id="aiImport">⤒ 导入 AI 返回的内容</button>
         <div class="row">
-          <button type="button" class="link" id="loadSample">载入样板</button>
-          <button type="button" class="link" id="clearAll">清空</button>
+          <span class="muted">样板：</span>
+          <button type="button" class="link" id="loadSample" data-tpl="tea">茶庄</button>
+          <button type="button" class="link" data-tpl="coffee">咖啡馆</button>
+          <button type="button" class="link" data-tpl="craft">手作店</button>
+          <span class="muted">·</span>
+          <button type="button" class="link danger" id="clearAll">清空</button>
         </div>
         <p id="status" class="status muted small">草稿会自动保存在这台设备的浏览器里。</p>
       </div>
@@ -155,14 +176,14 @@
       <textarea data-s="text" rows="3" placeholder="正文：用大白话讲，发生了什么、谁、为什么重要"></textarea>
       <input data-s="lesson" placeholder="一句启示（可选）：这件事教会你什么" />
       <div class="step-foot">
-        <label class="photo">
-          <span class="thumb"></span>
+        <div class="photo">
+          <span class="thumb"><button type="button" class="thumb-del" data-act="clearimg" title="移除照片">×</button></span>
           <span class="photo-ops">
             <input type="file" accept="image/*" data-s="file" hidden />
             <button type="button" class="btn sm" data-act="pick">传照片</button>
-            <input data-s="imgurl" placeholder="或贴图片网址" class="w-url" />
+            <input data-s="imgurl" placeholder="或贴图片网址 / 直接拖拽粘贴图片到本栏" class="w-url" />
           </span>
-        </label>
+        </div>
         <label class="check"><input type="checkbox" data-s="cta.on" /> 这一站挂购买票根</label>
       </div>
       <div class="step-cta" hidden>
@@ -180,6 +201,7 @@
       <input data-p="born" type="number" placeholder="出生年" class="w-year" />
       <input data-p="died" type="number" placeholder="去世年" class="w-year" />
       <select data-p="parent" class="w-chap"></select>
+      <select data-p="branch" class="w-chap" title="所属章节（决定家谱颜色）"></select>
       <input data-p="note" placeholder="一句话（第二代掌柜，守住炭焙）" class="grow" />
       <button type="button" class="link danger" data-act="del">删除</button>
     </div>

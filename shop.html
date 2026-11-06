@@ -120,7 +120,7 @@
       if (q.get("draft")) {
         try {
           const d = JSON.parse(localStorage.getItem("cc_draft") || "null");
-          if (d && d.STORIES) { ["SITE", "ERAS", "EVENTS", "STORIES", "IMAGES", "FAMILY"].forEach((k) => { if (d[k]) window[k] = d[k]; }); window.DRAFT = true; }
+          if (d && d.STORIES) { ["SITE", "ERAS", "EVENTS", "STORIES", "IMAGES", "FAMILY", "CAPTIONS"].forEach((k) => { if (d[k]) window[k] = d[k]; }); window.DRAFT = true; }
         } catch (e) {}
       }
       if (!window.STORIES) {

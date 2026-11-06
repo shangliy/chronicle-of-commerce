@@ -1,7 +1,9 @@
 /* 家谱：随时光机年份生长的家族树（需要 window.FAMILY；由 app.js 的 window.onYear 驱动） */
 (() => {
   const FAMILY = window.FAMILY, A = window.APP, root = document.getElementById("tree");
-  if (!FAMILY || !A || !root) return;
+  if (!A || !root) return;
+  if (!FAMILY || !FAMILY.length) { root.hidden = true; return; }
+  root.hidden = false;
   const { esc } = A;
   const IMAGES = window.IMAGES || {};
   const storyColor = Object.fromEntries((window.STORIES || []).map((s) => [s.id, s.color]));
@@ -27,8 +29,10 @@
   const GEN = "一二三四五六七八九十";
 
   const edges = people.filter((p) => p.parent && byId[p.parent]).map((p) => {
-    const q = byId[p.parent], mid = Y(q) + 74;
-    return `<path data-c="${p.id}" pathLength="1" style="--c:${storyColor[p.branch] || "var(--ink)"}" d="M${X(q)} ${Y(q) + 61} V${mid} H${X(p)} V${Y(p) - 24}"/>`;
+    const q = byId[p.parent], x1 = X(q), y1 = Y(q) + 61, x2 = X(p), y2 = Y(p) - 24, mid = Y(q) + 74;
+    const dx = x2 - x1, r = Math.min(8, Math.abs(dx) / 2), s = Math.sign(dx);
+    const d = r < 1 ? `M${x1} ${y1} V${y2}` : `M${x1} ${y1} V${mid - r} Q${x1} ${mid} ${x1 + s * r} ${mid} H${x2 - s * r} Q${x2} ${mid} ${x2} ${mid + r} V${y2}`;
+    return `<path data-c="${p.id}" pathLength="1" style="--c:${storyColor[p.branch] || "var(--ink)"}" d="${d}"/>`;
   }).join("");
 
   root.innerHTML = `
@@ -93,7 +97,7 @@
       <h2>${esc(p.name)}</h2>
       ${p.img && IMAGES[p.img] ? `${A.pic(p.img, { contain: true })}<p class="small muted" style="margin:0">${A.credit(p.img)}</p>` : ""}
       <p class="dropcap">${esc(p.note || "")}</p>
-      ${p.parent ? `<p class="small">父亲：${esc(byId[p.parent].name)}${kids ? ` · 子女（本报收录）：${esc(kids)}` : ""}</p>` : kids ? `<p class="small">子女：${esc(kids)}</p>` : ""}
+      ${p.parent ? `<p class="small">上一辈：${esc(byId[p.parent].name)}${kids ? ` · 下一辈（本报收录）：${esc(kids)}` : ""}</p>` : kids ? `<p class="small">下一辈：${esc(kids)}</p>` : ""}
       <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">
         <button class="link" data-jump="${p.born}">时光机跳到 ${p.born} 年 ›</button>
         ${storyTitle[p.branch] ? `<button class="link" data-story="${p.branch}">翻阅「${esc(storyTitle[p.branch])}」›</button>` : ""}

@@ -23,15 +23,19 @@
   function ticket(c, kicker = "入手同款") {
     if (!c || !(c.label || c.link || c.wechat)) return "";
     const wx = c.wechat ? `<span class="tk-wx">微信 <b>${esc(c.wechat)}</b> <button class="link" type="button" data-copy="${esc(c.wechat)}">复制</button></span>` : "";
-    const tag = c.link ? "a" : "span", href = c.link ? ` href="${esc(c.link)}" target="_blank" rel="noopener"` : "";
-    return `<div class="ticket"><${tag} class="tk-l"${href}><span class="tk-k">${esc(c.kicker || kicker)}</span><b>${esc(c.label || "")}</b>${c.note ? `<i>${esc(c.note)}</i>` : ""}${wx}</${tag}>
-      <${tag} class="tk-r"${href}>${c.price ? `<span class="tk-price">${esc(c.price)}</span>` : ""}<span class="tk-go">${esc(c.go || (c.link ? "立即入手 ›" : "到店品鉴"))}</span></${tag}></div>`;
+    const lTag = c.link ? "a" : "span", href = c.link ? ` href="${esc(c.link)}" target="_blank" rel="noopener"` : "";
+    const rCopy = !c.link && c.wechat ? ` data-copy="${esc(c.wechat)}"` : "";
+    const rTag = c.link ? "a" : "span";
+    const goTxt = c.go || (c.link ? "立即入手 ›" : c.wechat ? "复制微信 ›" : "到店品鉴");
+    return `<div class="ticket"><${lTag} class="tk-l"${href}><span class="tk-k">${esc(c.kicker || kicker)}</span><b>${esc(c.label || "")}</b>${c.note ? `<i>${esc(c.note)}</i>` : ""}${wx}</${lTag}>
+      <${rTag} class="tk-r"${href}${rCopy}>${c.price ? `<span class="tk-price">${esc(c.price)}</span>` : ""}<span class="tk-go">${esc(goTxt)}</span></${rTag}></div>`;
   }
   document.addEventListener("click", (e) => {
     const b = e.target.closest("[data-copy]");
     if (!b) return;
     e.preventDefault(); e.stopPropagation();
-    navigator.clipboard?.writeText(b.dataset.copy).then(() => { const t = b.textContent; b.textContent = "已复制"; setTimeout(() => (b.textContent = t), 1500); });
+    const target = b.querySelector(".tk-go") || b;
+    navigator.clipboard?.writeText(b.dataset.copy).then(() => { const t = target.textContent; target.textContent = "已复制"; setTimeout(() => (target.textContent = t), 1500); });
   }, true);
   if (SITE.cta && $("shopcard")) $("shopcard").innerHTML = `<h3>本店 <small>读完故事，带一份走</small></h3>${ticket(SITE.cta, SITE.cta.kicker || "本报推荐")}`;
 
@@ -50,11 +54,15 @@
     if (!m) return `<div class="halftone noimg ${cls}">${esc(fallback)}</div>`;
     return `<div class="halftone ${contain ? "contain" : ""} ${cls}"><img src="${esc(m.src)}" alt="${esc(CAPTIONS[name] || "")}" loading="lazy" referrerpolicy="no-referrer"></div>`;
   }
-  function credit(name) {
+  function credit(name, fallback = "") {
     const m = name && IMAGES[name];
     if (!m) return "";
     const who = m.artist && m.artist.length < 60 ? m.artist : "Wikimedia Commons";
-    return `${esc(CAPTIONS[name] || "")}<span class="credit">图：${esc(who)} · ${esc(m.license || "")} · <a href="${esc(m.page)}" target="_blank" rel="noopener">来源</a></span>`;
+    const parts = [`图：${esc(who)}`];
+    if (m.license) parts.push(esc(m.license));
+    if (m.page && m.page !== "#") parts.push(`<a href="${esc(m.page)}" target="_blank" rel="noopener">来源</a>`);
+    const cap = CAPTIONS[name] || fallback;
+    return `${esc(cap)}<span class="credit">${parts.join(" · ")}</span>`;
   }
 
   /* ---------- 日期（中文数字） ---------- */
@@ -82,8 +90,10 @@
 
   // 时间之河：所有带图条目按年份排开，复制一份实现无缝循环；未来的照片蒙尘待显影
   const flow = ALL.filter((x) => IMAGES[x.img]);
-  const frames = flow.map((x, i) => `<div class="frame" data-key="${x.key}" data-y="${x.year}" style="--r:${((i * 37) % 7) - 3}deg">${pic(x.img)}<div class="y">${x.year}</div><div class="t">${esc(x.title)}</div></div>`).join("");
-  $("river").innerHTML = frames + frames;
+  const riverItems = flow.length ? flow : ALL;
+  const frames = riverItems.map((x, i) => `<div class="frame" data-key="${x.key}" data-y="${x.year}" style="--r:${((i * 37) % 7) - 3}deg">${pic(x.img, { fallback: x.year })}<div class="y">${x.year}</div><div class="t">${esc(x.title)}</div></div>`).join("");
+  const halfRiver = frames.repeat(Math.max(1, Math.ceil(10 / Math.max(1, riverItems.length))));
+  $("river").innerHTML = halfRiver + halfRiver;
   const riverFrames = [...$("river").children];
   // 时间之河不在屏幕里时暂停漂移动画，省下合成开销
   new IntersectionObserver(([en]) => $("river").parentElement.classList.toggle("idle", !en.isIntersecting)).observe($("river").parentElement);
@@ -192,8 +202,7 @@
   }
 
   $("front").addEventListener("click", (e) => {
-    if (e.target.closest("#machine")) return;
-    if (e.target.closest("#results")) return;
+    if (e.target.closest("#machine, #results, .ticket")) return;
     const fk = e.target.closest(".lead[data-key], .story[data-key]");
     if (fk) return openKey(fk.dataset.key);
     const st = e.target.closest("[data-id]");
@@ -345,6 +354,7 @@
   $("mAxis").insertAdjacentHTML("afterbegin", `<div class="m-mini"><b id="mMini"></b><button id="mMiniPlay" title="播放 / 暂停（空格）">▶</button></div>`);
   M.mini = $("mMini"); M.miniPlay = $("mMiniPlay");
   M.miniPlay.onclick = (e) => { e.stopPropagation(); M.playing ? pauseMachine() : playMachine(); };
+  $("mPlay").textContent = "▶ " + SITE.play;
   setYear(MIN_YEAR);
 
   // 下滑离开时光机后，时间轴缩成细条，停靠在屏幕最下方
@@ -421,7 +431,9 @@
     let inner;
     if (pg === 0) {
       const imgs = s.steps.map((x) => x.img).filter((x) => IMAGES[x]).slice(0, 7);
-      inner = `<div class="mosaic">${imgs.map((x) => pic(x)).join("")}</div>`;
+      inner = imgs.length
+        ? `<div class="mosaic mosaic-${imgs.length}">${imgs.map((x) => pic(x)).join("")}</div>`
+        : `<div class="frontispiece"><div class="fp-in"><span class="fp-k">${esc(SITE.masthead || SITE.title || "商海時報")}</span><div class="fp-yrs">${s.steps[0].year} — ${s.steps.at(-1).year}</div><h3>${esc(s.title)}</h3><p>${esc(s.subtitle)}</p><div class="fp-stamps">${s.steps.slice(0, 6).map((x) => `<span><b>${x.year}</b> ${esc(x.place)}</span>`).join("")}</div></div></div>`;
     } else if (pg === n - 1) {
       const ls = s.steps.filter((x) => x.lesson);
       inner = `<div class="article"><span class="kicker">本期启示</span><h2>从这门生意里学到的</h2>
@@ -431,7 +443,7 @@
       inner = `<figure class="plate" style="margin:0">
         <div class="yearstamp">${st.year}</div>
         ${pic(st.img, { contain: isContain(st.img), fallback: st.year })}
-        <figcaption>${credit(st.img) || `<span class="credit">${esc(st.place)} · ${st.year}</span>`}</figcaption>
+        <figcaption>${credit(st.img, `${st.place} · ${st.year} — ${st.title}`) || `<span class="credit">${esc(st.place)} · ${st.year}</span>`}</figcaption>
       </figure>`;
     }
     return runhead(s, pg, "L") + inner + folio(pg, "L");
@@ -592,7 +604,7 @@
     const nx = e.target.closest("[data-next]"); if (nx) return openStory(nx.dataset.next, 0);
     if (e.target.closest("[data-home]")) return goHome();
     // 点击右半页翻下一页，左半页翻上一页
-    if (e.target.closest("a, button")) return;
+    if (e.target.closest("a, button, .ticket")) return;
     const r = $("book").getBoundingClientRect();
     if (!narrow()) { stopPlay(); go(state.pg + (e.clientX > r.left + r.width / 2 ? 1 : -1)); }
   });
@@ -657,9 +669,11 @@
   const QUIZ_N = 5, QMID = Math.round((SITE.quiz[0] + SITE.quiz[1]) / 2);
   function startQuiz() {
     pauseMachine();
-    const pool = ALL.filter((x) => IMAGES[x.img]);
+    let pool = ALL.filter((x) => IMAGES[x.img]);
+    if (pool.length < 3) pool = ALL.slice();
     for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
     state.quiz = { qs: pool.slice(0, QUIZ_N), i: 0, score: 0 };
+    if (!state.quiz.qs.length) return;
     quizQuestion();
   }
   function quizQuestion() {
@@ -668,7 +682,7 @@
       <div class="extra">看图猜年份</div>
       <div class="muted small">第 ${q.i + 1} / ${q.qs.length} 题 · 得分 ${q.score}</div>
       <h2>${esc(it.title)}</h2>
-      ${pic(it.img, { contain: isContain(it.img) })}
+      ${pic(it.img, { contain: isContain(it.img), fallback: "？" })}
       <p class="muted small" style="margin:0">地点：${esc(it.place)} · 出自：${esc(it.from)}</p>
       <div class="guess" id="gz">${QMID}</div>
       <input type="range" id="gr" min="${SITE.quiz[0]}" max="${SITE.quiz[1]}" value="${QMID}" />

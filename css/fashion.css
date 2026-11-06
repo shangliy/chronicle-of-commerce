@@ -162,8 +162,8 @@ body.reading .topbar { opacity: 1; pointer-events: auto; }
 .echo-to:hover { background: var(--accent); color: var(--bg); }
 
 /* 人物登场 */
-.cast { display: grid; grid-template-columns: 92px 1fr; gap: 18px; align-items: center; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--line); padding: 14px 0; }
-.cast-face { width: 92px; aspect-ratio: 4 / 5; overflow: hidden; background: var(--paper); display: grid; place-items: center; }
+.cast { display: grid; grid-template-columns: 92px 1fr; gap: 20px; align-items: center; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--line); padding: 16px 0; }
+.cast-face { width: 92px; aspect-ratio: 4 / 5; overflow: hidden; background: var(--paper); display: grid; place-items: center; box-shadow: 0 0 0 3px var(--bg), 0 0 0 4px var(--line), 0 8px 20px rgba(0,0,0,.14); }
 .cast-face img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 20%; filter: grayscale(1) contrast(1.1); }
 .cast-ini { font-family: var(--display); font-size: 44px; color: var(--accent); }
 .cast-tx span { font-family: var(--display); font-style: italic; font-size: 12px; letter-spacing: .3em; color: var(--accent); }
@@ -179,9 +179,10 @@ body.reading .topbar { opacity: 1; pointer-events: auto; }
 .looks-h span { font-family: var(--display); font-style: italic; letter-spacing: .2em; color: var(--accent); font-size: 14px; }
 .looks-h i { flex: 1; height: 1px; background: var(--line); }
 .looks-h b { font-weight: 400; font-family: var(--display); letter-spacing: .1em; }
-.looks-row { display: flex; gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; scrollbar-width: thin; }
-.look { flex: 0 0 auto; width: 168px; text-align: left; scroll-snap-align: start; display: grid; gap: 8px; }
-.look-img { display: block; height: 220px; overflow: hidden; background: var(--paper); }
+.looks-row { display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 4px 2px 12px; scrollbar-width: thin; }
+.look { flex: 0 0 auto; width: 168px; text-align: left; scroll-snap-align: start; display: grid; gap: 8px; transition: transform .35s cubic-bezier(.2, .7, .2, 1); }
+.look:hover { transform: translateY(-3px); }
+.look-img { display: block; height: 220px; overflow: hidden; background: var(--paper); border: 1px solid var(--line); box-shadow: 0 8px 20px -10px rgba(0,0,0,.22); }
 .look-img img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; transition: transform .9s cubic-bezier(.2, .7, .2, 1); }
 .look:hover .look-img img { transform: scale(1.06); }
 .look-tx { display: grid; gap: 1px; }
@@ -222,8 +223,8 @@ blockquote p { font-size: clamp(20px, 2vw, 28px); line-height: 1.6; font-weight:
 blockquote p::before { content: "“"; font-family: var(--display); color: var(--accent); margin-right: 2px; }
 blockquote p::after { content: "”"; font-family: var(--display); color: var(--accent); }
 cite { font-style: normal; font-size: 12px; color: var(--muted); }
-.ch-unlock { display: inline-grid; justify-self: start; grid-template-columns: auto auto; grid-template-rows: auto auto; column-gap: 12px; align-items: center; text-align: left; border: 1px solid var(--accent); padding: 10px 16px 10px 10px; margin: 10px 0; transition: background-color .3s; }
-.ch-unlock:hover { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+.ch-unlock { display: inline-grid; justify-self: start; grid-template-columns: auto auto; grid-template-rows: auto auto; column-gap: 14px; align-items: center; text-align: left; border: 1px solid var(--accent); outline: 1px solid color-mix(in srgb, var(--accent) 30%, transparent); outline-offset: -4px; padding: 12px 18px 12px 12px; margin: 10px 0; transition: background-color .3s, transform .25s; }
+.ch-unlock:hover { background: color-mix(in srgb, var(--accent) 12%, transparent); transform: translateY(-2px); }
 .ch-unlock .ico { grid-row: span 2; width: 38px; height: 38px; color: var(--accent); }
 .ch-unlock span { font-size: 11px; letter-spacing: .25em; color: var(--accent); }
 .ch-unlock b { font-size: 16px; letter-spacing: .1em; }
@@ -231,7 +232,7 @@ cite { font-style: normal; font-size: 12px; color: var(--muted); }
 .ch-lesson span { display: inline-block; background: var(--ink); color: var(--bg); font-size: 11px; letter-spacing: .2em; padding: 1px 8px; margin-right: 10px; transition: background-color .9s, color .9s; }
 
 /* 猜一猜 */
-.guess { border: 1px solid var(--ink); padding: 22px 24px 18px; background: var(--paper); transition: opacity .9s, transform .9s cubic-bezier(.2, .7, .2, 1), background-color .9s; }
+.guess { border: 1px solid var(--line); border-top: 3px double var(--accent); padding: 22px 24px 18px; background: var(--paper); box-shadow: 0 12px 28px -16px rgba(0,0,0,.16); transition: opacity .9s, transform .9s cubic-bezier(.2, .7, .2, 1), background-color .9s; }
 .g-kick { font-size: 11px; letter-spacing: .4em; color: var(--accent); }
 .guess > b { display: block; font-size: 20px; margin: 6px 0 14px; line-height: 1.5; }
 .g-opts { display: flex; flex-wrap: wrap; gap: 8px; }

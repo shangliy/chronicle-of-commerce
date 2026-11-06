@@ -85,3 +85,32 @@ window.FAMILY = [
   { id: "yichuan", parent: "maolan", name: "陈一川", born: 1995, branch: "men", note: "外孙。负责老宅门店与茶山民宿。" },
   { id: "tuantuan", parent: "xiaoman", name: "林团团", born: 2021, branch: "xin", note: "第四代。还不会喝茶，已经会把茶罐当鼓敲。" }
 ];
+
+window.CAPTIONS = {
+  "1992年邓小平植树 3471.jpg": "1992 年春，邓小平在深圳仙湖植物园植树",
+  "Wuyi Mountains Sea of clouds 4.jpg": "武夷山云海与丹霞峰峦，1999 年列入世界文化与自然双重遗产",
+  "TaobaoCity Alibaba Xixi Park.jpg": "杭州阿里巴巴西溪园区（淘宝城）",
+  "2008 Summer Olympics opening ceremony - Fireworks.jpg": "2008 年北京奥运会开幕式夜空",
+  "China Jinan Lady with phone 5196971.jpg": "智能手机与微信普及后的日常街头",
+  "CRH2 Model Chinese high speed rail train passing Lianjiang Railway Station, Fujian.jpg": "驶过福建境内的和谐号动车组",
+  "G20 2016 leaders.jpg": "2016 年杭州 G20 峰会，同年电商直播兴起",
+  "Wuhan Metro requests passengers to wear masks throughout their journeys during COVID-19 pandemic.jpg": "2020 年疫情期间佩戴口罩出行的乘客",
+  "武夷山茶园.JPG": "武夷山岩谷间的老茶园",
+  "深山茶园 - Tea Garden in Remote Mountains - 2015.08 - panoramio.jpg": "深山茶园与挑茶下山的山径",
+  "Oolong tea leaves - character for tea in Chinese.jpg": "乌龙茶青叶与干茶，摇青发酵决定香气底色",
+  "Tea Roasting (37995430594).jpg": "传统竹笼炭焙：文火慢炖，一焙数日",
+  "Da Hong Pao Oolong tea leaf close.jpg": "焙火后的武夷岩茶条索，色泽乌润",
+  "Wuyi oolong tea.jpg": "冲泡出的武夷岩茶，汤色橙黄透亮",
+  "Jin Jun Mei tea.jpg": "武夷山茶区的干茶样品与审评茶荷",
+  "白花岩上看武夷山市 - Wuyishan City Viewed from Baihua Rock - 2015.11 - panoramio.jpg": "从白花岩远眺武夷山市街区",
+  "Teochew Kanghu tea.jpg": "潮汕工夫茶席：小壶三杯，讲究泡法与火功",
+  "Xiamen - View from GulangYu 20091120.jpg": "从鼓浪屿远眺厦门海岸线",
+  "大红袍 - Dahongpao(Big Red Robe Tea) on the Cliff - 2010.09 - panoramio.jpg": "九龙窠岩壁上的大红袍母树",
+  "大红袍祖庭 - Place of Worship for Dahongpao(Big Red Robe Tea) - 2010.09 - panoramio.jpg": "武夷山大红袍祖庭石刻",
+  "Yixing ware teapot and Lapsang tea.jpg": "紫砂壶与岩茶品饮茶席",
+  "Wuyi Mountains Sea of clouds.jpg": "清晨云雾散开时的武夷茶山",
+  "Alibaba group Headquarters.jpg": "杭州电商园区，许多返乡青年的第一站",
+  "Kung fu cha - Shanghai - 2013-08-15 - 1411.jpg": "一方茶席：对着镜头一泡一泡讲茶",
+  "Oolong Tea wrapped tea balls.jpg": "分装成泡的乌龙茶，每盒附山场与焙火记录",
+  "Tea garden building of Mt Wuyi.jpg": "武夷山茶园里的老茶寮"
+};
