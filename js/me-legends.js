@@ -1511,8 +1511,8 @@
 "t": 7050.03833,
 "at": "moria",
 "z": 500,
-"h": "你不能过去",
-"hEn": "You Cannot Pass",
+"h": "卡扎督姆的炎魔 · 你不能过去",
+"hEn": "The Balrog of Moria · You Cannot Pass",
 "p": "九人同盟在冬天出发，翻越卡拉兹拉斯雪山失败，只好钻进黑暗的墨瑞亚。他们在马扎布尔厅找到了巴林的墓，也听见了深处传来的战鼓。奥克蜂拥而至，与之同来的还有一团裹着火焰与阴影的庞然大物——炎魔。在狭窄的卡扎督姆之桥中央，甘道夫转身挡住了它，高喊：你不能过去！石桥崩塌，炎魔坠落，火鞭却缠住了巫师的膝盖。他喊了一声“快跑，傻瓜们”，便坠入深渊。",
 "pEn": "The Nine set out in winter, failed to cross the snows of Caradhras, and went instead into the dark of Moria. In the Chamber of Mazarbul they found Balin's tomb and heard war-drums in the deep. Orcs swarmed upon them, and with them came a great shape of shadow and flame: a Balrog. In the middle of the narrow Bridge of Khazad-dûm Gandalf turned to face it and cried, “You cannot pass!” The bridge broke and the Balrog fell — but its whip caught the wizard's knees. “Fly, you fools!” he cried, and was gone into the abyss."
 },
@@ -1569,6 +1569,15 @@
 "hEn": "The Window on the West",
 "p": "弗罗多和山姆在咕噜的带领下穿过死亡沼泽，来到伊希利恩。那里还残留着春天的花香，却已是敌人的地界。他们被一队刚铎游击兵擒获，带进了瀑布后的秘密洞穴汉奈斯安努恩。首领是波洛米尔的弟弟法拉米尔。山姆一时说漏了嘴，暴露了魔戒的秘密。法拉米尔却平静地说，即使这东西掉在路边，他也不会去捡。他放走了他们，并警告要小心西力斯昂哥。",
 "pEn": "Led by Gollum, Frodo and Sam crossed the Dead Marshes and came into Ithilien, still sweet with spring flowers though it was the Enemy's land. They were taken by a band of Gondor's rangers and brought to Henneth Annûn, a secret cave behind a waterfall. Their captain was Faramir, Boromir's brother. Sam let slip the secret of the Ring, but Faramir answered quietly that he would not pick the thing up even if it lay by the roadside. He set them free, and warned them to beware of Cirith Ungol."
+},
+{
+"t": 7050.185845,
+"at": "dunharrow",
+"z": 520,
+"h": "亡者之路与亡灵大军",
+"hEn": "The Paths of the Dead & Army of the Dead",
+"p": "与此同时，阿拉贡在真知晶石中看见南方海盗的大船正驶向米那斯提力斯，知道大路已经来不及。他与莱戈拉斯、金雳及北方游侠毅然踏入黑蛮祠后山无人敢进的“亡者之路”。在埃瑞赫之石前，伊熙尔杜的继承人高举安督利尔，召唤三千年前背弃誓言的亡灵大军。苍白泛着幽光的鬼魂大军跟在他身后席卷南方，在佩拉基尔击溃乌姆巴尔海盗、夺下黑帆舰队，阿拉贡随即宣告誓言已成，放亡灵安息。",
+"pEn": "Meanwhile Aragorn had looked into the Orthanc-stone and seen the great fleet of the Corsairs sailing against Minas Tirith. Knowing the open roads were too slow, he led Legolas, Gimli and the Grey Company into the dreaded Paths of the Dead beneath Dunharrow. At the Stone of Erech, Isildur's heir raised Andúril and summoned the Oathbreakers who had betrayed their word three thousand years before. The spectral Army of the Dead swept south behind him, routed the Corsairs at Pelargir and seized their black ships — whereupon Aragorn declared their oath fulfilled and granted them peace."
 },
 {
 "t": 7050.199535,

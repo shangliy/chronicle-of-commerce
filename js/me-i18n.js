@@ -42,6 +42,8 @@
     "精灵": "Elves", "人类": "Men", "矮人": "Dwarves", "霍比特人": "Hobbits", "霍比特": "Hobbits", "黑暗势力": "The Shadow", "地标": "Landmark",
     "暗影": "Shadow", "魔戒": "The Ring", "战争": "War",
     "这里在编年里还没有专门的记载。": "The chronicle has no entry for this place yet.",
+    "编年与关键时刻": "Chronicle & Key Moments", "传说章节": "Legend Chapters", "相关人物": "People", "途经足迹 · 点一下跟随": "Journeys · click to follow",
+    "搜索地点、人物、事件…": "Search places, people, events…", "地点": "Places", "未找到匹配内容": "No matches found",
     "日月初升 · 第一纪元": "The Sun and Moon rise · First Age",
     "贝烈瑞安德沉入大海 · 第二纪元": "Beleriand sinks beneath the sea · Second Age",
     "索隆败亡 · 第三纪元": "Sauron is overthrown · Third Age",
@@ -51,7 +53,17 @@
     "居所": "Homes", "参战": "Battles", "足迹 · 点一下跟着走": "Journeys · click to follow",
     "称号": "Titles", "生平": "Lifespan", "亲族": "Kin", "传记": "Biography", "结局": "Fate",
     "展开完整传记 ▾": "Read the full biography ▾", "收起 ▴": "Show less ▴",
-    "迁徙": "Migration", "旅程": "Journey", "从头跟随这段路": "Follow this road from the start",
+    "迁徙": "Migration", "旅程": "Journey", "大军进发": "Army March", "从头跟随这段路": "Follow this road from the start", "从头跟随大军行军": "Follow this army march", "进入战场推演": "Enter Battle Map",
+    "阿拉贡与西方大军": "Aragorn & Host of the West", "阿拉贡与亡灵大军": "Aragorn & Army of the Dead", "阿拉贡与南方援军": "Aragorn & Southern Fleet", "阿拉贡、莱戈拉斯、金雳": "Aragorn, Legolas, Gimli",
+    "亡灵大军 · 背誓者": "Army of the Dead · Oathbreakers", "炎魔 · 卡扎督姆死战": "Durin's Bane · Battle of the Peak", "魔苟斯炎魔与恶龙大军": "Morgoth's Balrogs & Dragons",
+    "洛汗六千铁骑 · 希奥顿": "Ride of the Rohirrim · Théoden", "梅里与皮平": "Merry & Pippin",
+    "树人进军艾森加德": "March of the Ents on Isengard",
+    "芬巩与特刚西路联军": "Western Host of Fingon & Turgon", "梅斯罗斯与矮人东路军": "Eastern Host of Maedhros & Dwarves", "格劳龙与安格班大军": "Glaurung & Host of Angband",
+    "维拉大军 · 愤怒之战": "Host of the Valar · War of Wrath", "刚铎北上联军": "Gondor Host Marches North", "索隆魔多主力": "Sauron's Host of Mordor",
+    "博格的北方奥克大军": "Bolg's Northern Orc Army", "瑟兰迪尔与巴德联军": "Host of Thranduil & Bard", "戴因的铁丘陵矮人军": "Dáin's Iron Hills Dwarves",
+    "萨鲁曼的乌鲁克大军": "Saruman's Uruk-hai Army", "希奥顿与洛汗军": "Théoden & the Rohirrim",
+    "巫王与魔多攻城大军": "Witch-king & Siege Host of Mordor", "哈拉德与南方猛犸军": "Haradrim & Mûmakil Host", "多阿姆洛斯与南方诸侯援军": "Prince Imrahil & Southern Fiefs",
+    "黑门魔多与东方联军": "Host of Mordor & Easterlings", "东方人围攻河谷与孤山": "Easterlings Besiege Dale & Erebor", "多古尔都攻罗瑞恩与反击": "Assault on Lórien & Fall of Dol Guldur",
     "身临战场": "Enter the battle", "读传说": "Read the legend", "身临": "Enter: ",
     // 侧栏
     "每个传说是一段引导式阅读：点“下一段”，地图会飞到故事发生的地方，时间也会拨到那一年。": "Each legend is a guided reading: press “Next” and the map flies to where the story happens, and the clock turns to that year.",
@@ -64,6 +76,20 @@
     "播放时遇到关键时刻自动停下": "Pause playback at key moments",
     "那些被反复讲述的瞬间。播放时间轴走到这里会自动停下，也可以直接点开。": "The instants that are told and retold. Playback pauses when it reaches one, or open any of them here.",
     "你": "You", "上一幕": "Previous act", "序": "Prologue", "回到地图 ▸": "Back to the map ▸", "下一幕": "Next act",
+    "★ 你（点击友军随行 · 点击敌军突击）": "★ You (Click ally to join · Click enemy to charge)",
+    "亲自参战 · 选择你的行动": "Join the Fray · Choose Your Action",
+    "随行": "With", "双方战场士气态势": "Battlefield Morale Balance", "战意": "Valor",
+    "齐射压制": "Volley", "向最近的敌军发动箭雨齐射": "Loose an arrow volley at the nearest enemy",
+    "吹响战号": "Sound Horn", "吹响号角鼓舞全军士气": "Sound the war-horn to rally allied forces",
+    "率队突击": "Charge", "率领所在部队向敌阵发起白刃突击": "Lead your unit in a close-combat charge",
+    "箭雨命中!": "Volley Hit!", "破阵突击!": "Fierce Charge!", "全军士气大振! +10": "Morale Rallied! +10",
+    "你指挥": "You command ", "向": " to loose arrows at ", "倾泻箭雨！": "!",
+    "你吹响号角，": "You sound the horn — ", "与友军士气高涨！": " and allies rally!",
+    "你率领": "You lead ", "发起白刃突击！": " in a fierce charge!",
+    "你已赶赴": "You joined ", "并肩作战！": " on the frontline!",
+    "你的此役战记": "Your Battle Record", "亲历抉择": "Choices", "战术指令": "Orders", "次": "", "累计战意": "Total Valor", "获封": "Honor: ",
+    "圣盔谷坚盾": "Shield of Helm's Deep", "帕兰诺破晓枪骑": "Dawn-rider of Pelennor", "黑门死士": "Vanguard of the Morannon",
+    "孤山同盟勇士": "Champion of Erebor", "达戈拉德神射手": "Bowman of Dagorlad", "日必再升之证人": "Witness of Day Shall Come Again",
     "攻击": "Attack", "防御": "Defense", "力量": "Power", "知识": "Knowledge", "等级": "Level", "士气": "Morale", "运气": "Luck",
     "巫师": "Wizard", "骑士": "Knight", "游侠": "Ranger", "战士": "Warrior", "冒险者": "Adventurer", "术士": "Warlock", "贤者": "Sage", "吟游诗人": "Bard", "领主": "Lord",
     "月": "Month", "周": "Week", "日": "Day", "小地图": "Minimap", "英雄属性": "Hero stats",
@@ -103,14 +129,15 @@
     if (!o || typeof o !== "object") return;
     for (const k of Object.keys(o)) {
       const v = o[k];
-      if (typeof v === "string") { if (CJK.test(v)) { if (D[v]) o[k] = D[v]; else miss.add(v); } }
+      if (typeof v === "string") { if (CJK.test(v)) { if (D[v] || UI[v]) o[k] = D[v] || UI[v]; else miss.add(v); } }
       else if (v && typeof v === "object" && v !== skip) walk(v, skip);
     }
   };
   (window.ME?.EVENTS || []).forEach((e) => { e.h0 = e.h; });
-  // 自带英文字段的数据（关键时刻、扩写后的传说）
+  // 自带英文字段的数据（关键时刻、扩写后的传说、地点介绍）
   (window.ME_MOMENTS || []).forEach((m) => ["h", "line", "by", "scene"].forEach((k) => { if (m[k + "En"] != null) m[k] = m[k + "En"]; }));
   (window.ME?.LEGENDS || []).forEach((l) => { if (l.subEn) l.sub = l.subEn; l.beats.forEach((b) => { if (b.hEn) b.h = b.hEn; if (b.pEn) b.p = b.pEn; }); });
+  (window.ME?.PLACES || []).forEach((p) => { if (p.dEn) p.d = p.dEn; });
   ["WORLD", "ME", "ME_BATTLES", "ME_CHARS", "ME_DECO", "ME_BIO"].forEach((k) => walk(window[k]));
   if (window.ME_LIFE) { walk(window.ME_LIFE.LANDMARKS); walk(window.ME_LIFE.LIFE); walk(window.ME_LIFE.WONDERS); }
   // 中文名翻译后与英文副名重复时，去掉副名

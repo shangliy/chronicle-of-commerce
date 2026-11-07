@@ -95,7 +95,7 @@
   const flag = (x, y, c, h = 6) => `<path d="M${f(x)},${f(y)}V${f(y - h)}" stroke="#2a1a10" stroke-width=".5"/><path class="h3flag" d="M${f(x)},${f(y - h)}q2.6,-1 5,0q-.9,1.4 0,2.8q-2.4,-1 -5,0z" fill="${c}" stroke="#2a1a10" stroke-width=".3"/>`;
   const water = (x, y, rx, ry = rx * 0.3) => `<ellipse cx="${f(x)}" cy="${f(y)}" rx="${f(rx)}" ry="${f(ry)}" fill="url(#m-s-water)" ${EDGE}/><ellipse cx="${f(x - rx * 0.25)}" cy="${f(y - ry * 0.2)}" rx="${f(rx * 0.4)}" ry="${f(ry * 0.25)}" fill="rgba(255,255,255,.35)"/>`;
   const slab = (rx, ry, m, t = 1.6) => shd(0, 3.6, rx + 2, ry + 1.4) + path(`M${-rx},3V${3 + t}A${rx},${ry} 0 0 0 ${rx},${3 + t}V3Z`, `url(#m-${m})`) + `<ellipse cx="0" cy="3" rx="${rx}" ry="${ry}" fill="url(#m-s-${m})" ${EDGE}/>`;
-  const smoke = (x, y) => `<g class="h3smoke"><circle cx="${f(x)}" cy="${f(y)}" r="1.5" fill="#cfcac0" opacity=".7"/><circle cx="${f(x + 1.5)}" cy="${f(y - 2.6)}" r="2.1" fill="#cfcac0" opacity=".5"/><circle cx="${f(x + 0.4)}" cy="${f(y - 5.4)}" r="2.7" fill="#cfcac0" opacity=".3"/></g>`;
+  const smoke = (x, y, d = 0) => `<g class="h3smoke"${d ? ` style="animation-delay:${d}s"` : ""}><circle cx="${f(x)}" cy="${f(y)}" r="1.5" fill="#cfcac0" opacity=".7"/><circle cx="${f(x + 1.5)}" cy="${f(y - 2.6)}" r="2.1" fill="#cfcac0" opacity=".5"/><circle cx="${f(x + 0.4)}" cy="${f(y - 5.4)}" r="2.7" fill="#cfcac0" opacity=".3"/></g>`;
   const arch = (x, y, w, h, c = "#1a120c") => path(`M${f(x - w / 2)},${f(y)}V${f(y - h + w / 2)}A${f(w / 2)},${f(w / 2)} 0 0 1 ${f(x + w / 2)},${f(y - h + w / 2)}V${f(y)}Z`, c, "");
   function wallArc(rx, ry, y, h, m, front) { // 环形城墙的前半/后半
     const c = MAT[m];
@@ -197,7 +197,7 @@
     dolguldur() {
       let s = shd(0, 4, 17, 6) + hill(0, 4, 14, 8, "dark");
       s += pine(-12, 4, 11) + pine(-8, 5, 9) + pine(12, 4, 12) + pine(8, 5, 9);
-      s += box(0, -2, 8, 6, 3, "dark") + cyl(0, -6, 2.2, 14, "dark", { win: 2, lit: 1 }) + path("M-2.2,-20L0,-25L2.2,-20Z", "url(#m-dark)") + glow(0, -12, 3) + `<ellipse cx="0" cy="2" rx="16" ry="3" fill="rgba(160,170,150,.35)" class="h3smoke"/>`;
+      s += box(0, -2, 8, 6, 3, "dark") + cyl(0, -6, 2.2, 14, "dark", { win: 2, lit: 1 }) + path("M-2.2,-20L0,-25L2.2,-20Z", "url(#m-dark)") + glow(0, -12, 3) + `<ellipse cx="0" cy="2" rx="16" ry="3" fill="rgba(160,170,150,.35)"/>`;
       return s;
     },
     morannon() { // 黑门与獠牙塔
@@ -209,7 +209,7 @@
     orodruin() { // 火山
       let s = shd(0, 4, 18, 6) + path("M-16,4L-4,-20H4L16,4Z", "url(#m-dark)") + path("M0,-20H4L16,4H2Z", MAT.dark[3]);
       s += `<ellipse cx="0" cy="-20" rx="4" ry="1.2" fill="url(#m-lava)"/>` + path("M1,-19.4Q3,-12 1,-6Q-1,0 2,4", "none", 'stroke="url(#m-lava)" stroke-width="1.2"') + path("M-1.6,-19Q-5,-10 -9,-2", "none", 'stroke="#ff7a1a" stroke-width=".7"');
-      s += glow(0, -21, 7) + path("M-3,6L-1,-9H1.6L-0.2,6Z", "#ff9a3a", "") + smoke(0, -26) + smoke(3, -30);
+      s += glow(0, -21, 7) + path("M-3,6L-1,-9H1.6L-0.2,6Z", "#ff9a3a", "") + smoke(0, -26, 0) + smoke(3, -30, -1.5);
       return s;
     },
     angband() { // 桑戈洛锥姆三峰
@@ -301,6 +301,26 @@
   M.fornost = () => shd(0, 4, 18, 6) + hill(0, 4, 15, 9, "green") + cyl(0, -4, 9, 3, "stone", { cren: 1, win: 4 }) + cyl(-4, -7, 1.8, 8, "stone", { cren: 1 }) + cyl(4, -7, 2.2, 10, "stone", { cren: 1, win: 2 }) + flag(4, -18, "#2a5ab0", 4);
   M.eithel = () => shd(0, 4, 17, 6) + crag(-10, 4, 7, 16, "rock", 0.2) + path("M-4,-6Q-2,-1 -3,4H1Q0,-1 2,-6Z", "url(#m-fall)", "") + cyl(6, 2, 4, 6, "white", { cren: 1, win: 3 }) + cyl(6, -4, 1.6, 10, "white", { win: 1 }) + cone(6, -14, 2, 4, "blue") + water(-1, 5.4, 6, 1.4);
   M.carndum = () => shd(0, 4, 18, 6) + crag(-8, 4, 9, 20, "dark", 0.2) + crag(8, 4, 9, 22, "dark", -0.2) + snowcap(8, 4, 9, 22, -0.2) + box(0, 4, 10, 8, 2, "dark") + arch(0, 4, 3, 4.4, "#ff6a1a") + cyl(0, -4, 2, 10, "dark", { cren: 1, win: 1, lit: 1 }) + glow(0, -8, 2.4);
+  M.erech = () => shd(0, 4, 16, 5.5) + hill(0, 4, 13, 10, "dgreen") + glow(0, -8, 6.5, "g") + `<circle cx="0" cy="-8.2" r="4.4" fill="url(#m-dark)" stroke="#7effd4" stroke-width=".45"/><ellipse cx="-1.4" cy="-9.8" rx="1.6" ry=".9" fill="rgba(220,255,240,.28)" transform="rotate(-25 -1.4 -9.8)"/>` + path("M-8,2L-7.5,-3M8,2L7.5,-3M-5,3.2L-4.8,-1.5M5,3.2L4.8,-1.5", "none", 'stroke="#6a7a72" stroke-width=".8"');
+  M.dunharrow = () => shd(0, 4, 17, 6) + crag(-7, 4, 9, 20, "rock", 0.15) + crag(7, 4, 9, 22, "rock", -0.15) + path("M-10,4L6,0L-6,-4L5,-8L0,-11", "none", 'stroke="#d8ccb0" stroke-width="1.1"') + arch(0, -10, 3.2, 5, "#0d0a08") + glow(0, -12, 3.2, "g") + `<circle cx="-8" cy="2" r="1.4" fill="#8a8274"/><circle cx="7" cy="-1" r="1.4" fill="#8a8274"/>`;
+  M.amonhen = () => shd(0, 4, 17, 6) + hill(0, 4, 14, 12, "dgreen") + tree(-9, 3, 2.4, "dgreen") + tree(9, 3, 2.4, "dgreen") + slab(5.5, 1.8, "stone", 1.2) + cyl(-3.2, -7.5, 0.7, 4.5, "stone") + cyl(3.2, -7.5, 0.7, 4.5, "stone") + box(0, -8, 4.4, 3.2, 1.4, "stone") + path("M-5,-12H5L4,-13.4H-4Z", "url(#m-stone)");
+  M.eregion = () => shd(0, 4, 18, 6) + hill(0, 4, 14, 8, "green") + cyl(0, 1, 7.5, 3.2, "white", { cren: 1, win: 4 }) + dome(0, -2.2, 4.8, "silver") + cyl(-6, 1, 1.5, 10, "white", { win: 2 }) + cone(-6, -9, 1.9, 3.6, "blue") + cyl(6, 1, 1.5, 10, "white", { win: 2 }) + cone(6, -9, 1.9, 3.6, "blue") + glow(0, -7, 3.8, "s");
+  M.twotrees = () => shd(0, 4, 20, 6.5) + hill(0, 4, 16, 9, "green") + glow(-5, -13, 7, "s") + glow(5, -13, 7, "w") + tree(-5, -2, 5.2, "silver", "white") + tree(5, -2, 5.4, "gold", "wood") + dome(0, 1, 3.6, "gold");
+  M.tharbad = () => shd(0, 4, 18, 6) + `<path d="M-16,4.5Q0,1 16,4.5Q0,7.5 -16,4.5Z" fill="url(#m-water)"/>` + box(-9, 2.5, 9, 3.2, 1.8, "stone") + box(9, 2.5, 9, 3.2, 1.8, "stone") + arch(-8, 2.5, 2.6, 2.2, "#24546e") + arch(8, 2.5, 2.6, 2.2, "#24546e") + cyl(-11, -0.5, 2, 5, "stone", { cren: 1 });
+  M.bywater = () => shd(0, 4, 16, 5.5) + hill(-3, 4, 11, 8, "green") + water(5, 4.8, 8, 2.2) + gable(-3, 2.5, 6.5, 3.8, 3, "wood", "thatch", 2.8) + `<circle cx="-3" cy="1" r="1.4" fill="#3a8a3a"/>` + smoke(-1, -4.5);
+  M.buckland = () => shd(0, 4, 16, 5.5) + water(-9, 4.5, 5, 2.5) + hill(2, 4, 12, 10, "green") + `<circle cx="0" cy="0.5" r="2" fill="#c8a040" stroke="#5a3a20" stroke-width=".4"/><circle cx="5" cy="1.5" r="1.5" fill="#3a8a3a" stroke="#5a3a20" stroke-width=".4"/><circle cx="2" cy="-3.5" r="1.4" fill="#ffe8a0"/>` + tree(9, 3, 2.4, "dgreen");
+  M.azanulbizar = () => shd(0, 4, 17, 6) + crag(-8, 4, 8, 16, "rock", 0.2) + water(2, 4.5, 10, 2.8) + `<circle cx="2" cy="4.5" r="5" fill="none" stroke="#fff8c8" stroke-width=".5" stroke-dasharray=".8 1.6"/>` + cyl(-5, 3, 0.9, 7, "stone");
+  M.celebrantfield = () => shd(0, 4, 16, 5.5) + hill(0, 4, 14, 6, "green") + water(-6, 5, 8, 2) + flag(0, 1, "#2e7a2a", 9) + flag(4, 2, "#c89a2e", 7);
+  M.gollumcave = () => shd(0, 4, 17, 6) + crag(0, 4, 14, 18, "dark", 0.05) + arch(0, 4, 8, 7, "#0a0c10") + water(0, 4.5, 6, 1.5) + `<circle cx="1.5" cy="4" r="1.1" fill="none" stroke="#ffd84a" stroke-width=".6"/>` + glow(1.5, 4, 2.5, "w");
+  M.carrock = () => shd(0, 4, 17, 6) + water(0, 4.5, 15, 3.8) + path("M-7,4L-5,-9H5L7,4Z", "url(#m-rock)") + path("M0,4V-9", "none", 'stroke="#ece4d2" stroke-width=".7" stroke-dasharray=".9 .7"');
+  M.gladden = () => shd(0, 4, 17, 5.5) + water(0, 4, 14, 3.4) + path("M-9,4v-5M-7,4.5v-4M7,4v-5M9,4.5v-4", "none", 'stroke="#4a6a32" stroke-width=".8"') + `<circle cx="-8" cy="-1.5" r="1.1" fill="#f4c430"/><circle cx="8" cy="-1.5" r="1.1" fill="#f4c430"/><circle cx="0" cy="4" r="1.3" fill="none" stroke="#ffd84a" stroke-width=".65"/>` + glow(0, 4, 3, "w");
+  M.deadmarshes = () => shd(0, 4, 17, 5.5) + `<ellipse cx="0" cy="3.5" rx="14" ry="3.8" fill="#263228"/>` + glow(-6, 1, 2.4, "g") + glow(1, 0, 2.8, "g") + glow(7, 1.5, 2.2, "g") + `<circle cx="-6" cy="1" r=".8" fill="#d8ffe8"/><circle cx="1" cy="0" r=".9" fill="#d8ffe8"/><circle cx="7" cy="1.5" r=".8" fill="#d8ffe8"/>`;
+  M.dagorlad = () => shd(0, 4, 16, 5.5) + `<ellipse cx="0" cy="3.5" rx="14" ry="3.6" fill="#4a382c"/>` + path("M-6,3L-3,-5M4,3L1,-5", "none", 'stroke="#8a7a6a" stroke-width=".9"') + flag(-1, 2, "#8a2a1a", 7);
+  M.losgar = () => shd(0, 4, 17, 5.5) + water(3, 4.5, 12, 3) + crag(-8, 4, 7, 12, "rock", 0.2) + path("M-1,4H8L6.5,6H0.5Z", "url(#m-white)") + glow(3, 1, 4.5) + smoke(3, -4, 0);
+  M.nanelmoth = () => shd(0, 4, 17, 6) + tree(-6, 4, 4.2, "dgreen") + tree(6, 4, 4.2, "dgreen") + tree(0, 3, 5, "dgreen") + glow(0, -4, 3.5, "s");
+  M.cabed = () => shd(0, 4, 17, 6) + crag(-8, 4, 7, 16, "rock", 0.25) + crag(8, 4, 7, 16, "rock", -0.25) + `<path d="M-3,5.5L-1,-2H1L3,5.5Z" fill="url(#m-water)"/>` + cyl(-5, -8, 1, 3.5, "stone");
+  M.tolgalen = () => shd(0, 4, 17, 5.5) + water(0, 4, 15, 3.8) + hill(0, 3.8, 9, 6, "green") + tree(-3, 2, 2.6, "green") + tree(3, 2, 2.6, "gold") + glow(0, -2, 3.5, "w");
+  M.andunie = () => shd(0, 4, 17, 6) + water(-4, 5, 12, 3) + box(5, 3, 10, 3.5, 2.5, "white") + cyl(8, -0.5, 1.8, 10, "white", { win: 2 }) + cone(8, -10.5, 2.2, 3.6, "blue") + path("M-10,4H-2L-3.5,6H-8.5Z", "url(#m-white)") + path("M-6,4V-5", "none", 'stroke="#6a5a4a" stroke-width=".5"') + path("M-5.6,-4.6Q-1,-1 -5.6,2.2Z", "url(#m-silver)");
 
   const base = window.ME_ICON;
   window.ME_ICON = (p) => { const m = M[p.id]; if (!m) return base(p); defs(); return `<g class="mdl">${m()}<rect class="mbox" x="-14" y="-34" width="28" height="40" fill="none" stroke="none"/></g>`; };

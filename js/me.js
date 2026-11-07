@@ -174,10 +174,10 @@
     const dk = /mirkwood|oldforest|fangorn|taur|nanelmoth/.test(f.id), pineP = f.gold ? 0 : dk ? 0.55 : (y0 + y1) / 2 < 220 ? 0.45 : 0.2;
     const root = el("g", { class: "h3f" + (dk ? " dk" : "") + (f.gold ? " gold" : "") }, g);
     el("path", { d: rough(f.pts, 4, f.pts.length * 7 + 3), class: "h3f-floor" }, root);
-    const N = Math.round(n * 2.4), T2 = [];
-    for (let i = 0; i < N * 3 && T2.length < N; i++) { const x = lerp(x0, x1, rnd()), y = lerp(y0, y1, rnd()); if (inPoly(x, y, f.pts)) T2.push([x, y, 2.3 + rnd() * 1.5, rnd() < pineP]); }
+    const N = Math.round(n * 1.45), T2 = [];
+    for (let i = 0; i < N * 3 && T2.length < N; i++) { const x = lerp(x0, x1, rnd()), y = lerp(y0, y1, rnd()); if (inPoly(x, y, f.pts)) T2.push([x, y, 2.5 + rnd() * 1.6, rnd() < pineP]); }
     T2.sort((a, b) => a[1] - b[1]);
-    const BAND = 10; let b0 = -1e9, P = null;
+    const BAND = 36; let b0 = -1e9, P = null;
     const flush = () => { if (!P) return; ["sh", "cr", "hi", "pl", "ps"].forEach((k) => P[k] && el("path", { d: P[k], class: "h3f-" + k }, root)); };
     T2.forEach(([x, y, r, pine]) => {
       if (y - b0 > BAND) { flush(); P = { sh: "", cr: "", hi: "", pl: "", ps: "" }; b0 = y; }
@@ -248,6 +248,7 @@
       <filter id="gold" x="-200%" y="-200%" width="500%" height="500%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
       ${["elf", "man", "dwarf", "dark", "rohan"].map((c) => `<radialGradient id="rg-${c}"><stop offset="0" class="rg-${c}" stop-opacity=".55"/><stop offset=".75" class="rg-${c}" stop-opacity=".22"/><stop offset="1" class="rg-${c}" stop-opacity="0"/></radialGradient>`).join("")}
       <linearGradient id="beam" x1="1" x2="0" y1="0" y2="0"><stop offset="0" stop-color="#ff8a20" stop-opacity=".9"/><stop offset="1" stop-color="#ff5a10" stop-opacity="0"/></linearGradient>
+      <marker id="jarrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5.2" markerHeight="5.2" orient="auto-start-reverse"><path d="M0,1L10,5L0,9L2.4,5Z" fill="context-stroke"/></marker>
       ${chibiDefs()}
       <pattern id="seaHatch" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(-18)"><path d="M0 7h6" class="sea-h"/></pattern>
       ${H3 ? H3.textures() : ""}`;
@@ -303,7 +304,7 @@
       }); }
     L.veil = el("g", { class: "veil-l", transform: "translate(-1060,560)" }, L.aman);
     { const s2 = el("g", { class: "sc" }, L.veil); el("text", { class: "veil-n" }, s2).textContent = tr("已移出世界之圈 · 唯有精灵的船走笔直航道"); el("text", { class: "veil-en", y: 13 }, s2).textContent = "REMOVED FROM THE CIRCLES OF THE WORLD · SA 3319"; }
-    el("rect", { x: BX, y: BY, width: BW, height: BH, filter: "url(#paper)", class: "paper", "pointer-events": "none" }, svg);
+    if (!H3) el("rect", { x: BX, y: BY, width: BW, height: BH, filter: "url(#paper)", class: "paper", "pointer-events": "none" }, svg);
     // 湖
     L.ter = el("g", { class: "terrain" }, svg);
     W.lakes.forEach((lk) => { const d = cr(lk.pts, true); el("path", { d, class: "lake" }, L.ter); el("path", { d, class: "lake-in" }, L.ter); });
@@ -354,7 +355,7 @@
     });
     W.peaks.forEach((p) => {
       const g = el("g", { class: "peak" + (p.fire ? " fire" : "") }, p.nu ? L.nu : p.aman ? L.aman : L.ter), w = p.h * 0.7;
-      if (PAINT && window.ME_RELIEF) { ME_RELIEF.place({ pts: [[p.x, p.y]], h: p.h, peak: true, kind: p.fire ? "fire" : p.aman ? "aman" : "norm" }, el("image", { class: "mt-img" }, g)); if (p.fire) el("circle", { cx: p.x, cy: p.y - p.h * 0.8, r: 3, class: "ember" }, g); return; }
+      if (PAINT && window.ME_RELIEF) { ME_RELIEF.place({ pts: [[p.x, p.y]], h: p.h, peak: true, kind: p.fire ? "fire" : p.aman ? "aman" : "norm" }, el("image", { class: "mt-img" }, g)); return; }
       el("path", { d: `M${p.x - w},${p.y}L${p.x - 2},${p.y - p.h}L${p.x + 2},${p.y - p.h}L${p.x + w},${p.y}Z`, class: "mt big" }, g);
       if (p.fire) el("circle", { cx: p.x, cy: p.y - p.h, r: 3, class: "ember" }, g);
     });
@@ -392,10 +393,10 @@
     // 旅程
     L.jr = el("g", { class: "journeys" }, svg);
     JR.forEach((j) => {
-      j.path = el("path", { class: "jpath" + (j.mig ? " mig" : ""), stroke: j.c, "vector-effect": "non-scaling-stroke" }, L.jr);
+      j.path = el("path", { class: "jpath" + (j.mig ? " mig" : "") + (j.army ? " army" : ""), stroke: j.c, "vector-effect": "non-scaling-stroke", ...(j.army ? { "marker-end": "url(#jarrow)" } : {}) }, L.jr);
     });
     JR.forEach((j) => {
-      j.mk = el("g", { class: "jmk", "data-j": j.id }, L.jr);
+      j.mk = el("g", { class: "jmk" + (j.army ? " army" : ""), "data-j": j.id }, L.jr);
       const s = el("g", { class: "sc" }, j.mk);
       j.cl = el("g", { class: "jcl" }, s);
       j.lab = el("text", { y: 14, class: "jname", fill: j.c, "text-anchor": "middle" }, s); j.lab.textContent = j.n;
@@ -427,7 +428,7 @@
     const rs = el("g", { class: "sc" }, L.ring);
     el("circle", { r: 9, class: "ring-glow", filter: "url(#gold)" }, rs);
     el("circle", { r: 4.2, class: "ring-o" }, rs);
-    el("text", { x: 10, y: 14, class: "ring-n" }, rs).textContent = tr("至尊戒");
+    el("text", { x: 11, y: -4, class: "ring-n" }, rs).textContent = tr("至尊戒");
     L.won = el("g", { class: "wonders" }, svg);
     (LIFE.WONDERS || []).forEach((o) => lifeItem(o, L.won, "won k-" + o.k));
     L.fx = el("g", { class: "fx" }, svg);
@@ -449,7 +450,7 @@
   /* ——关键时刻—— */
   const MO = (window.ME_MOMENTS || []).slice().sort((a, b) => a.t - b.t);
   const MOI = {}; MO.forEach((m, i) => (MOI[m.id] = i));
-  const moSpan = (m) => (m.t > 6900 ? 0.12 : m.t > 4000 ? 40 : 60); // 地图上的✦标记持续多久
+  const moSpan = (m) => (m.t > 7049 ? 0.015 : m.t > 6900 ? 0.12 : m.t > 4000 ? 40 : 60); // 地图上的✦标记持续多久
   function momentDeco() {
     L.mo = el("g", { class: "moments" }, svg);
     MO.forEach((m) => {
@@ -477,19 +478,23 @@
   const RES = [];
   function whoAt(j, t) { let w = j.who || []; (j.whoAt || []).forEach(([t0, l]) => { if (t >= t0) w = l; }); return w; }
   function joinT(j, id) { if ((j.who || []).includes(id)) return j.P[0].t; const w = (j.whoAt || []).find(([, l]) => l.includes(id)); return w ? w[0] : j.P[0].t; }
-  function renderCluster(j, who, mode) {
-    const key = who.join() + "|" + mode; if (j.key === key) return; j.key = key;
-    if (!who.length || !CB) { j.cl.innerHTML = `<circle r="4.5" fill="${j.c}" class="jdot"/>`; return; }
-    if (H3 && !PAINT && mode !== "ship") return h3Cluster(j, who, mode);
-    const n = who.length, two = n > 4, per = two ? Math.ceil(n / 2) : n, gap = mode === "ride" ? 32 : 21;
+  function renderCluster(j, who, mode, isArmy) {
+    const sol = isArmy && j.army ? "sol-" + j.army : "";
+    const list = sol ? [...who, sol, sol, sol, ...(who.length < 2 ? [sol] : [])] : who;
+    const key = list.join() + "|" + mode + "|" + (isArmy ? 1 : 0); if (j.key === key) return; j.key = key;
+    if (!list.length || !CB) { j.cl.innerHTML = `<circle r="4.5" fill="${j.c}" class="jdot"/>`; return; }
+    if (H3 && !PAINT && mode !== "ship") return h3Cluster(j, list, mode);
+    const n = list.length, two = n > 4, per = two ? Math.ceil(n / 2) : n, gap = mode === "ride" ? 30 : isArmy ? 18 : 21;
     const S = 0.82; let h = "";
     if (mode === "ship") { const sx = Math.max(0.85, (per * gap + 26) / 62); h += `<use href="#chb-sail" transform="translate(-2,2) scale(.85)"/>`; j.hullTf = `translate(0,3) scale(${sx.toFixed(2)},.8)`; }
-    const rows = two ? [who.slice(0, per), who.slice(per)] : [who];
+    if (isArmy) h += `<g class="army-flag" transform="translate(0,${two ? -42 : -30})"><path d="M0,18V-14" stroke="#3a2514" stroke-width="1.3"/><path d="M0,-14L14,-9.5L10,-5L14,-0.5L0,2Z" fill="${j.c}" stroke="#f6e6b8" stroke-width=".6"/><circle cy="-14.5" r="1.4" fill="#e8c466"/></g>`;
+    const rows = two ? [list.slice(0, per), list.slice(per)] : [list];
     rows.forEach((row, ri) => row.forEach((id, i) => {
+      const isSol = id.startsWith("sol-"), sc = isSol ? S * 0.86 : S;
       const x = (i - (row.length - 1) / 2) * gap + (two && ri ? gap / 2 : 0), y = two && ri === 0 ? -13 : 0;
       const d = ((j.id.length * 7 + ri * 3 + i) * 0.13) % 0.6;
       h += `<g transform="translate(${x.toFixed(1)},${y})"><g class="bob" style="animation-delay:-${d.toFixed(2)}s"><g class="flip">` +
-        (mode === "ride" ? `<use href="#chb-horse" transform="scale(.8)"/><use href="#chb-${id}" transform="translate(0,-8) scale(${S})"/>` : `<use href="#chb-${id}" transform="scale(${S})"/>`) + `</g></g></g>`;
+        (mode === "ride" ? `<use href="#chb-horse" transform="scale(${isSol ? .72 : .8})"/><use href="#chb-${id}" transform="translate(0,-8) scale(${sc.toFixed(2)})"/>` : `<use href="#chb-${id}" transform="scale(${sc.toFixed(2)})"/>`) + `</g></g></g>`;
     }));
     if (mode === "ship") h += `<use href="#chb-hull" transform="${j.hullTf}"/>`;
     j.cl.innerHTML = h; j.lab.setAttribute("y", mode === "ride" ? 24 : 15);
@@ -512,49 +517,71 @@
   }
 
   /* ——随时间更新地图—— */
-  let T = D.EVENTS[0].t;
+  let T = D.EVENTS[0].t, seaTimed = null;
   const visible = (p, t) => (t >= (p.from ?? -1e9) && t < (p.to ?? 1e9)) || (p.again && t >= p.again[0] && t < p.again[1]);
   function updateMap() {
     const t = T;
+    if (!seaTimed) seaTimed = [...svg.querySelectorAll(".sea-o[data-from]")];
     L.bel.classList.toggle("gone", t >= 587.5);
     L.nu.classList.toggle("gone", t < 622 || t >= 3909.3);
     L.roads.classList.toggle("off", t < 591); L.timed.forEach((g) => g.classList.toggle("off", t < +g.dataset.from));
     L.tw.forEach((g) => g.classList.toggle("off", t < +g.dataset.from || t >= +g.dataset.to));
-    svg.querySelectorAll(".sea-o[data-from]").forEach((g) => g.classList.toggle("off", t < +g.dataset.from || t >= +g.dataset.to));
+    seaTimed.forEach((g) => g.classList.toggle("off", t < +g.dataset.from || t >= +g.dataset.to));
     const veiled = t >= 3909.3; L.aman.classList.toggle("veiled", veiled);
     if (MM) { MM.bel.classList.toggle("gone", t >= 587.5); MM.nu.classList.toggle("gone", t < 622 || t >= 3909.3); MM.aman.classList.toggle("veiled", veiled); }
     L.trees.classList.toggle("dead", t >= -40);
     W.labels.forEach((lb) => lb.g && lb.g.classList.toggle("off", (lb.from != null && t < lb.from) || (lb.ta && t < 591)));
     D.REALMS.forEach((r) => r.g.classList.toggle("on", t >= r.from && t < r.to));
     D.PLACES.forEach((p) => {
-      const v = visible(p, t); p.g.classList.toggle("off", !v);
-      if (p.mm) p.mm.style.display = v ? "" : "none";
-      if (p.aman) p.g.classList.toggle("veiled", veiled);
+      const v = visible(p, t);
+      if (p._v !== v) { p.g.classList.toggle("off", !v); if (p.mm) p.mm.style.display = v ? "" : "none"; p._v = v; }
+      if (p.aman && p._vl !== veiled) { p.g.classList.toggle("veiled", veiled); p._vl = veiled; }
       if (!v) return;
       const ruin = p.ruin != null && t >= p.ruin && !(p.rebuilt && t >= p.rebuilt);
       const dark = p.darkAt != null && t >= p.darkAt && !(p.lightAt && t >= p.lightAt);
-      p.g.classList.toggle("ruin", ruin); p.g.classList.toggle("dk", dark);
+      if (p._ruin !== ruin) { p.g.classList.toggle("ruin", ruin); p._ruin = ruin; }
+      if (p._dk !== dark) { p.g.classList.toggle("dk", dark); p._dk = dark; }
       let n = p.n; (p.names || []).forEach(([nt, nn]) => { if (t >= nt) n = nn; });
       const label = n + (ruin ? tr("（废墟）") : "");
-      if (p.tx.textContent !== label) p.tx.textContent = label;
+      if (p._lbl !== label) { p.tx.textContent = label; p._lbl = label; }
     });
     const away = new Set();
     JR.forEach((j) => {
-      const r = at(j.P, t), end = j.P[j.P.length - 1].t, span = Math.max(0.4, (end - j.P[0].t) * 0.6);
-      const on = r && t <= end + span, mk = on && !r.done && !r.hidden;
-      j.path.style.display = on ? "" : "none"; j.mk.style.display = mk ? "" : "none"; j.vis = mk;
+      const r = at(j.P, t), end = j.P[j.P.length - 1].t, dur = end - j.P[0].t;
+      const span = j.army && dur < 1 ? Math.max(0.012, dur * 0.45) : Math.max(0.4, dur * 0.6);
+      const hold = j.army ? (dur < 1 ? Math.max(0.005, dur * 0.22) : Math.min(2.5, dur * 0.15)) : (dur < 1 ? 0.004 : 0);
+      const on = !!(r && t <= end + span), mk = !!(on && (!r.done || t <= end + hold) && !r.hidden);
+      if (j._on !== on) { j.path.style.display = on ? "" : "none"; j._on = on; }
+      if (j.vis !== mk) { j.mk.style.display = mk ? "" : "none"; j.vis = mk; }
       if (!on) return;
-      j.path.setAttribute("d", r.d); j.path.classList.toggle("done", r.done);
+      if (j._d !== r.d) { j.path.setAttribute("d", r.d); j._d = r.d; }
+      const isDone = r.done && t > end + hold;
+      if (j._done !== isDone) { j.path.classList.toggle("done", isDone); j._done = isDone; }
       if (!mk) return;
-      const who = whoAt(j, t); who.forEach((id) => away.add(id)); j.curWho = who; j.curPos = r.pos;
-      const a = j.P[r.seg - 1] || j.P[0], b = j.P[r.seg], moving = Math.hypot(b.x - a.x, b.y - a.y) > 0.5;
-      renderCluster(j, who, moving ? b.m || j.mode || "" : "");
-      j.mk.classList.toggle("still", !moving);
-      if (moving && Math.abs(b.x - a.x) > 0.5) j.mk.classList.toggle("left", b.x < a.x);
-      j.mk.setAttribute("transform", `translate(${r.pos[0].toFixed(1)},${r.pos[1].toFixed(1)})`);
+      const who = whoAt(j, t); who.forEach((id) => CI[id] && away.add(id)); j.curWho = who; j.curPos = r.pos;
+      const a = j.P[r.seg - 1] || j.P[0], b = j.P[r.seg], moving = (!r.done || t <= end + hold) && Math.hypot(b.x - a.x, b.y - a.y) > 0.5;
+      const isArmy = !!(j.army && (j.id !== "aragorn" && j.id !== "merry" || t >= 7050.18));
+      if (j.id === "aragorn") {
+        const isDeadPhase = t >= 7050.184 && t < 7050.201;
+        j.army = isDeadPhase ? "dead" : "gondor";
+        const lb = tr(t >= 7050.21 ? "阿拉贡与西方大军" : isDeadPhase ? "阿拉贡与亡灵大军" : t >= 7050.18 ? "阿拉贡与南方援军" : "阿拉贡、莱戈拉斯、金雳");
+        if (j._lb !== lb) { j.lab.textContent = lb; j._lb = lb; }
+      }
+      if (j.id === "merry") { const lb = tr(t >= 7050.18 ? "洛汗六千铁骑 · 希奥顿" : "梅里与皮平"); if (j._lb !== lb) { j.lab.textContent = lb; j._lb = lb; } }
+      if (j._army !== isArmy) {
+        j.path.classList.toggle("army", isArmy);
+        if (j.army) { if (isArmy) j.path.setAttribute("marker-end", "url(#jarrow)"); else j.path.removeAttribute("marker-end"); }
+        j.mk.classList.toggle("army", isArmy);
+        j._army = isArmy;
+      }
+      renderCluster(j, who, moving ? b.m || j.mode || "" : j.mode || "", isArmy);
+      if (j._still !== !moving) { j.mk.classList.toggle("still", !moving); j._still = !moving; }
+      if (moving && Math.abs(b.x - a.x) > 0.5) { const lf = b.x < a.x; if (j._lf !== lf) { j.mk.classList.toggle("left", lf); j._lf = lf; } }
+      const tf = `translate(${r.pos[0].toFixed(1)},${r.pos[1].toFixed(1)})`;
+      if (j._tf !== tf) { j.mk.setAttribute("transform", tf); j._tf = tf; }
     });
     const groups = {};
-    RES.forEach((r) => { const v = t >= r.from && t < r.to && !away.has(r.c.id); r.vis = v; r.g.style.display = v ? "" : "none"; if (v) (groups[r.key] ||= []).push(r); });
+    RES.forEach((r) => { const v = t >= r.from && t < r.to && !away.has(r.c.id); if (r.vis !== v) { r.vis = v; r.g.style.display = v ? "" : "none"; } if (v) (groups[r.key] ||= []).push(r); });
     Object.values(groups).forEach((list) => list.forEach((r, i) => {
       const n = list.length, per = Math.min(n, 4), row = Math.floor(i / 4), col = i % 4, cnt = Math.min(per, n - row * 4);
       const tf = `translate(${((col - (cnt - 1) / 2) * 17).toFixed(1)},${-6 - row * 28})`;
@@ -569,8 +596,16 @@
   }
 
   /* ——镜头—— */
+  let camRaf = 0, moveTimer = 0, svgRect = null;
+  function updateSvgSize() { const r = svg.getBoundingClientRect(); svgRect = r; cw = r.width || 1; ch = r.height || 1; }
+  function markMoving() {
+    svg.classList.add("moving");
+    clearTimeout(moveTimer);
+    moveTimer = setTimeout(() => { svg.classList.remove("moving"); schedDc(true); }, 140);
+  }
+  function schedCam() { if (!camRaf) camRaf = requestAnimationFrame(() => { camRaf = 0; applyCam(); }); }
   function applyCam() {
-    const r = svg.getBoundingClientRect(); cw = r.width || 1; ch = r.height || 1;
+    if (!svgRect || cw <= 1) updateSvgSize();
     const h = (cam.w * ch) / cw;
     svg.setAttribute("viewBox", `${cam.x.toFixed(2)} ${cam.y.toFixed(2)} ${cam.w.toFixed(2)} ${h.toFixed(2)}`);
     const k = cam.w / cw; svg.style.setProperty("--k", k.toFixed(4));
@@ -580,47 +615,110 @@
     if (MM) { MM.vp.setAttribute("x", cam.x.toFixed(1)); MM.vp.setAttribute("y", cam.y.toFixed(1)); MM.vp.setAttribute("width", cam.w.toFixed(1)); MM.vp.setAttribute("height", h.toFixed(1)); }
   }
   /* ——标签避让：按重要性逐个放置，和已放置的文字重叠就先隐藏，放大后再出现—— */
-  let dcAt = 0, dcTimer = 0;
-  function schedDc() { if (!dcTimer) dcTimer = setTimeout(declutter, Math.max(30, 220 - (performance.now() - dcAt))); }
-  function declutter() {
-    dcAt = performance.now(); dcTimer = 0;
-    const U = [], add = (sel, pri) => svg.querySelectorAll(sel).forEach((n) => U.push({ n, pri: typeof pri === "function" ? pri(n) : pri }));
+  let dcAt = 0, dcTimer = 0, DC_U = null, DC_IC = null;
+  function getAnc(el) {
+    const out = [];
+    for (let p = el.parentElement; p && p !== svg; p = p.parentElement) out.push(p);
+    return out;
+  }
+  function initDcCache() {
+    DC_U = [];
+    const add = (sel, pri) => svg.querySelectorAll(sel).forEach((n) => {
+      const p = typeof pri === "function" ? pri(n) : pri;
+      const isPl = n.classList.contains("pl-n");
+      const plNode = isPl ? n.closest(".pl") : null;
+      const pl = plNode ? P[plNode.dataset.id] : null;
+      const mdlp = !!(plNode && plNode.classList.contains("mdlp") && !plNode.classList.contains("minor"));
+      const st = n.classList.contains("st");
+      const rmNode = n.closest(".realm");
+      const fs = +n.style.getPropertyValue("--fs") || 11;
+      DC_U.push({ n, pri: p, fs, idx: DC_U.length, isPl, pl, mdlp, st, rmNode, anc: getAnc(n), wasDc: false, wasLf: false });
+    });
     add(".pl-n", (n) => (n.closest(".minor") || n.classList.contains("st") ? 4 : 1));
-    add(".ring-n", 1.5);
     add(".realm-n", 2);
     add(".edge > .sc", 2.5);
     add(".lbl:not(.mt-l):not(.tx-l) > .sc", 3);
     add(".lm-n", 5);
     add(".tx-l > .sc, .mt-l > .sc", 6);
     add(".rv-n", 7);
-    add(".jname", 8);
-    const vw = innerWidth, vh = innerHeight, placed = [], seen = [], pad = 1.5;
-    const inView = (r) => r.width >= 1 && r.right > 0 && r.left < vw && r.bottom > 0 && r.top < vh;
-    const hits = (r) => placed.some((q) => r.left < q.right - pad && r.right > q.left + pad && r.top < q.bottom - pad && r.bottom > q.top + pad);
-    // 地点图标本身也是障碍
-    svg.querySelectorAll(".pl:not(.off) .ic2").forEach((ic) => { const r = (ic.querySelector(".mbox") || ic).getBoundingClientRect(); if (inView(r)) placed.push(r); });
-    U.forEach((u) => {
-      u.r = u.n.closest(".off,.gone,.realm:not(.on),.veiled") ? null : u.n.getBoundingClientRect();
-      if (u.r && !inView(u.r)) u.r = null;
-      u.h = u.r ? u.r.height : 0;
-      if (u.r && u.n.classList.contains("pl-n")) { // 记下图标中心，算出“放右边”的原始位置
-        const ic = u.n.parentNode.querySelector(".ic2").getBoundingClientRect(); u.cx = (ic.left + ic.right) / 2;
-        if (u.n.classList.contains("lf")) u.r = new DOMRect(2 * u.cx - u.r.right, u.r.top, u.r.width, u.r.height);
-      }
+    DC_U.sort((a, b) => a.pri - b.pri || b.fs - a.fs || a.idx - b.idx);
+    DC_IC = [...svg.querySelectorAll(".pl .ic2")].map((ic) => {
+      const plNode = ic.closest(".pl");
+      const pl = plNode ? P[plNode.dataset.id] : null;
+      return { pl, mdlp: !!(plNode && plNode.classList.contains("mdlp") && !plNode.classList.contains("minor")), anc: getAnc(ic) };
     });
-    U.sort((a, b) => a.pri - b.pri || b.h - a.h);
-    U.forEach((u) => {
-      if (!u.r) { u.n.classList.remove("dc"); return; }
+  }
+  function schedDc(now) {
+    if (svg.classList.contains("moving") && !now) return;
+    const wait = now ? 16 : (playing || follow) ? Math.max(180, 650 - (performance.now() - dcAt)) : Math.max(45, 180 - (performance.now() - dcAt));
+    if (!dcTimer) dcTimer = setTimeout(declutter, wait);
+  }
+  function isAncHidden(anc) {
+    for (let k = 0; k < anc.length; k++) {
+      const a = anc[k], cl = a.classList;
+      if (cl.contains("off") || cl.contains("gone") || cl.contains("veiled") || a.style.display === "none") return true;
+    }
+    return false;
+  }
+  function declutter() {
+    dcAt = performance.now(); dcTimer = 0;
+    if (svg.classList.contains("moving")) return;
+    if (!DC_U) initDcCache();
+    updateSvgSize();
+    const vw = innerWidth, vh = innerHeight, placed = [], seen = [];
+    const inView = (r) => r.width >= 1 && r.right > 0 && r.left < vw && r.bottom > 0 && r.top < vh;
+    const hits = (r, pad) => placed.some((q) => r.left < q.right - pad && r.right > q.left + pad && r.top < q.bottom - pad && r.bottom > q.top + pad);
+    const kScale = cw / cam.w, ox = svgRect ? svgRect.left : 0, oy = svgRect ? svgRect.top : 0;
+    const icz = clamp(640 / cam.w, 0.8, 2.4);
+    // 地点图标本身也是障碍（使用纯坐标包围盒，彻底消除动画/DOM抖动）
+    for (let i = 0; i < DC_IC.length; i++) {
+      const it = DC_IC[i];
+      if (!it.pl || isAncHidden(it.anc)) continue;
+      const cx = ox + (it.pl.x - cam.x) * kScale, cy = oy + (it.pl.y - cam.y) * kScale;
+      const hw = (it.mdlp ? 15 : 8) * icz, hh = (it.mdlp ? 14 : 8) * icz;
+      const r = { left: cx - hw, right: cx + hw, top: cy - hh * 1.15, bottom: cy + hh * 0.55, width: hw * 2, height: hh * 1.7 };
+      if (inView(r)) placed.push(r);
+    }
+    for (let i = 0; i < DC_U.length; i++) {
+      const u = DC_U[i], n = u.n;
+      const hide = (u.rmNode && !u.rmNode.classList.contains("on")) || isAncHidden(u.anc);
+      if (hide) { u.r = null; continue; }
+      if (u.isPl && u.pl) {
+        const txt = n.textContent || "";
+        if (!u.w || u._txt !== txt) {
+          const br = n.getBoundingClientRect();
+          if (br.width >= 1) { u.w = br.width; u.h = br.height || 13; u._txt = txt; }
+        }
+        const w = u.w || (txt.length * 11 + 4), h = u.h || 13;
+        const cx = ox + (u.pl.x - cam.x) * kScale, cy = oy + (u.pl.y - cam.y) * kScale;
+        const dx = (u.mdlp ? 17 : u.st ? 8 : 12) * icz;
+        u.cx = cx; u.dx = dx;
+        u.r = { left: cx + dx, right: cx + dx + w, top: cy - h * 0.45, bottom: cy + h * 0.55, width: w, height: h };
+        if (!inView(u.r) && !inView({ left: cx - dx - w, right: cx - dx, top: u.r.top, bottom: u.r.bottom, width: w, height: h })) u.r = null;
+      } else {
+        const br = n.getBoundingClientRect();
+        u.r = inView(br) ? br : null;
+      }
+    }
+    for (let i = 0; i < DC_U.length; i++) {
+      const u = DC_U[i];
+      if (!u.r) { if (u.wasDc) { u.n.classList.remove("dc"); u.wasDc = false; } continue; }
+      const pad = u.wasDc ? 0.5 : 3.2;
       let r = u.r, lf = false;
       const txt = (u.n.textContent || "").replace(/（废墟）| \(ruins\)/, "").trim();
-      let hit = hits(r);
-      if (hit && u.cx != null) { const r2 = new DOMRect(2 * u.cx - r.right, r.top, r.width, r.height); if (!hits(r2)) { r = r2; lf = true; hit = false; } }
+      let hit = hits(r, pad);
+      if (u.cx != null) {
+        const rLeft = { left: u.cx - u.dx - r.width, right: u.cx - u.dx, top: r.top, bottom: r.bottom, width: r.width, height: r.height };
+        if (u.wasLf && !hits(rLeft, pad)) { r = rLeft; lf = true; hit = false; }
+        else if (hit && !hits(rLeft, pad)) { r = rLeft; lf = true; hit = false; }
+      }
       const cx = (r.left + r.right) / 2, cy = (r.top + r.bottom) / 2;
       if (!hit && txt) hit = seen.some((q) => q.t === txt && Math.hypot(q.x - cx, q.y - cy) < 160);
-      u.n.classList.toggle("dc", hit);
-      if (u.cx != null) u.n.classList.toggle("lf", lf);
+      if (hit) lf = u.wasLf;
+      if (u.wasDc !== hit) { u.n.classList.toggle("dc", hit); u.wasDc = hit; }
+      if (u.cx != null && u.wasLf !== lf) { u.n.classList.toggle("lf", lf); u.wasLf = lf; }
       if (!hit) { placed.push(r); if (txt) seen.push({ t: txt, x: cx, y: cy }); }
-    });
+    }
   }
   function scaleBar(k) { // 100 里格 ≈ 125 地图单位
     const sb = document.getElementById("scalebar"); if (!sb) return;
@@ -636,31 +734,32 @@
     w = clamp(w, 180, BW);
     const h = (w * ch) / cw, s = { ...cam }, e = { x: x - w / 2, y: y - h / 2, w };
     const t0 = performance.now();
-    const step = (now) => { const k = ease(clamp((now - t0) / ms, 0, 1)); cam.x = lerp(s.x, e.x, k); cam.y = lerp(s.y, e.y, k); cam.w = lerp(s.w, e.w, k); applyCam(); if (k < 1) flyRaf = requestAnimationFrame(step); };
+    markMoving();
+    const step = (now) => { const k = ease(clamp((now - t0) / ms, 0, 1)); cam.x = lerp(s.x, e.x, k); cam.y = lerp(s.y, e.y, k); cam.w = lerp(s.w, e.w, k); applyCam(); if (k < 1) { markMoving(); flyRaf = requestAnimationFrame(step); } };
     flyRaf = requestAnimationFrame(step);
   }
   const flyBox = ([x, y, w]) => { const h = (w * ch) / cw; flyTo(x + w / 2, y + Math.min(h, w * 0.75) / 2 + (h > w * 0.75 ? 0 : 0), w); };
   function zoomAt(f, sx, sy) {
     const nw = clamp(cam.w * f, 180, BW), px = cam.x + (sx / cw) * cam.w, py = cam.y + (sy / cw) * cam.w;
-    cam.x = px - (sx / cw) * nw; cam.y = py - (sy / cw) * nw; cam.w = nw; applyCam();
+    cam.x = px - (sx / cw) * nw; cam.y = py - (sy / cw) * nw; cam.w = nw; markMoving(); schedCam();
   }
   function bindPan() {
     let drag = null; const pts = new Map();
-    svg.addEventListener("wheel", (e) => { e.preventDefault(); cancelAnimationFrame(flyRaf); userMoved = Date.now(); const r = svg.getBoundingClientRect(); zoomAt(Math.exp(e.deltaY * 0.0015), e.clientX - r.left, e.clientY - r.top); }, { passive: false });
-    svg.addEventListener("pointerdown", (e) => { pts.set(e.pointerId, [e.clientX, e.clientY]); if (pts.size === 1) drag = { x: e.clientX, y: e.clientY, cx: cam.x, cy: cam.y, moved: false }; cancelAnimationFrame(flyRaf); });
+    svg.addEventListener("wheel", (e) => { e.preventDefault(); cancelAnimationFrame(flyRaf); userMoved = Date.now(); if (!svgRect) updateSvgSize(); zoomAt(Math.exp(e.deltaY * 0.0015), e.clientX - svgRect.left, e.clientY - svgRect.top); }, { passive: false });
+    svg.addEventListener("pointerdown", (e) => { if (!svgRect) updateSvgSize(); pts.set(e.pointerId, [e.clientX, e.clientY]); if (pts.size === 1) drag = { x: e.clientX, y: e.clientY, cx: cam.x, cy: cam.y, moved: false }; cancelAnimationFrame(flyRaf); });
     svg.addEventListener("pointermove", (e) => {
       if (!pts.has(e.pointerId)) return;
       const prev = pts.get(e.pointerId); pts.set(e.pointerId, [e.clientX, e.clientY]);
-      if (pts.size === 2) { const [a, b] = [...pts.values()], [pa] = [prev]; const other = [...pts.entries()].find(([id]) => id !== e.pointerId)[1]; const d0 = Math.hypot(pa[0] - other[0], pa[1] - other[1]), d1 = Math.hypot(a[0] - b[0], a[1] - b[1]); const r = svg.getBoundingClientRect(); if (d0 > 0) zoomAt(d0 / d1, (a[0] + b[0]) / 2 - r.left, (a[1] + b[1]) / 2 - r.top); drag = null; userMoved = Date.now(); return; }
+      if (pts.size === 2) { const [a, b] = [...pts.values()], [pa] = [prev]; const other = [...pts.entries()].find(([id]) => id !== e.pointerId)[1]; const d0 = Math.hypot(pa[0] - other[0], pa[1] - other[1]), d1 = Math.hypot(a[0] - b[0], a[1] - b[1]); if (d0 > 0) zoomAt(d0 / d1, (a[0] + b[0]) / 2 - svgRect.left, (a[1] + b[1]) / 2 - svgRect.top); drag = null; userMoved = Date.now(); return; }
       if (!drag) return; const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
       if (Math.abs(dx) + Math.abs(dy) > 4) { drag.moved = true; svg.setPointerCapture?.(e.pointerId); }
-      if (drag.moved) { cam.x = drag.cx - (dx / cw) * cam.w; cam.y = drag.cy - (dy / cw) * cam.w; applyCam(); userMoved = Date.now(); }
+      if (drag.moved) { cam.x = drag.cx - (dx / cw) * cam.w; cam.y = drag.cy - (dy / cw) * cam.w; markMoving(); schedCam(); userMoved = Date.now(); }
     });
     const up = (e) => { pts.delete(e.pointerId); if (!pts.size) drag = null; };
     svg.addEventListener("pointerup", up); svg.addEventListener("pointercancel", up);
     $("#zin").onclick = () => zoomAt(0.7, cw / 2, ch / 2); $("#zout").onclick = () => zoomAt(1.4, cw / 2, ch / 2);
     $("#zfit").onclick = () => flyBox(eraOf(T).cam);
-    addEventListener("resize", () => applyCam());
+    addEventListener("resize", () => { updateSvgSize(); applyCam(); });
   }
 
   /* ——脉冲与地名卡—— */
@@ -672,50 +771,94 @@
   function showPlace(p) {
     if (window.ME_KIDS && window.ME_KIDS.place(p)) return;
     const evs = D.EVENTS.filter((e) => e.at === p.id);
+    const mos = MO.filter((m) => m.at === p.id || (p.id === "erech" && m.id === "paths-of-the-dead"));
+    const lgs = [];
+    D.LEGENDS.forEach((l) => l.beats.forEach((b, bi) => { if (b.at === p.id) lgs.push({ l, b, bi }); }));
+    const chars = (CH.CHARS || []).filter((c) => (c.homes || []).some(([at]) => at === p.id));
+    const jrs = JR.filter((j) => (j.pts || []).some(([at]) => at === p.id));
+    const lm = (LIFE.LANDMARKS || []).find((m) => m.id === p.id);
+    const desc = p.d || (lm && lm.d) || "";
     const kind = tr({ elf: "精灵", man: "人类", dwarf: "矮人", hob: "霍比特人", dark: "黑暗势力", site: "地标" }[p.k]);
-    openCard(`<div class="pc-k">${esc(dot(kind, p.en))}</div><h3>${esc(p.tx.textContent)}</h3>` + (evs.length ? `<ul class="pc-ev">${evs.map((e) => `<li data-t="${e.t}"><b>${esc(fmt(e.t, hasDay(e.t)))}</b>${esc(e.h)}</li>`).join("")}</ul>` : `<p class="muted">${tr("这里在编年里还没有专门的记载。")}</p>`));
+    let html = `<div class="pc-k">${esc(dot(kind, p.en))}</div><h3>${esc(p.tx.textContent)}</h3>`;
+    if (desc) html += `<p class="pc-d">${esc(desc)}</p>`;
+    if (evs.length || mos.length) {
+      html += `<h5 class="cc-h">${tr("编年与关键时刻")}</h5><ul class="pc-ev">` +
+        evs.map((e) => `<li data-t="${e.t}"><b>${esc(fmt(e.t, hasDay(e.t)))}</b>${esc(e.h)}</li>`).join("") +
+        mos.map((m) => `<li data-mo="${m.id}"><b>✦ ${esc(fmt(m.t, hasDay(m.t)))}</b>${esc(m.h)}</li>`).join("") + `</ul>`;
+    }
+    if (lgs.length) {
+      html += `<h5 class="cc-h">${tr("传说章节")}</h5><ul class="pc-ev">` +
+        lgs.slice(0, 5).map(({ l, b, bi }) => `<li data-lg="${l.id}" data-beat="${bi}"><b>❧ ${esc(l.n)} · ${esc(fmt(b.t, hasDay(b.t)))}</b>${esc(b.h)}</li>`).join("") + `</ul>`;
+    }
+    if (chars.length) {
+      html += `<h5 class="cc-h">${tr("相关人物")}</h5><div class="cc-who">${chars.map((c) => `<button data-c="${c.id}">${chSvg(c.id)}<span>${esc(c.n)}</span></button>`).join("")}</div>`;
+    }
+    if (jrs.length) {
+      html += `<h5 class="cc-h">${tr("途经足迹 · 点一下跟随")}</h5><div class="cc-js">${jrs.map((j) => `<button data-follow="${j.id}" style="--c:${j.c}"><b>${esc(j.n)}</b><small>${esc(fmt(j.P[0].t, hasDay(j.P[0].t)))} → ${esc(fmt(j.P[j.P.length - 1].t, hasDay(j.P[j.P.length - 1].t)))}</small></button>`).join("")}</div>`;
+    }
+    openCard(html);
     pulse(p.x, p.y);
   }
   function openCard(html) { const c = $("#card"); c.innerHTML = `<button class="x" aria-label="${tr("关闭")}">×</button>` + html; c.hidden = false; }
   $("#card").addEventListener("click", (e) => { if (e.target.closest(".x")) return ($("#card").hidden = true);
     const bm = e.target.closest(".bio-more"); if (bm) { const open = bm.closest(".bio").classList.toggle("open"); bm.textContent = open ? tr("收起 ▴") : tr("展开完整传记 ▾"); return; }
     const fo = e.target.closest("[data-follow]"); if (fo) return followJ(fo.dataset.follow);
+    const lg = e.target.closest("[data-lg]"); if (lg) { $("#card").hidden = true; setTab("legends"); return openLegend(lg.dataset.lg, +lg.dataset.beat || 0); }
     const ho = e.target.closest("[data-home]"); if (ho) { pause(); setT(+ho.dataset.home + 1e-4); const a = ho.dataset.at, [x, y] = a.includes(",") ? a.split(",").map(Number) : xy(a); flyTo(x, y, fine(T) ? 420 : 640); userMoved = Date.now(); pulse(x, y, "k-ring"); return; } const li = e.target.closest("[data-t]"); if (li) { const ev = D.EVENTS.find((x) => x.t === +li.dataset.t); if (ev) goEvent(ev); } });
 
   /* ======================= 时光机 ======================= */
   const tm = $("#tm"), track = $("#tmTrack"), thumb = $("#tmThumb");
+  let tmBands = [], tmTicks = [];
   function buildTM() {
     $("#tmBands").innerHTML = ERAS.map((e) => `<button class="band" style="left:${e.p0 * 100}%;width:${(e.p1 - e.p0) * 100}%;--c:${e.col}" data-era="${e.id}" title="${esc(dot(e.n, e.en))}"><span>${esc(e.sn || e.n)}</span></button>`).join("");
     $("#tmTicks").innerHTML = D.EVENTS.map((e, i) => `<i class="tick k-${e.k}${e.b ? " b" : ""}" style="left:${(posOf(e.t) * 100).toFixed(3)}%" data-i="${i}" title="${esc(fmt(e.t, hasDay(e.t)) + " · " + e.h)}"></i>`).join("");
+    tmBands = $$(".band"); tmTicks = $$(".tick");
     $("#tmBands").addEventListener("click", (e) => { const b = e.target.closest("[data-era]"); if (!b) return; const er = ERAS.find((x) => x.id === b.dataset.era); setT(er.a + (er.id === "trees" ? 1 : 0.001), true); flyBox(er.cam); });
     $("#tmTicks").addEventListener("click", (e) => { const k = e.target.closest(".tick"); if (k) goEvent(D.EVENTS[+k.dataset.i]); });
     let dragging = false;
     const fromX = (cx) => { const r = track.getBoundingClientRect(); return tAt((cx - r.left) / r.width); };
     track.addEventListener("pointerdown", (e) => { if (e.target.closest(".tick")) return; dragging = true; track.setPointerCapture(e.pointerId); pause(); setT(fromX(e.clientX), true); });
-    track.addEventListener("pointermove", (e) => { const r = track.getBoundingClientRect(); const t = tAt((e.clientX - r.left) / r.width); $("#tmHover").textContent = fmt(t, fine(t)); $("#tmHover").style.left = clamp(e.clientX - r.left, 40, r.width - 40) + "px"; if (dragging) setT(t, true); });
+    track.addEventListener("pointermove", (e) => {
+      const r = track.getBoundingClientRect(), p = clamp((e.clientX - r.left) / r.width, 0, 1), t = tAt(p);
+      let near = null, bd = 0.012;
+      D.EVENTS.forEach((ev) => { const d = Math.abs(posOf(ev.t) - p); if (d < bd) { bd = d; near = ev; } });
+      $("#tmHover").textContent = fmt(t, fine(t)) + (near ? " · " + near.h : "");
+      $("#tmHover").style.left = clamp(e.clientX - r.left, 60, r.width - 60) + "px";
+      if (dragging) setT(t, true);
+    });
     track.addEventListener("pointerleave", () => ($("#tmHover").textContent = ""));
     track.addEventListener("pointerup", () => (dragging = false));
     $("#tmPlay").onclick = () => (playing ? pause() : play());
     $("#tmSpeed").onclick = () => { speed = speed === 1 ? 2 : speed === 2 ? 4 : 1; $("#tmSpeed").textContent = speed + "×"; };
     $("#tmPrev").onclick = () => stepEvent(-1); $("#tmNext").onclick = () => stepEvent(1);
   }
-  let lastEra = null, lastEvIdx = -1;
+  let lastEra = null, lastEvIdx = -1, lastMoId = null;
   function setT(t, user) {
     const T_ = T; T = clamp(t, T0, T1 - 0.001);
-    if (playing && !user && moAuto && !follow) { const m = MO.find((x) => x.t > T_ + 1e-9 && x.t <= T + 1e-9); if (m) { T = m.t; setTimeout(() => openMoment(m.id, true), 0); } }
-    thumb.style.left = posOf(T) * 100 + "%"; $("#tmFill").style.width = posOf(T) * 100 + "%";
+    if (user || T < T_ - 1e-5) lastMoId = null;
+    if (playing && !user && moAuto && !follow) {
+      const m = MO.find((x) => x.id !== lastMoId && x.t > T_ + 1e-9 && x.t <= T + 1e-9);
+      if (m) { lastMoId = m.id; T = m.t + 2e-6; pause(); setTimeout(() => openMoment(m.id, true), 0); }
+    }
+    const posPct = posOf(T) * 100 + "%";
+    thumb.style.left = posPct; $("#tmFill").style.width = posPct;
     const e = eraOf(T);
     $("#tmDate").textContent = fmt(T, fine(T)); $("#tmEra").textContent = dot(e.n, e.en);
     if (H3 && !PAINT) { const [mo, dd] = md(T); if (age(T).y == null) $("#tmCal").textContent = ""; else { const wk = Math.min(4, Math.ceil(dd / 7)), dy = ((dd - 1) % 7) + 1; $("#tmCal").textContent = EN ? `Month ${mo} · Week ${wk} · Day ${dy}` : `第${mo}月 · 第${wk}周 · 第${dy}天`; } }
-    tm.style.setProperty("--era", e.col); document.body.dataset.era = e.id;
-    $$(".band").forEach((b) => b.classList.toggle("cur", b.dataset.era === e.id));
-    if (lastEra && lastEra !== e.id && !reading && Date.now() - userMoved > 2500) flyBox(e.cam);
-    if (lastEra !== e.id) onEra(e);
-    lastEra = e.id;
+    if (lastEra !== e.id) {
+      tm.style.setProperty("--era", e.col); document.body.dataset.era = e.id;
+      tmBands.forEach((b) => b.classList.toggle("cur", b.dataset.era === e.id));
+      if (lastEra && !reading && Date.now() - userMoved > 2500) flyBox(e.cam);
+      onEra(e);
+      lastEra = e.id;
+    }
     // 越过的事件：播放时弹出
     let idx = -1; D.EVENTS.forEach((ev, i) => { if (ev.t <= T + 1e-6) idx = i; });
-    if (idx !== lastEvIdx) { if ((playing || follow) && idx > lastEvIdx && idx >= 0) toast(D.EVENTS[idx]); lastEvIdx = idx; markChron(idx); }
-    $$(".tick").forEach((k, i) => k.classList.toggle("past", i <= idx));
+    if (idx !== lastEvIdx) {
+      if ((playing || follow) && idx > lastEvIdx && idx >= 0) toast(D.EVENTS[idx]);
+      lastEvIdx = idx; markChron(idx);
+      tmTicks.forEach((k, i) => k.classList.toggle("past", i <= idx));
+    }
     updateMap();
   }
   function onEra(e) {
@@ -728,7 +871,7 @@
   let playing = false, speed = 1, raf = 0, last = 0;
   /* ——人物走得慢一点：任何一支队伍在屏幕上每秒最多走约 5% 宽—— */
   function capMove(t, nt, dt) {
-    if (nt <= t) return nt;
+    if (nt <= t) return t;
     let m = 0;
     for (const j of JR) {
       const a = j.P[0].t, b = j.P[j.P.length - 1].t; if (nt < a || t > b) continue;
@@ -737,7 +880,7 @@
       const r0 = at(j.P, t0), r1 = at(j.P, t1); if (!r0 || !r1 || r0.hidden || r1.hidden) continue;
       m = Math.max(m, Math.hypot(r1.pos[0] - r0.pos[0], r1.pos[1] - r0.pos[1]));
     }
-    const lim = cam.w * 0.05 * dt * speed;
+    const lim = Math.max(cam.w, 520) * 0.065 * dt * speed;
     return m > lim ? t + ((nt - t) * lim) / m : nt;
   }
   /* ——人物登场：第一次出现时弹出插画，几秒后淡去—— */
@@ -778,7 +921,7 @@
     endFollow();
     if (T >= T1 - 0.01) setT(T0);
     playing = true; $("#tmPlay").classList.add("on"); $("#tmPlay").setAttribute("aria-label", tr("暂停")); last = performance.now();
-    const step = (now) => { if (!playing) return; const dt = Math.min(0.1, (now - last) / 1000); last = now; const p = posOf(T) + (dt * speed * slowK()) / DUR; if (p >= 1) { setT(T1 - 0.001); return pause(); } setT(capMove(T, tAt(p), dt)); raf = requestAnimationFrame(step); };
+    const step = (now) => { if (!playing) return; const dt = clamp((now - last) / 1000, 0.001, 0.1); last = Math.max(last, now); const p = posOf(T) + (dt * speed * slowK()) / DUR; if (p >= 1) { setT(T1 - 0.001); return pause(); } setT(capMove(T, tAt(p), dt)); if (playing) raf = requestAnimationFrame(step); };
     raf = requestAnimationFrame(step);
   }
   function pause() { endFollow(); playing = false; cancelAnimationFrame(raf); $("#tmPlay").classList.remove("on"); $("#tmPlay").setAttribute("aria-label", tr("播放")); }
@@ -803,7 +946,7 @@
   }
   function fstep(now) {
     const f = follow; if (!f) return;
-    const dt = Math.min(0.1, (now - last) / 1000); last = now;
+    const dt = clamp((now - last) / 1000, 0.001, 0.1); last = Math.max(last, now);
     const nt = capMove(T, T + dt * f.rate * speed * slowK(), dt);
     if (nt >= f.t1) { setT(f.t1 - 1e-6); return pause(); }
     setT(nt);
@@ -852,11 +995,12 @@
       (b.fate ? `<p class="bio-f"><b>${tr("结局")}</b>${esc(b.fate)}</p>` : "") + `</div>`;
   }
   function showJourney(j) {
-    const who = j.curWho || whoAt(j, T);
+    const who = (j.curWho || whoAt(j, T)).filter((id) => CI[id]);
     if (window.ME_KIDS && window.ME_KIDS.journey(j, who)) return;
-    openCard(`<div class="pc-k">${tr(j.mig ? "迁徙" : "旅程")} · ${esc(fmt(j.P[0].t, hasDay(j.P[0].t)))} — ${esc(fmt(j.P[j.P.length - 1].t, hasDay(j.P[j.P.length - 1].t)))}</div><h3>${esc(j.n)}</h3>
-      <div class="cc-who">${who.map((id) => `<button data-c="${id}">${chSvg(id)}<span>${esc(CI[id]?.n || id)}</span></button>`).join("")}</div>
-      <button class="cc-follow" data-follow="${j.id}" style="--c:${j.c}">▶ ${tr("从头跟随这段路")}</button>`);
+    openCard(`<div class="pc-k">${tr(j.army ? "大军进发" : j.mig ? "迁徙" : "旅程")} · ${esc(fmt(j.P[0].t, hasDay(j.P[0].t)))} — ${esc(fmt(j.P[j.P.length - 1].t, hasDay(j.P[j.P.length - 1].t)))}</div><h3>${esc(j.n)}</h3>
+      ${who.length ? `<div class="cc-who">${who.map((id) => `<button data-c="${id}">${chSvg(id)}<span>${esc(CI[id]?.n || id)}</span></button>`).join("")}</div>` : ""}
+      <button class="cc-follow" data-follow="${j.id}" style="--c:${j.c}">▶ ${tr(j.army ? "从头跟随大军行军" : "从头跟随这段路")}</button>
+      ${j.b ? `<button class="go-b wide" data-b="${j.b}">⚔ ${tr("进入战场推演")}</button>` : ""}`);
   }
 
   let toastTimer = 0;
@@ -874,10 +1018,54 @@
   }
 
   /* ======================= 侧栏：编年 / 传说 / 战役 ======================= */
-  let panelTab = "chron", reading = null;
+  let panelTab = "chron", reading = null, chronLis = [], charsBuilt = false;
   const KIND = Object.fromEntries(Object.entries({ elf: "精灵", man: "人类", dwarf: "矮人", hob: "霍比特", dark: "暗影", ring: "魔戒", war: "战争" }).map(([k, v]) => [k, tr(v)]));
+  function ensureCharsBuilt() {
+    if (charsBuilt) return;
+    charsBuilt = true;
+    $("#chars").innerHTML = `<p class="hint">${tr("中洲的 {n} 位人物。点一个人，地图会跳到他出现的年代和地点；在人物卡里点“足迹”，就能跟着他走完那段路。地图上走动的小队就是正在旅行的人。").replace("{n}", CH.CHARS.length)}</p>` +
+      CH.RACES.map(([r, n]) => `<h4 class="ch-race">${esc(n)}</h4><div class="cgrid">${CH.CHARS.filter((c) => c.r === r).map((c) => `<button class="cbtn" data-c="${c.id}" data-jump="1"><span class="cb-pt">${PT(c)}</span><b>${esc(c.n)}</b></button>`).join("")}</div>`).join("");
+  }
   function buildPanel() {
     $("#tabs").addEventListener("click", (e) => { const b = e.target.closest("[data-tab]"); if (b) setTab(b.dataset.tab); });
+    const sBox = document.createElement("div");
+    sBox.className = "p-search";
+    sBox.innerHTML = `<input id="pSearch" type="search" placeholder="${tr("搜索地点、人物、事件…")}" autocomplete="off"/><div id="pRes" class="p-res" hidden></div>`;
+    $("#tabs").after(sBox);
+    const sIn = $("#pSearch"), sRes = $("#pRes");
+    sIn.addEventListener("input", () => {
+      const q = sIn.value.trim().toLowerCase();
+      if (!q) { sRes.hidden = true; sRes.innerHTML = ""; return; }
+      const pls = D.PLACES.filter((p) => p.n.toLowerCase().includes(q) || (p.en || "").toLowerCase().includes(q) || (p.names || []).some(([, nn]) => nn.toLowerCase().includes(q))).slice(0, 6);
+      const chs = CH.CHARS.filter((c) => c.n.toLowerCase().includes(q) || (c.en || "").toLowerCase().includes(q)).slice(0, 6);
+      const evs = D.EVENTS.filter((e) => e.h.toLowerCase().includes(q) || (e.p || "").toLowerCase().includes(q)).slice(0, 6);
+      let h = "";
+      if (pls.length) h += `<div class="pr-g"><b>${tr("地点")}</b>${pls.map((p) => `<button data-sp="${p.id}">${esc(p.n)} <small>${esc(p.en || "")}</small></button>`).join("")}</div>`;
+      if (chs.length) h += `<div class="pr-g"><b>${tr("人物")}</b>${chs.map((c) => `<button data-c="${c.id}" data-jump="1">${esc(c.n)} <small>${esc(c.en || "")}</small></button>`).join("")}</div>`;
+      if (evs.length) h += `<div class="pr-g"><b>${tr("编年")}</b>${evs.map((e) => `<button data-se="${D.EVENTS.indexOf(e)}">${esc(e.h)} <small>${esc(fmt(e.t, hasDay(e.t)))}</small></button>`).join("")}</div>`;
+      sRes.innerHTML = h || `<p class="muted">${tr("未找到匹配内容")}</p>`;
+      sRes.hidden = false;
+    });
+    sRes.addEventListener("click", (e) => {
+      const sp = e.target.closest("[data-sp]");
+      if (sp) {
+        const p = P[sp.dataset.sp]; if (!p) return;
+        sIn.value = ""; sRes.hidden = true;
+        if (!visible(p, T)) { pause(); setT(clamp(p.from ?? -100, T0 + 1, T1 - 1), true); }
+        flyTo(p.x, p.y, p.minor ? 360 : 520); userMoved = Date.now(); showPlace(p);
+        if (innerWidth <= 860) document.body.classList.remove("panel-open");
+        return;
+      }
+      const se = e.target.closest("[data-se]");
+      if (se) {
+        const ev = D.EVENTS[+se.dataset.se];
+        sIn.value = ""; sRes.hidden = true;
+        if (ev) goEvent(ev);
+        if (innerWidth <= 860) document.body.classList.remove("panel-open");
+        return;
+      }
+      if (e.target.closest("[data-c]")) { sIn.value = ""; sRes.hidden = true; }
+    });
     // 编年
     let html = "", cur = null;
     D.EVENTS.forEach((e, i) => {
@@ -886,13 +1074,14 @@
       html += `<li class="k-${e.k}" data-i="${i}"><span class="d">${esc(fmt(e.t, hasDay(e.t)).replace(/^(第.纪元|FA|SA|TA|FoA) /, ""))}</span><b>${esc(e.h)}</b>${e.b ? `<button class="mini go-b" data-b="${e.b}" title="${tr("身临战场")}">⚔</button>` : ""}${e.l ? `<button class="mini go-l" data-l="${e.l}" title="${tr("读传说")}">❧</button>` : ""}${(() => { const m = MO.find((m) => Math.abs(m.t - e.t) < (e.t > 6900 ? 0.006 : 0.6) && (m.at === e.at || e.t > 6900)); return m ? `<button class="mini go-m" data-mo="${m.id}" title="${tr("关键时刻")}">✦</button>` : ""; })()}</li>`;
     });
     $("#chron").innerHTML = html + "</ul>";
+    chronLis = $$("#chron li");
     $("#chron").addEventListener("click", (e) => { if (e.target.closest(".mini")) return; const li = e.target.closest("li[data-i]"); if (li) goEvent(D.EVENTS[+li.dataset.i]); });
     // 传说
     $("#legends").innerHTML = `<p class="hint">${tr("每个传说是一段引导式阅读：点“下一段”，地图会飞到故事发生的地方，时间也会拨到那一年。")}</p>` + D.LEGENDS.map((l) => `<button class="lg-card" data-l="${l.id}"><span class="lg-y">${esc(fmt(l.beats[0].t).replace(/ \d+( 年)?$/, ""))}</span><b>${esc(l.n)}</b><i>${esc(l.en)}</i><span class="lg-s">${esc(l.sub)}</span><span class="lg-n">${l.beats.length} ${tr("段")}</span></button>`).join("") +
       (MO.length ? `<h4 class="ch-race mo-h">✦ ${tr("关键时刻")}</h4><p class="hint">${tr("那些被反复讲述的瞬间。播放时间轴走到这里会自动停下，也可以直接点开。")}</p><div class="mo-list">${MO.map((m) => `<button class="mo-card" data-mo="${m.id}"><span class="mo-y">${esc(fmt(m.t, hasDay(m.t)))}</span><b>${esc(m.h)}</b>${m.line ? `<i>${esc(m.line)}</i>` : ""}</button>`).join("")}</div>` : "");
-    // 人物
-    $("#chars").innerHTML = `<p class="hint">${tr("中洲的 {n} 位人物。点一个人，地图会跳到他出现的年代和地点；在人物卡里点“足迹”，就能跟着他走完那段路。地图上走动的小队就是正在旅行的人。").replace("{n}", CH.CHARS.length)}</p>` +
-      CH.RACES.map(([r, n]) => `<h4 class="ch-race">${esc(n)}</h4><div class="cgrid">${CH.CHARS.filter((c) => c.r === r).map((c) => `<button class="cbtn" data-c="${c.id}" data-jump="1"><span class="cb-pt">${PT(c)}</span><b>${esc(c.n)}</b></button>`).join("")}</div>`).join("");
+    // 人物（延迟生成 65+ 幅复杂 SVG 肖像，避免首屏卡顿）
+    if (typeof requestIdleCallback === "function") requestIdleCallback(ensureCharsBuilt, { timeout: 2500 });
+    else setTimeout(ensureCharsBuilt, 1200);
     // 战役
     $("#battles").innerHTML = `<p class="hint">${tr("选一场战役进入战场：分阶段推演兵力移动，你会以一个普通人的视角经历它。")}</p>` + [...BATTLES].sort((a, b) => a.t - b.t).map((b) => `<button class="bt-card" data-b="${b.id}"><span class="bt-y">${esc(b.age)}</span><b>${esc(b.n)}</b><i>${esc(b.en)}</i><span class="bt-s"><em class="w">${esc(b.sides.w)}</em> ${tr("对")} <em class="e">${esc(b.sides.e)}</em></span><span class="bt-go">${tr("进入战场 ▸")}</span></button>`).join("");
     document.addEventListener("click", (e) => {
@@ -906,16 +1095,16 @@
       const n = e.target.closest("[data-beat]"); if (n) return openLegend(reading.id, +n.dataset.beat);
     });
   }
-  function setTab(t) { panelTab = t; $$("#tabs [data-tab]").forEach((b) => b.classList.toggle("on", b.dataset.tab === t)); $$(".pane").forEach((p) => (p.hidden = p.dataset.pane !== t)); if (t !== "legends") closeLegend(); document.body.classList.add("panel-open"); if (t === "chron") setTimeout(() => $("#chron li.cur")?.scrollIntoView({ block: "center" }), 60); }
-  function markChron(idx) { $$("#chron li").forEach((li) => { const i = +li.dataset.i; li.classList.toggle("past", i < idx); li.classList.toggle("cur", i === idx); }); }
+  function setTab(t) { if (t === "chars") ensureCharsBuilt(); panelTab = t; $$("#tabs [data-tab]").forEach((b) => b.classList.toggle("on", b.dataset.tab === t)); $$(".pane").forEach((p) => (p.hidden = p.dataset.pane !== t)); if (t !== "legends") closeLegend(); document.body.classList.add("panel-open"); if (t === "chron") setTimeout(() => $("#chron li.cur")?.scrollIntoView({ block: "center" }), 60); }
+  function markChron(idx) { chronLis.forEach((li, i) => { li.classList.toggle("past", i < idx); li.classList.toggle("cur", i === idx); }); }
 
   let moAuto = true; try { moAuto = localStorage.getItem("me-mo-auto") !== "0"; } catch (e) {}
   let moCur = null;
   function openMoment(id, fromPlay) {
     const i = MOI[id]; if (i == null) return; const m = MO[i];
     const wasPlaying = fromPlay || (moCur && moCur.resume);
-    pause(); moCur = { id, resume: !!wasPlaying };
-    if (Math.abs(T - m.t) > 1e-6) setT(m.t + 1e-7);
+    lastMoId = id; pause(); moCur = { id, resume: !!wasPlaying };
+    if (T <= m.t + 1e-6 || Math.abs(T - m.t) > 1e-5) setT(m.t + 2e-6, true);
     const [x, y] = xy(m.at); flyTo(x, y, m.t > 6900 ? 260 : 520, 1600); pulse(x, y, "k-ring"); userMoved = Date.now();
     const who = (m.who || []).filter((w) => CI[w]);
     const lg = m.legend && D.LEGENDS.find((l) => l.id === m.legend);
@@ -941,6 +1130,7 @@
   function closeMoment(resume) {
     const box = $("#moment"); if (box.hidden) return;
     const r = resume && moCur && moCur.resume; box.hidden = true; box.innerHTML = ""; moCur = null;
+    if (location.hash.startsWith("#m=")) history.replaceState(null, "", location.pathname + location.search);
     if (r) play();
   }
   function openLegend(id, k) {
@@ -950,13 +1140,13 @@
     r.innerHTML = `<button class="rd-back">← ${tr("全部传说")}</button><div class="rd-head"><i>${esc(lg.en)}</i><h3>${esc(lg.n)}</h3><p>${esc(lg.sub)}</p></div>
       <ol class="rd-dots">${lg.beats.map((x, i) => `<li><button data-beat="${i}" class="${i === k ? "on" : i < k ? "past" : ""}" title="${esc(x.h)}"></button></li>`).join("")}</ol>
       <article class="rd-beat" key="${k}"><div class="rd-d">${esc(fmt(b.t, hasDay(b.t)))}${placeName(b.at) ? " · " + esc(placeName(b.at)) : ""}</div><h4>${esc(b.h)}</h4><p>${esc(b.p)}</p></article>
-      <div class="rd-nav">${k > 0 ? `<button data-beat="${k - 1}">‹ ${tr("上一段")}</button>` : "<span></span>"}<span class="rd-k">${k + 1} / ${lg.beats.length}</span>${k < lg.beats.length - 1 ? `<button class="pri" data-beat="${k + 1}">${tr("下一段")} ›</button>` : `<button class="pri rd-back">${tr("读完了 · 回到列表")}</button>`}</div>
+      <div class="rd-nav">${k > 0 ? `<button data-beat="${k - 1}">‹ ${tr("上一段")}</button>` : "<span></span>"}<span class="rd-k">${k + 1} / ${lg.beats.length}</span>${k < lg.beats.length - 1 ? `<button data-beat="${k + 1}" class="pri">${tr("下一段")} ›</button>` : `<button class="pri rd-back">${tr("读完了 · 回到列表")}</button>`}</div>
       ${(() => { const near = (m) => { let bi = -1, bd = 1e9; lg.beats.forEach((x, j) => { const d = Math.abs(x.t - m.t) + (x.at === m.at ? 0 : m.t > 6900 ? 0.004 : 3); if (d < bd) { bd = d; bi = j; } }); return bd < (m.t > 6900 ? 0.03 : 30) ? bi : -1; }; const ms = MO.filter((m) => m.legend === id && near(m) === k); return ms.map((m) => `<button class="go-m wide" data-mo="${m.id}">✦ ${tr("关键时刻")}${EN ? ": " : "："}${esc(m.h)}</button>`).join(""); })()}
       ${(() => { const bs = BATTLES.filter((x) => Math.abs(x.t - b.t) < 0.05); return bs.length ? `<button class="go-b wide" data-b="${bs[0].id}">⚔ ${tr("身临")}${esc(bs[0].n)}</button>` : ""; })()}`;
     setT(b.t + 1e-7); const [x, y] = xy(b.at); flyTo(x, y, b.z || 700); pulse(x, y, "k-ring"); userMoved = Date.now();
     history.replaceState(null, "", `#l=${id}&k=${k}`);
   }
-  function closeLegend() { reading = null; $("#reader").hidden = true; $("#legends").hidden = false; }
+  function closeLegend() { reading = null; $("#reader").hidden = true; $("#legends").hidden = false; if (location.hash.startsWith("#l=")) history.replaceState(null, "", location.pathname + location.search); }
 
   /* ======================= 战役 ======================= */
   const B = { el: $("#battle"), svg: $("#bsvg"), cur: null, k: -1, cam: { x: 0, y: 0, w: 1000 }, raf: 0, auto: false, timer: 0 };
@@ -970,9 +1160,14 @@
     defs.innerHTML = `<pattern id="bp-w" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" class="bpw"/><circle cx="4" cy="4" r="1.3" class="bpd"/></pattern>
       <pattern id="bp-e" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" class="bpe"/><path d="M2 2l4 4M6 2l-4 4" class="bpd"/></pattern>
       <pattern id="bp-n" width="10" height="10" patternUnits="userSpaceOnUse"><rect width="10" height="10" class="bpn"/><circle cx="5" cy="5" r="1.2" class="bpd"/></pattern>
-      <pattern id="bt-grid" width="80" height="80" patternUnits="userSpaceOnUse"><path d="M80 0H0V80" fill="none" stroke="rgba(240,212,138,.05)" stroke-width="1"/><path d="M40 0V80M0 40H80" fill="none" stroke="rgba(240,212,138,.025)" stroke-width=".7" stroke-dasharray="3 3"/></pattern>
-      <radialGradient id="bt-parch" cx="50%" cy="45%" r="65%"><stop offset="0%" stop-color="#584b33"/><stop offset="65%" stop-color="#483d28"/><stop offset="100%" stop-color="#362c1c"/></radialGradient>
-      <radialGradient id="bt-vig" cx="50%" cy="50%" r="72%"><stop offset="55%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#090503" stop-opacity=".65"/></radialGradient>
+      <pattern id="bt-grid" width="80" height="80" patternUnits="userSpaceOnUse"><path d="M80 0H0V80" fill="none" stroke="rgba(240,212,138,.055)" stroke-width="1"/><path d="M40 0V80M0 40H80" fill="none" stroke="rgba(240,212,138,.028)" stroke-width=".7" stroke-dasharray="3 3"/></pattern>
+      <radialGradient id="bt-parch" cx="50%" cy="45%" r="65%"><stop offset="0%" stop-color="#5d4f36"/><stop offset="62%" stop-color="#493d28"/><stop offset="100%" stop-color="#33291a"/></radialGradient>
+      <radialGradient id="bt-hill-g" cx="38%" cy="35%" r="70%"><stop offset="0%" stop-color="#766544"/><stop offset="65%" stop-color="#5a4b31"/><stop offset="100%" stop-color="#433722"/></radialGradient>
+      <linearGradient id="bt-cliff-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#504233"/><stop offset="55%" stop-color="#382d22"/><stop offset="100%" stop-color="#221b14"/></linearGradient>
+      <linearGradient id="bt-dark-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#322119"/><stop offset="60%" stop-color="#20140f"/><stop offset="100%" stop-color="#120a07"/></linearGradient>
+      <linearGradient id="bt-water-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#325260"/><stop offset="50%" stop-color="#253d47"/><stop offset="100%" stop-color="#1a2c34"/></linearGradient>
+      <radialGradient id="bt-forest-g" cx="45%" cy="40%" r="65%"><stop offset="0%" stop-color="#3c502b"/><stop offset="70%" stop-color="#2b3a1e"/><stop offset="100%" stop-color="#1d2814"/></radialGradient>
+      <radialGradient id="bt-vig" cx="50%" cy="50%" r="72%"><stop offset="55%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#090503" stop-opacity=".68"/></radialGradient>
       <filter id="bblur"><feGaussianBlur stdDeviation="14"/></filter>
       <radialGradient id="bglow"><stop offset="0" stop-color="#ffb347" stop-opacity=".9"/><stop offset=".5" stop-color="#ff5a1f" stop-opacity=".35"/><stop offset="1" stop-color="#ff5a1f" stop-opacity="0"/></radialGradient>
       <marker id="bah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0L10,5L0,10L2.5,5z" class="bah"/></marker>`;
@@ -981,45 +1176,64 @@
       if (tr.k === "poly") {
         const d = tr.pts.length <= 4 ? "M" + tr.pts.join("L") + "Z" : cr(tr.pts, true);
         el("path", { d, class: "bt-" + tr.f }, scene);
-        if (tr.f === "hill" && tr.pts.length > 4) { const c = centroid(tr.pts); [0.72, 0.45].forEach((sc) => el("path", { d: cr(tr.pts.map((p) => [lerp(c[0], p[0], sc), lerp(c[1], p[1], sc)]), true), class: "bt-hill-in" }, scene)); }
-        if (tr.f === "water" && tr.pts.length > 4) { const c = centroid(tr.pts); el("path", { d: cr(tr.pts.map((p) => [lerp(c[0], p[0], 0.82), lerp(c[1], p[1], 0.82)]), true), class: "bt-water-in" }, scene); }
+        if (tr.f === "hill" && tr.pts.length > 4) { const c = centroid(tr.pts); [0.74, 0.48, 0.25].forEach((sc) => el("path", { d: cr(tr.pts.map((p) => [lerp(c[0], p[0], sc), lerp(c[1], p[1], sc)]), true), class: "bt-hill-in" }, scene)); }
+        if (tr.f === "water" && tr.pts.length > 4) { const c = centroid(tr.pts); [0.85, 0.68].forEach((sc) => el("path", { d: cr(tr.pts.map((p) => [lerp(c[0], p[0], sc), lerp(c[1], p[1], sc)]), true), class: "bt-water-in" }, scene)); }
         if (tr.f === "cliff" || tr.f === "dark") { seed = tr.pts.length * 31; const g = el("g", { class: "bt-hatch" + (tr.f === "dark" ? " dk" : "") }, scene); const xs = tr.pts.map((p) => p[0]), ys = tr.pts.map((p) => p[1]); for (let i = 0; i < 160; i++) { const x = lerp(Math.min(...xs), Math.max(...xs), rnd()), y = lerp(Math.min(...ys), Math.max(...ys), rnd()); if (inPoly(x, y, tr.pts)) el("path", { d: `M${x - 7},${y + 5}L${x},${y - 6}L${x + 7},${y + 5}M${x},${y - 6}L${x},${y + 3}` }, g); } }
+        if (tr.f === "forest") { seed = tr.pts.length * 19; const g = el("g", { class: "bt-trees" }, scene); const xs = tr.pts.map((p) => p[0]), ys = tr.pts.map((p) => p[1]); for (let i = 0; i < 110; i++) { const x = lerp(Math.min(...xs), Math.max(...xs), rnd()), y = lerp(Math.min(...ys), Math.max(...ys), rnd()), r = 4.5 + rnd() * 3.5; if (inPoly(x, y, tr.pts)) el("circle", { cx: x.toFixed(1), cy: y.toFixed(1), r: r.toFixed(1) }, g); } }
         if (tr.f === "marsh") { const g = el("g", { class: "bt-reeds" }, scene); seed = 99; const xs = tr.pts.map((p) => p[0]), ys = tr.pts.map((p) => p[1]); for (let i = 0; i < 90; i++) { const x = lerp(Math.min(...xs), Math.max(...xs), rnd()), y = lerp(Math.min(...ys), Math.max(...ys), rnd()); if (inPoly(x, y, tr.pts)) el("path", { d: `M${x - 5},${y}h10M${x - 2},${y - 4}v4M${x + 2},${y - 3}v3` }, g); } }
       }
-      else if (tr.k === "line") el("path", { d: cr(tr.pts), class: "bl-" + tr.s }, scene);
-      else if (tr.k === "tower") { const g = el("g", { class: "b-tower", transform: `translate(${tr.x},${tr.y})` }, scene); el("circle", { r: tr.r }, g); el("circle", { r: tr.r * 0.78, class: "cren" }, g); el("circle", { r: tr.r * 0.45, class: "in" }, g); }
-      else if (tr.k === "city") { const g = el("g", { class: "b-city", transform: `translate(${tr.x},${tr.y})` }, scene); el("circle", { r: tr.r * 1.04, class: "base" }, g); for (let i = 7; i >= 1; i--) el("path", { d: `M0,${-tr.r * i / 7}A${tr.r * i / 7},${tr.r * i / 7} 0 0,1 0,${tr.r * i / 7}`, class: "tier" }, g); el("path", { d: `M-6,-8L${tr.r * 1.02},0L-6,8Z`, class: "prow" }, g); el("circle", { cx: tr.r * 0.22, cy: 0, r: 3.5, fill: "#fff8e7" }, g); }
-      else if (tr.k === "gate") { const g = el("g", { class: "b-gate", transform: `translate(${tr.x},${tr.y})` }, scene); el("rect", { x: -11, y: -7, width: 22, height: 14, rx: 1.5 }, g); el("path", { d: "M-6,-7V7M-2,-7V7M2,-7V7M6,-7V7M-11,0H11", class: "bars" }, g); }
-      else if (tr.k === "peak") { const g = el("g", { class: "b-peak" + (tr.fire ? " fire" : ""), transform: `translate(${tr.x},${tr.y})` }, scene), h = tr.h; el("path", { d: `M${-h},${h * 0.5}L${-h * 0.35},${-h * 0.25}L-7,${-h * 0.55}L7,${-h * 0.55}L${h * 0.4},${-h * 0.2}L${h},${h * 0.5}L0,${h * 0.62}Z` }, g); el("path", { d: `M-7,${-h * 0.55}L-2,${h * 0.1}L${-h * 0.45},${h * 0.48}M7,${-h * 0.55}L4,${h * 0.15}L${h * 0.45},${h * 0.45}`, class: "ridge" }, g); if (tr.fire) el("ellipse", { cx: 0, cy: -h * 0.52, rx: 7, ry: 3.2, class: "crater" }, g); }
+      else if (tr.k === "line") {
+        const d = cr(tr.pts);
+        if (tr.s === "river") el("path", { d, class: "bl-river-b" }, scene);
+        el("path", { d, class: "bl-" + tr.s }, scene);
+        if (tr.s === "river") el("path", { d, class: "bl-river-in" }, scene);
+        if (tr.s === "wall") el("path", { d, class: "bl-wall-cren" }, scene);
+      }
+      else if (tr.k === "tower") { const g = el("g", { class: "b-tower", transform: `translate(${tr.x},${tr.y})` }, scene); el("circle", { r: tr.r * 1.18, class: "shd" }, g); el("circle", { r: tr.r }, g); el("circle", { r: tr.r * 0.78, class: "cren" }, g); el("circle", { r: tr.r * 0.46, class: "in" }, g); el("circle", { r: tr.r * 0.18, fill: "#ffe4a0" }, g); }
+      else if (tr.k === "city") { const g = el("g", { class: "b-city", transform: `translate(${tr.x},${tr.y})` }, scene); el("circle", { r: tr.r * 1.08, class: "base" }, g); for (let i = 7; i >= 1; i--) { const rr = (tr.r * i) / 7; el("path", { d: `M0,${-rr}A${rr},${rr} 0 0,1 0,${rr}`, class: "tier" }, g); el("path", { d: `M0,${-rr}A${rr},${rr} 0 0,1 0,${rr}`, class: "tier-cren" }, g); } el("path", { d: `M-12,-14L${tr.r * 1.05},0L-12,14Z`, class: "prow" }, g); el("path", { d: `M-12,0L${tr.r * 1.05},0L-12,14Z`, fill: "rgba(0,0,0,.22)" }, g); el("circle", { cx: tr.r * 0.22, cy: 0, r: 6, fill: "#f6efe0", stroke: "#3a3022", "stroke-width": 1.2 }, g); el("circle", { cx: tr.r * 0.22, cy: 0, r: 2.6, fill: "#fff8d8" }, g); }
+      else if (tr.k === "gate") { const g = el("g", { class: "b-gate", transform: `translate(${tr.x},${tr.y})` }, scene); el("rect", { x: -13, y: -8, width: 26, height: 16, rx: 2 }, g); el("path", { d: "M-7,-8V8M-2.5,-8V8M2.5,-8V8M7,-8V8M-13,0H13", class: "bars" }, g); el("circle", { cx: -11, cy: 0, r: 2.2, fill: "#d8c8a8" }, g); el("circle", { cx: 11, cy: 0, r: 2.2, fill: "#d8c8a8" }, g); }
+      else if (tr.k === "peak") { const g = el("g", { class: "b-peak" + (tr.fire ? " fire" : ""), transform: `translate(${tr.x},${tr.y})` }, scene), h = tr.h; el("path", { d: `M${-h},${h * 0.5}L${-h * 0.35},${-h * 0.25}L-7,${-h * 0.55}L7,${-h * 0.55}L${h * 0.4},${-h * 0.2}L${h},${h * 0.5}L0,${h * 0.62}Z` }, g); el("path", { d: `M7,${-h * 0.55}L${h * 0.4},${-h * 0.2}L${h},${h * 0.5}L0,${h * 0.62}L0,${-h * 0.55}Z`, fill: "rgba(0,0,0,.28)", stroke: "none" }, g); el("path", { d: `M-7,${-h * 0.55}L-2,${h * 0.1}L${-h * 0.45},${h * 0.48}M7,${-h * 0.55}L4,${h * 0.15}L${h * 0.45},${h * 0.45}`, class: "ridge" }, g); if (tr.fire) { el("path", { d: `M0,${-h * 0.5}Q6,${-h * 0.1} 14,${h * 0.35}M-2,${-h * 0.5}Q-8,${-h * 0.15} -12,${h * 0.28}`, stroke: "#ff6a18", "stroke-width": 2.2, fill: "none" }, g); el("ellipse", { cx: 0, cy: -h * 0.52, rx: 7.5, ry: 3.4, class: "crater" }, g); } }
       if (tr.n) { const c = tr.k === "poly" ? centroid(tr.pts) : tr.k === "line" ? tr.pts[Math.floor(tr.pts.length / 2)] : [tr.x, tr.y + (tr.r || tr.h || 10) + 14]; el("text", { x: c[0], y: c[1], class: "b-tn" + (tr.k === "line" ? " ln" : "") }, scene).textContent = tr.n; }
       if (tr.k === "label") el("text", { x: tr.x, y: tr.y, class: "b-tn lb" }, scene).textContent = tr.n;
     });
     el("rect", { x: -200, y: -200, width: 1400, height: 1000, class: "bt-grid" }, scene);
     el("rect", { x: 0, y: 0, width: 1000, height: 600, class: "bt-vig" }, scene);
     B.arrows = el("g", { class: "b-arrows" }, scene);
-    B.units = {};
+    B.units = {}; B.youId = b.youUnit || "dike"; B.userYou = null; B.morale = 52; B.valor = 0; B.actsDone = {}; B.cmdCount = 0;
     const ug = el("g", { class: "b-units" }, scene);
-    b.units.forEach((u) => {
-      const g = el("g", { class: `bu s-${SIDEC[u.side]} u-${u.kind}` }, ug);
+    B.melee = el("g", { class: "b-melee" }, scene);
+    B.fx = el("g", { class: "b-fx" }, s);
+    B.labels = el("g", { class: "b-labels" }, s);
+    b.units.forEach((u, idx) => {
+      const g = el("g", { class: `bu s-${SIDEC[u.side]} u-${u.kind}`, "data-uid": u.id }, ug);
+      const body = el("g", { class: "bu-body" }, g);
       const w = u.w || 24, h = u.h || 24;
       const hs = u.kind === "hero" && CB ? CH.HEROES[b.id + "." + u.id] : null;
-      if (hs) { el("ellipse", { rx: 8 + hs.length * 9, ry: 5, cy: 8, class: "hb hb-sh" }, g); hs.forEach((id, i) => { const gg = el("g", { transform: `translate(${((i - (hs.length - 1) / 2) * 20).toFixed(1)},8)` }, g), bb = el("g", { class: "bob", style: `animation-delay:-${i * 0.2}s` }, gg); el("use", { href: "#chb-" + id, transform: "scale(.8)" }, bb); }); }
-      else if (u.kind === "hero") { el("circle", { r: 7, class: "hb" }, g); el("path", { d: "M0,-7V-22L12,-18L0,-14", class: "flag" }, g); }
-      else if (u.kind === "nazgul") { el("path", { d: "M-18,-4Q-8,-12 0,0Q8,-12 18,-4Q8,-6 0,6Q-8,-6 -18,-4Z", class: "naz" }, g); }
-      else if (u.kind === "eagle") { for (let i = 0; i < 5; i++) el("path", { d: `M${-w / 2 + i * (w / 4) - 10},${(i % 2) * 10 - 4}q10,-10 10,0q0,-10 10,0`, class: "eag" }, g); }
-      else if (u.kind === "ship") { for (let i = 0; i < 4; i++) el("path", { d: `M-12,${-h / 2 + i * (h / 4)}h24l-5,8h-14z M0,${-h / 2 + i * (h / 4)}v-12l9,8z`, class: "shp" }, g); }
-      else if (u.kind === "forest") { seed = 5; for (let i = 0; i < 60; i++) el("circle", { cx: (rnd() - 0.5) * w, cy: (rnd() - 0.5) * h, r: 6 + rnd() * 6, class: "hu" }, g); }
-      else if (u.kind === "troll") { el("rect", { x: -11, y: -11, width: 22, height: 22, class: "blk tr" }, g); el("path", { d: "M-6,-6L6,6M6,-6L-6,6", class: "tri" }, g); }
-      else if (u.kind === "beast") { el("ellipse", { rx: w / 2, ry: h / 2, class: "blk" }, g); for (let i = 0; i < 3; i++) el("circle", { cx: (i - 1) * w / 3.5, r: Math.min(w, h) / 6, class: "bst" }, g); }
-      else { el("rect", { x: -w / 2, y: -h / 2, width: w, height: h, rx: 2, class: "blk" }, g); if (u.kind === "cav") el("path", { d: `M${-w / 2 + 4},${-4}l6,4l-6,4M${-w / 2 + 12},${-4}l6,4l-6,4`, class: "chev" }, g); if (u.kind === "arc" || u.kind === "elf") el("path", { d: `M${-w / 2 + 2},${h / 2 + 4}h${w - 4}`, class: "arcl" }, g); }
+      if (hs) { el("ellipse", { rx: 8 + hs.length * 9, ry: 5, cy: 8, class: "hb hb-sh" }, body); hs.forEach((id, i) => { const gg = el("g", { transform: `translate(${((i - (hs.length - 1) / 2) * 20).toFixed(1)},8)` }, body), bb = el("g", { class: "bob", style: `animation-delay:-${i * 0.2}s` }, gg); el("use", { href: "#chb-" + id, transform: "scale(.8)" }, bb); }); }
+      else if (u.kind === "hero") { el("circle", { r: 7, class: "hb" }, body); el("path", { d: "M0,-7V-22L12,-18L0,-14", class: "flag" }, body); }
+      else if (u.kind === "nazgul") { el("path", { d: "M-18,-4Q-8,-12 0,0Q8,-12 18,-4Q8,-6 0,6Q-8,-6 -18,-4Z", class: "naz" }, body); }
+      else if (u.kind === "eagle") { for (let i = 0; i < 5; i++) el("path", { d: `M${-w / 2 + i * (w / 4) - 10},${(i % 2) * 10 - 4}q10,-10 10,0q0,-10 10,0`, class: "eag" }, body); }
+      else if (u.kind === "ship") { for (let i = 0; i < 4; i++) el("path", { d: `M-14,${-h / 2 + i * (h / 4)}h28l-6,8.5h-16z M0,${-h / 2 + i * (h / 4)}v-14l11,9.5z`, class: "shp" }, body); }
+      else if (u.kind === "forest") { seed = 5; for (let i = 0; i < 60; i++) el("circle", { cx: (rnd() - 0.5) * w, cy: (rnd() - 0.5) * h, r: 6 + rnd() * 6, class: "hu" }, body); }
+      else if (u.kind === "troll") { el("rect", { x: -11, y: -11, width: 22, height: 22, rx: 3, class: "blk tr" }, body); el("path", { d: "M-6,-6L6,6M6,-6L-6,6", class: "tri" }, body); }
+      else if (u.kind === "beast") { el("ellipse", { rx: w / 2, ry: h / 2, class: "blk" }, body); for (let i = 0; i < 3; i++) { const bx = (i - 1) * (w / 3.2); el("path", { d: `M${bx - 7},4Q${bx - 7},-6 ${bx},-7Q${bx + 6},-6 ${bx + 7},4Z`, class: "bst" }, body); el("path", { d: `M${bx - 5},-5h10v-5h-10z`, fill: "#a83220", stroke: "#2a1008", "stroke-width": 0.7 }, body); el("path", { d: `M${bx - 7},1q-4,1 -6,-2M${bx + 7},1q4,1 6,-2`, stroke: "#f4ead0", "stroke-width": 1.2, fill: "none" }, body); } }
+      else { el("rect", { x: -w / 2, y: -h / 2, width: w, height: h, rx: 2.5, class: "blk" }, body); if (u.kind === "cav") el("path", { d: `M${-w / 2 + 4},${-4}l6,4l-6,4M${-w / 2 + 12},${-4}l6,4l-6,4`, class: "chev" }, body); if (u.kind === "arc" || u.kind === "elf") el("path", { d: `M${-w / 2 + 2},${h / 2 + 4}h${w - 4}`, class: "arcl" }, body); }
       const tp = !hs && CB && CH.TROOPS ? CH.TROOPS[b.id + "." + u.id] : null;
       let top = hs ? -42 : u.kind === "hero" ? -26 : -(u.h || 24) / 2 - 6;
-      if (tp) top = troops(g, u, tp, w, h, top);
-      const tx = el("text", { y: top, class: "bu-n" }, g); tx.textContent = u.n;
-      B.units[u.id] = { u, g, x: u.x, y: u.y, o: u.o ?? 1 };
+      if (tp) top = troops(body, u, tp, w, h, top);
+      if (tp || hs) g.classList.add("has-sol");
+      const lg = el("g", { class: `bu-lbl s-${SIDEC[u.side]}`, "data-uid": u.id }, B.labels);
+      const ldr = el("path", { class: "bu-ldr" }, lg);
+      const tx = el("text", { class: "bu-n" }, lg); tx.textContent = u.n;
+      B.units[u.id] = { u, idx, g, body, lg, ldr, tx, w, h, top, tp, hs, x: u.x, y: u.y, o: u.o ?? 1, lx: u.x, ly: u.y + top };
       place(B.units[u.id], true);
     });
-    B.fx = el("g", { class: "b-fx" }, s);
+    const youSol = { hornburg: "westfold", pelennor: "gondor", morannon: "gondor", fivearmies: "laketown", lastalliance: "numenor", nirnaeth: "edain" }[b.id] || "gondor";
+    B.youMk = el("g", { class: "b-you-mk", style: "opacity:0" }, B.labels);
+    el("circle", { r: 12, class: "ym-ring" }, B.youMk);
+    if (CB) { const yg = el("g", { class: "bob" }, B.youMk); el("use", { href: "#chb-sol-" + youSol, transform: "scale(.52)" }, yg); }
+    el("rect", { x: -18, y: -35, width: 36, height: 13, rx: 6.5, class: "ym-bg" }, B.youMk);
+    el("text", { y: -26, class: "ym-tx" }, B.youMk).textContent = "★ " + tr("你");
     $("#bTitle").textContent = b.n; $("#bEn").textContent = dot(b.en, b.age);
     renderIntro(b);
     history.replaceState(null, "", "#b=" + id);
@@ -1056,32 +1270,229 @@
     return top;
   }
   function centroid(pts) { let x = 0, y = 0; pts.forEach((p) => { x += p[0]; y += p[1]; }); return [x / pts.length, y / pts.length]; }
-  function place(U, instant) { U.g.style.transition = instant ? "none" : ""; U.g.style.transform = `translate(${U.x}px,${U.y}px)`; U.g.style.opacity = U.o; }
+  function place(U, instant) {
+    U.g.style.transition = instant ? "none" : "";
+    U.g.style.transform = `translate(${U.x.toFixed(1)}px,${U.y.toFixed(1)}px)`;
+    U.g.style.opacity = U.o;
+    if (U.lg) {
+      U.lg.style.transition = instant ? "none" : "";
+      U.lg.style.transform = `translate(${(U.lx ?? U.x).toFixed(1)}px,${(U.ly ?? (U.y + U.top)).toFixed(1)}px)`;
+      U.lg.style.opacity = U.o;
+    }
+  }
+  function resolveBattleUnits(b, k, p) {
+    Object.values(B.units).forEach((U) => { U.x = U.u.x; U.y = U.u.y; U.o = U.u.o ?? 1; U.g.classList.remove("in-melee", "is-you-unit"); U.body.classList.remove("face-l"); });
+    for (let i = 0; i <= k; i++) Object.entries(b.phases[i].set || {}).forEach(([id, v]) => { const U = B.units[id]; if (!U) return; if (Array.isArray(v)) { U.x = v[0]; U.y = v[1]; } else { if (v.x != null) U.x = v.x; if (v.y != null) U.y = v.y; if (v.o != null) U.o = v.o; } });
+    // 收集交锋对：显式 clash:a,b + 距离小于 92px 的敌对可见部队
+    const pairs = [], seen = new Set();
+    const addPair = (A, Bb) => {
+      if (!A || !Bb || A.o <= 0.2 || Bb.o <= 0.2) return;
+      const key = [A.u.id, Bb.u.id].sort().join(",");
+      if (seen.has(key)) return; seen.add(key);
+      pairs.push(A.u.side === "e" && Bb.u.side !== "e" ? [Bb, A] : [A, Bb]);
+    };
+    (p.fx || []).filter((f) => f.startsWith("clash:")).forEach((f) => { const [a, b2] = f.slice(6).split(","); addPair(B.units[a], B.units[b2]); });
+    const vis = Object.values(B.units).filter((U) => U.o > 0.2 && U.u.kind !== "forest" && U.u.kind !== "eagle");
+    vis.forEach((U1) => vis.forEach((U2) => { if (U1.u.side === "w" && U2.u.side === "e" && Math.hypot(U2.x - U1.x, U2.y - U1.y) < 92) addPair(U1, U2); }));
+    // 1) 交锋对保持前线对峙间距，避免两个兵块叠在同一个坐标上
+    pairs.forEach(([A, Bb]) => {
+      let dx = Bb.x - A.x, dy = Bb.y - A.y, d = Math.hypot(dx, dy);
+      if (d < 1) { dx = 1; dy = 0; d = 1; }
+      const stand = clamp((Math.max(A.w, 30) + Math.max(Bb.w, 30)) * 0.42, 46, 78);
+      if (d < stand) { const push = (stand - d) * 0.5, ux = dx / d, uy = dy / d; A.x -= ux * push; A.y -= uy * push; Bb.x += ux * push; Bb.y += uy * push; }
+    });
+    // 2) 多部队防堆叠排斥（如希奥顿、伊奥温与巫王同处一处时自动呈三角对峙）
+    for (let iter = 0; iter < 3; iter++) {
+      for (let i = 0; i < vis.length; i++) for (let j = i + 1; j < vis.length; j++) {
+        const A = vis[i], Bb = vis[j];
+        let dx = Bb.x - A.x, dy = Bb.y - A.y, d = Math.hypot(dx, dy);
+        const minSep = A.u.side === Bb.u.side ? 42 : 48;
+        if (d < minSep) {
+          if (d < 1) { const ang = (A.idx - Bb.idx) * 1.7; dx = Math.cos(ang); dy = Math.sin(ang); d = 1; }
+          const push = (minSep - d) * 0.42, ux = dx / d, uy = dy / d;
+          A.x -= ux * push; A.y -= uy * push; Bb.x += ux * push; Bb.y += uy * push;
+        }
+      }
+    }
+    // 3) 设置交锋朝向与近战突刺向量
+    pairs.forEach(([A, Bb]) => {
+      const dx = Bb.x - A.x, dy = Bb.y - A.y, d = Math.hypot(dx, dy) || 1, ux = dx / d, uy = dy / d;
+      A.g.classList.add("in-melee"); A.g.style.setProperty("--mx", (ux * 6.5).toFixed(1) + "px"); A.g.style.setProperty("--my", (uy * 6.5).toFixed(1) + "px");
+      Bb.g.classList.add("in-melee"); Bb.g.style.setProperty("--mx", (-ux * 6.5).toFixed(1) + "px"); Bb.g.style.setProperty("--my", (-uy * 6.5).toFixed(1) + "px");
+      if (Bb.x < A.x - 4) A.body.classList.add("face-l");
+      if (A.x < Bb.x - 4) Bb.body.classList.add("face-l");
+    });
+    return pairs;
+  }
+  function placeBattleLabels() {
+    const all = Object.values(B.units);
+    all.forEach((U) => { U.lx = U.x; U.ly = U.y + U.top; U.lw = (U.tx.textContent.length || 4) * 11.5 + 14; U.ldr.setAttribute("d", ""); });
+    const vis = all.filter((U) => U.o > 0.2).sort((a, b) => a.ly - b.ly);
+    for (let iter = 0; iter < 4; iter++) {
+      for (let i = 0; i < vis.length; i++) for (let j = i + 1; j < vis.length; j++) {
+        const A = vis[i], Bb = vis[j];
+        const ox = (A.lw + Bb.lw) * 0.52 - Math.abs(A.lx - Bb.lx), oy = 17 - Math.abs(A.ly - Bb.ly);
+        if (ox > 0 && oy > 0) {
+          const sy = A.ly <= Bb.ly ? -1 : 1, sx = A.lx <= Bb.lx ? -1 : 1;
+          A.ly += sy * oy * 0.55; Bb.ly -= sy * oy * 0.55;
+          A.lx += sx * Math.min(ox * 0.25, 14); Bb.lx -= sx * Math.min(ox * 0.25, 14);
+        }
+      }
+    }
+    vis.forEach((U) => {
+      const ax = U.x - U.lx, ay = U.y + U.top + 6 - U.ly;
+      if (Math.hypot(ax, ay) > 8) U.ldr.setAttribute("d", `M0,3L${ax.toFixed(1)},${ay.toFixed(1)}`);
+    });
+  }
+  function renderMeleeZone(A, Bb) {
+    const mx = (A.x + Bb.x) / 2, my = (A.y + Bb.y) / 2, dx = Bb.x - A.x, dy = Bb.y - A.y, d = Math.hypot(dx, dy) || 1;
+    const ux = dx / d, uy = dy / d, px = -uy, py = ux, deg = (Math.atan2(dy, dx) * 180) / Math.PI;
+    const fw = clamp((A.h + Bb.h) * 0.58, 42, 92);
+    const zg = el("g", { class: "melee-zone", transform: `translate(${mx.toFixed(1)},${my.toFixed(1)})` }, B.melee);
+    const rg = el("g", { transform: `rotate(${deg.toFixed(1)})` }, zg);
+    el("ellipse", { rx: 22, ry: (fw * 0.55).toFixed(1), class: "mz-haze" }, rg);
+    el("path", { d: `M-5,${(-fw * 0.46).toFixed(1)}Q4,0 -5,${(fw * 0.46).toFixed(1)}`, class: "mz-line w" }, rg);
+    el("path", { d: `M5,${(-fw * 0.46).toFixed(1)}Q-4,0 5,${(fw * 0.46).toFixed(1)}`, class: "mz-line e" }, rg);
+    [-0.28, 0, 0.28].forEach((k, i) => {
+      const cy = (k * fw).toFixed(1), cg = el("g", { transform: `translate(0,${cy})` }, rg);
+      el("circle", { r: 13, class: "clash-ring", style: `animation-delay:${(i * 0.45).toFixed(2)}s` }, cg);
+      el("path", { d: "M-8,-6Q0,-12 8,-4M8,6Q0,12 -8,4", class: "mz-slash", style: `animation-delay:${(i * 0.3).toFixed(2)}s` }, cg);
+    });
+    if (CB) {
+      const solW = (A.tp && A.tp.s) || (A.u.kind === "elf" ? "elf" : "gondor");
+      const solE = (Bb.tp && Bb.tp.s) || (Bb.u.kind === "troll" ? "troll" : "orc");
+      [-0.36, -0.12, 0.12, 0.36].forEach((k, i) => {
+        const off = k * fw, wx = px * off - ux * 11, wy = py * off - uy * 11, ex = px * off + ux * 11, ey = py * off + uy * 11;
+        const wg = el("g", { transform: `translate(${wx.toFixed(1)},${(wy + 6).toFixed(1)})` }, zg);
+        const wb = el("g", { class: "mz-sol w", style: `--cx:${(ux * 8.5).toFixed(1)}px;--cy:${(uy * 8.5).toFixed(1)}px;animation-delay:-${(i * 0.22).toFixed(2)}s` }, wg);
+        el("use", { href: "#chb-sol-" + solW, transform: `${ux < -0.1 ? "scale(-.42,.42)" : "scale(.42)"}` }, wb);
+        const eg = el("g", { transform: `translate(${ex.toFixed(1)},${(ey + 6).toFixed(1)})` }, zg);
+        const eb = el("g", { class: "mz-sol e", style: `--cx:${(-ux * 8.5).toFixed(1)}px;--cy:${(-uy * 8.5).toFixed(1)}px;animation-delay:-${(i * 0.22 + 0.11).toFixed(2)}s` }, eg);
+        el("use", { href: "#chb-sol-" + solE, transform: `${ux > 0.1 ? "scale(-.42,.42)" : "scale(.42)"}` }, eb);
+        el("path", { d: "M-5,-5L5,5M5,-5L-5,5M-6,0H6M0,-6V6", class: "spark", transform: `translate(${(px * off).toFixed(1)},${(py * off - 4).toFixed(1)})`, style: `animation-delay:${(i * 0.27).toFixed(2)}s` }, zg);
+      });
+    }
+  }
+  function updateYouMarker(p, instant) {
+    if (!B.youMk || B.k < 0) { if (B.youMk) B.youMk.style.opacity = 0; return; }
+    let uid = B.userYou || (p && p.youAt) || B.cur.youUnit;
+    let U = B.units[uid];
+    if (!U || U.o <= 0.2) { U = Object.values(B.units).find((x) => x.u.side === "w" && x.o > 0.2); if (U) uid = U.u.id; }
+    Object.values(B.units).forEach((x) => x.g.classList.toggle("is-you-unit", x === U));
+    if (!U) { B.youMk.style.opacity = 0; return; }
+    B.youId = uid;
+    const yx = U.x - U.w * 0.5 - 12, yy = U.y + 6;
+    B.youMk.style.transition = instant ? "none" : "";
+    B.youMk.style.transform = `translate(${yx.toFixed(1)}px,${yy.toFixed(1)}px)`;
+    B.youMk.style.opacity = 1;
+  }
+  function renderTacticsBar() {
+    const box = $("#bTactics"); if (!box) return;
+    if (B.k < 0 || !B.cur) { box.hidden = true; return; }
+    box.hidden = false;
+    const U = B.units[B.youId], un = U ? U.u.n : "";
+    const m = clamp(Math.round(B.morale), 15, 95);
+    box.innerHTML = `<div class="bt-stat"><span class="bt-you-at">★ ${tr("随行")}：<b>${esc(un)}</b></span><div class="bt-mbar" title="${tr("双方战场士气态势")}"><i style="width:${m}%"></i></div><span class="bt-val">⚔ ${tr("战意")} <b>${B.valor}</b></span></div>
+      <div class="bt-cmds">
+        <button data-cmd="volley" title="${tr("向最近的敌军发动箭雨齐射")}">🏹 ${tr("齐射压制")}</button>
+        <button data-cmd="rally" title="${tr("吹响号角鼓舞全军士气")}">📯 ${tr("吹响战号")}</button>
+        <button data-cmd="charge" title="${tr("率领所在部队向敌阵发起白刃突击")}">⚔️ ${tr("率队突击")}</button>
+      </div>`;
+  }
+  function showBattleBanner(msg) {
+    const bn = $("#bBanner"); if (!bn) return;
+    bn.textContent = msg; bn.hidden = false; bn.classList.remove("on"); void bn.offsetWidth; bn.classList.add("on");
+    clearTimeout(B.bnTimer); B.bnTimer = setTimeout(() => (bn.hidden = true), 2800);
+  }
+  function floatBattleText(x, y, txt, cls = "") {
+    const g = el("g", { class: "b-ftx " + cls, transform: `translate(${x.toFixed(1)},${y.toFixed(1)})` }, B.labels);
+    el("text", {}, g).textContent = txt;
+    setTimeout(() => g.remove(), 1800);
+  }
+  function triggerExtraFx(f) {
+    if (!f) return;
+    const [kind, arg] = f.split(":");
+    if (kind === "rally") {
+      const U = B.units[arg] || B.units[B.youId]; if (!U) return;
+      const g = el("g", { class: "b-rally", transform: `translate(${U.x},${U.y})` }, B.fx);
+      el("circle", { r: 12, class: "rl-1" }, g); el("circle", { r: 12, class: "rl-2" }, g);
+      setTimeout(() => g.remove(), 1800);
+    } else if (kind === "arrows" || kind === "clash") {
+      const [a, b2] = arg.split(kind === "arrows" ? ">" : ",");
+      const A = B.units[a] || B.units[B.youId], Bb = B.units[b2] || Object.values(B.units).find((x) => x.u.side === "e" && x.o > 0.2);
+      if (!A || !Bb) return;
+      if (kind === "arrows") {
+        for (let i = 0; i < 11; i++) { const ox = (i - 5) * 8, p = el("path", { d: `M${A.x + ox},${A.y}Q${(A.x + Bb.x) / 2 + ox},${Math.min(A.y, Bb.y) - 85} ${Bb.x + ox * 1.4},${Bb.y}`, class: "volley user-v", style: `animation-delay:${(i * 0.08).toFixed(2)}s` }, B.fx); p.setAttribute("pathLength", 100); setTimeout(() => p.remove(), 2200); }
+        floatBattleText(Bb.x, Bb.y - 18, "🏹 " + tr("箭雨命中!"), "hit");
+      } else {
+        renderMeleeZone(A, Bb);
+        A.g.classList.add("in-melee"); Bb.g.classList.add("in-melee");
+        B.el.classList.add("quake"); setTimeout(() => B.el.classList.remove("quake"), 900);
+        floatBattleText((A.x + Bb.x) / 2, (A.y + Bb.y) / 2 - 16, "⚔ " + tr("破阵突击!"), "hit");
+      }
+    } else if (kind === "fire") {
+      const [x, y] = arg.split(",").map(Number);
+      const g = el("g", { class: "b-fire", transform: `translate(${x},${y})` }, B.fx);
+      el("circle", { r: 44, fill: "url(#bglow)" }, g);
+      for (let i = 0; i < 6; i++) el("circle", { r: 4 + i, cx: (i - 3) * 6, cy: -i * 3, class: "fl", style: `animation-delay:${i * 0.15}s` }, g);
+    }
+  }
+  function execBattleCmd(cmd, targetEnemy) {
+    if (!B.cur || B.k < 0) return;
+    const U = B.units[B.youId] || Object.values(B.units).find((x) => x.u.side === "w" && x.o > 0.2);
+    if (!U) return;
+    const enemies = Object.values(B.units).filter((x) => x.u.side === "e" && x.o > 0.2);
+    const E = targetEnemy || enemies.sort((a, b) => Math.hypot(a.x - U.x, a.y - U.y) - Math.hypot(b.x - U.x, b.y - U.y))[0];
+    B.cmdCount++; B.valor += 10; B.morale = clamp(B.morale + 5, 15, 95);
+    renderTacticsBar();
+    if (cmd === "volley" && E) {
+      sound.fx("clash"); triggerExtraFx(`arrows:${U.u.id}>${E.u.id}`);
+      showBattleBanner(`🏹 ${tr("你指挥")}【${U.u.n}】${tr("向")}【${E.u.n}】${tr("倾泻箭雨！")}`);
+    } else if (cmd === "rally") {
+      sound.fx("horn");
+      Object.values(B.units).filter((x) => x.u.side === "w" && x.o > 0.2).forEach((W) => triggerExtraFx(`rally:${W.u.id}`));
+      floatBattleText(U.x, U.y - 22, "📯 " + tr("全军士气大振! +10"), "gold");
+      showBattleBanner(`📯 ${tr("你吹响号角，")}【${U.u.n}】${tr("与友军士气高涨！")}`);
+    } else if (cmd === "charge" && E) {
+      sound.fx("clash"); triggerExtraFx(`clash:${U.u.id},${E.u.id}`);
+      showBattleBanner(`⚔️ ${tr("你率领")}【${U.u.n}】${tr("向")}【${E.u.n}】${tr("发起白刃突击！")}`);
+    }
+  }
   function renderIntro(b) {
     $("#bText").innerHTML = `<div class="b-intro"><p class="b-lead">${esc(b.intro)}</p>
       <dl class="b-forces"><dt class="w">${esc(b.sides.w)}</dt><dd>${esc(b.forces.w)}</dd><dt class="e">${esc(b.sides.e)}</dt><dd>${esc(b.forces.e)}</dd></dl>
       <div class="b-you"><span>${tr("你")}</span>${esc(b.you)}</div>
       <button class="pri b-start" data-bk="0">${tr("进入战场 ▸")}</button></div>`;
     $("#bDots").innerHTML = b.phases.map((p, i) => `<button data-bk="${i}" title="${esc(p.h)}"></button>`).join("");
-    $("#bK").textContent = ""; setFx([]); camB([0, 0, 1000]);
+    $("#bK").textContent = ""; if ($("#bTactics")) $("#bTactics").hidden = true; if (B.youMk) B.youMk.style.opacity = 0;
+    setFx([]); camB([0, 0, 1000]);
   }
   function phase(k) {
     const b = B.cur; if (!b) return; k = clamp(k, 0, b.phases.length - 1);
-    // 回放到第 k 阶段：从初始状态依次应用
+    const p = b.phases[k];
     const prevPos = {}; Object.values(B.units).forEach((U) => (prevPos[U.u.id] = [U.x, U.y, U.o]));
-    Object.values(B.units).forEach((U) => { U.x = U.u.x; U.y = U.u.y; U.o = U.u.o ?? 1; });
-    for (let i = 0; i <= k; i++) Object.entries(b.phases[i].set || {}).forEach(([id, v]) => { const U = B.units[id]; if (!U) return; if (Array.isArray(v)) { U.x = v[0]; U.y = v[1]; } else { if (v.x != null) U.x = v.x; if (v.y != null) U.y = v.y; if (v.o != null) U.o = v.o; } });
+    const clashPairs = resolveBattleUnits(b, k, p);
+    placeBattleLabels();
     B.arrows.innerHTML = "";
-    Object.values(B.units).forEach((U) => { const [px, py, po] = prevPos[U.u.id]; if (k === B.k + 1 && po > 0.2 && U.o > 0.2 && Math.hypot(U.x - px, U.y - py) > 24) { const mx = (px + U.x) / 2 - (U.y - py) * 0.14, my = (py + U.y) / 2 + (U.x - px) * 0.14; el("path", { d: `M${px},${py}Q${mx.toFixed(1)},${my.toFixed(1)} ${U.x},${U.y}`, class: "mv s-" + U.u.side, "marker-end": "url(#bah)" }, B.arrows); } place(U); });
-    B.k = k; const p = b.phases[k];
-    camB(p.cam || [0, 0, 1000]); setFx(p.fx || []);
+    Object.values(B.units).forEach((U) => { const [px, py, po] = prevPos[U.u.id]; if (k === B.k + 1 && po > 0.2 && U.o > 0.2 && Math.hypot(U.x - px, U.y - py) > 24) { const mx = (px + U.x) / 2 - (U.y - py) * 0.14, my = (py + U.y) / 2 + (U.x - px) * 0.14; el("path", { d: `M${px},${py}Q${mx.toFixed(1)},${my.toFixed(1)} ${U.x.toFixed(1)},${U.y.toFixed(1)}`, class: "mv s-" + U.u.side, "marker-end": "url(#bah)" }, B.arrows); } place(U); });
+    B.k = k; B.userYou = null;
+    updateYouMarker(p);
+    camB(p.cam || [0, 0, 1000]); setFx(p.fx || [], clashPairs);
+    renderTacticsBar();
     if (p.sfx) sound.fx(p.sfx);
     sound.bed((p.fx || []).includes("rain") ? "rain" : "wind");
     $$("#bDots button").forEach((d, i) => { d.classList.toggle("on", i === k); d.classList.toggle("past", i < k); });
     $("#bK").textContent = EN ? `Act ${k + 1} of ${b.phases.length}` : `第 ${k + 1} 幕 / 共 ${b.phases.length} 幕`;
     const last = k === b.phases.length - 1;
-    $("#bText").innerHTML = `<article class="b-ph"><div class="b-time">${esc(p.time)}</div><h3>${esc(p.h)}</h3><p>${esc(p.p)}</p><div class="b-you"><span>${tr("你")}</span>${esc(p.you)}</div>
-      ${last ? `<div class="b-out"><b>${tr("结局")}</b>${esc(b.outcome)}</div>` : ""}</article>
+    const acts = p.acts || [];
+    const chosenIdx = B.actsDone[k];
+    const chosenAct = chosenIdx != null ? acts[chosenIdx] : null;
+    const titleHonor = { hornburg: "圣盔谷坚盾", pelennor: "帕兰诺破晓枪骑", morannon: "黑门死士", fivearmies: "孤山同盟勇士", lastalliance: "达戈拉德神射手", nirnaeth: "日必再升之证人" }[b.id] || "中洲老兵";
+    $("#bText").innerHTML = `<article class="b-ph"><div class="b-time">${esc(p.time)}</div><h3>${esc(p.h)}</h3><p>${esc(p.p)}</p>
+      <div class="b-you"><span>${tr("你")}</span>${esc(p.you)}
+        ${acts.length ? `<div class="b-act-box"><div class="b-act-hd">⚔ ${tr("亲自参战 · 选择你的行动")}</div><div class="b-act-btns">${acts.map((a, idx) => `<button class="b-act-btn ${chosenIdx === idx ? "chosen" : ""}" data-act="${idx}">${esc(tr(a.lbl))}</button>`).join("")}</div><div id="bActRes" class="b-act-res" ${chosenAct ? "" : "hidden"}>${chosenAct ? esc(tr(chosenAct.res)) : ""}</div></div>` : ""}
+      </div>
+      ${last ? `<div class="b-out"><b>${tr("结局")}</b>${esc(b.outcome)}<div class="b-rec"><span>★ ${tr("你的此役战记")}</span>${tr("亲历抉择")} <b>${Object.keys(B.actsDone).length}</b> ${tr("次")} · ${tr("战术指令")} <b>${B.cmdCount}</b> ${tr("次")} · ${tr("累计战意")} <b>${B.valor}</b> · ${tr("获封")}「<b>${tr(titleHonor)}</b>」</div></div>` : ""}</article>
       <div class="b-nav">${k > 0 ? `<button data-bk="${k - 1}">‹ ${tr("上一幕")}</button>` : `<button data-bk="intro">‹ ${tr("序")}</button>`}${last ? `<button class="pri b-close">${tr("回到地图 ▸")}</button>` : `<button class="pri" data-bk="${k + 1}">${tr("下一幕")} ›</button>`}</div>`;
     if (B.auto) { clearTimeout(B.timer); if (!last) B.timer = setTimeout(() => phase(B.k + 1), Math.max(9000, (p.p.length + p.you.length) * 85)); }
   }
@@ -1090,17 +1501,17 @@
     const step = (now) => { const k = ease(clamp((now - t0) / ms, 0, 1)); B.cam = { x: lerp(s.x, e.x, k), y: lerp(s.y, e.y, k), w: lerp(s.w, e.w, k) }; B.svg.setAttribute("viewBox", `${B.cam.x} ${B.cam.y} ${B.cam.w} ${B.cam.w * 0.6}`); B.svg.style.setProperty("--bk", (B.cam.w / 1000).toFixed(3)); if (k < 1) B.raf = requestAnimationFrame(step); };
     B.raf = requestAnimationFrame(step);
   }
-  function setFx(list) {
+  function setFx(list, clashPairs = []) {
     const ov = $("#bOverlay"); ov.className = "b-overlay " + list.filter((f) => !f.includes(":")).map((f) => "fx-" + f).join(" ");
     B.el.classList.toggle("quake", list.includes("quake")); if (list.includes("quake")) setTimeout(() => B.el.classList.remove("quake"), 1400);
-    B.fx.innerHTML = "";
+    B.fx.innerHTML = ""; if (B.melee) B.melee.innerHTML = "";
+    clashPairs.forEach(([A, Bb]) => renderMeleeZone(A, Bb));
     list.filter((f) => f.includes(":")).forEach((f) => {
       const [kind, arg] = f.split(":");
       if (kind === "fire" || kind === "glow") { const [x, y] = arg.split(",").map(Number); const g = el("g", { class: "b-" + kind, transform: `translate(${x},${y})` }, B.fx); el("circle", { r: kind === "glow" ? 90 : 40, fill: "url(#bglow)" }, g); if (kind === "fire") for (let i = 0; i < 6; i++) el("circle", { r: 4 + i, cx: (i - 3) * 6, cy: -i * 3, class: "fl", style: `animation-delay:${i * 0.17}s` }, g); }
-      if (kind === "arrows" || kind === "clash") {
-        const [a, b2] = arg.split(kind === "arrows" ? ">" : ","); const A = B.units[a], Bb = B.units[b2]; if (!A || !Bb) return;
-        if (kind === "arrows") for (let i = 0; i < 9; i++) { const ox = (i - 4) * 9, p = el("path", { d: `M${A.x + ox},${A.y}Q${(A.x + Bb.x) / 2 + ox},${Math.min(A.y, Bb.y) - 80} ${Bb.x + ox * 1.6},${Bb.y}`, class: "volley", style: `animation-delay:${(i * 0.13).toFixed(2)}s` }, B.fx); p.setAttribute("pathLength", 100); }
-        else { const mx = (A.x + Bb.x) / 2, my = (A.y + Bb.y) / 2, cg = el("g", { transform: `translate(${mx},${my})` }, B.fx); el("circle", { r: 16, class: "clash-ring" }, cg); el("path", { d: "M-9,-9L9,9M9,-9L-9,9M-9,-4L-4,-9M9,-4L4,-9", class: "spark" }, cg); for (let i = 0; i < 7; i++) el("path", { d: "M-5,0L5,0M0,-5L0,5M-3.5,-3.5L3.5,3.5M3.5,-3.5L-3.5,3.5", class: "spark", transform: `translate(${mx + (rnd() - 0.5) * 50},${my + (rnd() - 0.5) * 40})`, style: `animation-delay:${(rnd() * 1.5).toFixed(2)}s` }, B.fx); }
+      if (kind === "arrows") {
+        const [a, b2] = arg.split(">"); const A = B.units[a], Bb = B.units[b2]; if (!A || !Bb) return;
+        for (let i = 0; i < 9; i++) { const ox = (i - 4) * 9, p = el("path", { d: `M${A.x + ox},${A.y}Q${(A.x + Bb.x) / 2 + ox},${Math.min(A.y, Bb.y) - 80} ${Bb.x + ox * 1.6},${Bb.y}`, class: "volley", style: `animation-delay:${(i * 0.13).toFixed(2)}s` }, B.fx); p.setAttribute("pathLength", 100); }
       }
     });
   }
@@ -1108,6 +1519,31 @@
   B.el.addEventListener("click", (e) => {
     if (e.target.closest(".b-close")) return closeBattle();
     const k = e.target.closest("[data-bk]"); if (k && !e.target.closest("#bAuto")) { clearTimeout(B.timer); return k.dataset.bk === "intro" ? (B.k = -1, renderIntro(B.cur)) : phase(+k.dataset.bk); }
+    const actBtn = e.target.closest("[data-act]");
+    if (actBtn && B.cur && B.k >= 0) {
+      const idx = +actBtn.dataset.act, p = B.cur.phases[B.k], act = (p.acts || [])[idx];
+      if (!act) return;
+      if (B.actsDone[B.k] == null) { B.valor += 15; B.morale = clamp(B.morale + 8, 15, 95); }
+      B.actsDone[B.k] = idx;
+      $$(".b-act-btn").forEach((b2, i) => b2.classList.toggle("chosen", i === idx));
+      const resEl = $("#bActRes"); if (resEl) { resEl.hidden = false; resEl.textContent = tr(act.res); }
+      if (act.sfx) sound.fx(act.sfx);
+      triggerExtraFx(act.fx);
+      renderTacticsBar();
+      const U = B.units[B.youId]; if (U) floatBattleText(U.x, U.y - 26, "★ +15 " + tr("战意"), "gold");
+      return;
+    }
+    const cmdBtn = e.target.closest("[data-cmd]");
+    if (cmdBtn) return execBattleCmd(cmdBtn.dataset.cmd);
+    const unitEl = e.target.closest("[data-uid]");
+    if (unitEl && B.cur && B.k >= 0) {
+      const U = B.units[unitEl.dataset.uid];
+      if (U && U.o > 0.2) {
+        if (U.u.side === "e") execBattleCmd("charge", U);
+        else { B.userYou = U.u.id; updateYouMarker(B.cur.phases[B.k]); sound.fx("horn"); triggerExtraFx(`rally:${U.u.id}`); renderTacticsBar(); showBattleBanner(`★ ${tr("你已赶赴")}【${U.u.n}】${tr("并肩作战！")}`); }
+      }
+      return;
+    }
     if (e.target.closest("#bAuto")) { B.auto = !B.auto; $("#bAuto").classList.toggle("on", B.auto); if (B.auto) phase(B.k + 1); else clearTimeout(B.timer); }
     if (e.target.closest("#bSound")) { sound.toggle(); $("#bSound").classList.toggle("on", sound.on); $("#bSound").textContent = sound.on ? tr("声音 开") : tr("声音 关"); if (sound.on && B.k >= 0) sound.bed((B.cur.phases[B.k].fx || []).includes("rain") ? "rain" : "wind"); }
   });
@@ -1150,7 +1586,10 @@
     setT(T0 + 1); flyBox(ERAS[0].cam, 0);
     const c = ERAS[0].cam; cam.x = c[0]; cam.y = c[1]; cam.w = c[2]; applyCam();
     $("#intro").addEventListener("click", (e) => { const b = e.target.closest("[data-start]"); if (b) start(b.dataset.start); });
-    $("#panelToggle").onclick = () => document.body.classList.toggle("panel-open");
+    $("#panelToggle").onclick = () => {
+      if (innerWidth <= 860) document.body.classList.toggle("panel-open");
+      else { document.body.classList.toggle("panel-shut"); setTimeout(() => { updateSvgSize(); applyCam(); }, 50); }
+    };
     $("#bClose").onclick = closeBattle;
     $("#moment").addEventListener("click", (e) => {
       if (e.target.closest(".mo-x") || e.target === e.currentTarget) return closeMoment(false);

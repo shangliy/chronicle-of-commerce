@@ -204,11 +204,14 @@
       bio: "龙之父，没有翅膀的金色大蛇。用眼神给图林和妮诺尔下了咒。",
       homes: [["angband", FA(260), FA(495)], ["nargothrond", FA(495.9), FA(500.9)]] },
     { id: "balrog", n: "炎魔", en: "Durin's Bane", r: "dark", look: { sp: "balrog" },
-      bio: "魔苟斯麾下火与影的恶魔。在迷雾山脉的深处睡了几千年，被贪心挖秘银的矮人吵醒。",
-      homes: [["moria", TA(1980), TA(3019, 1, 15)]] },
+      bio: "魔苟斯麾下火与影的恶魔。第一纪元随安格班大军出征；愤怒之战后躲进迷雾山脉深处睡了几千年，被挖秘银的矮人吵醒。",
+      homes: [["angband", FA(1), FA(587)], ["moria", TA(1980), TA(3019, 1, 26)]] },
     { id: "shelob", n: "希洛布", en: "Shelob", r: "dark", look: { sp: "spider" },
       bio: "远古巨蜘蛛的后代，盘踞在西力斯昂哥的隘道里，什么光都吞。",
-      homes: [["ciritungol", TA(1), TA(3019, 3, 13)]] }
+      homes: [["ciritungol", TA(1), TA(3019, 3, 13)]] },
+    { id: "kingdead", n: "亡灵之王", en: "King of the Dead", r: "dark", look: { sp: "dead", crown: 1 },
+      bio: "白山下的背誓者之王。第二纪元末曾向伊熙尔杜起誓助战，却因惧怕索隆而违背誓言，全族化为不得安息的幽魂，直到阿拉贡前来召唤。",
+      homes: [["dunharrow", SA(3434), TA(3019, 3, 8)]] }
   ];
 
   /* ——迁徙与新增旅程（pts 第三项："ship" 乘船、"ride" 骑马、"gap" 不可见）—— */
@@ -230,7 +233,55 @@
     { id: "smaugfall", n: "史矛革袭击长湖镇", c: "#b0342a", who: ["smaug"], pts: [["erebor", 6972.82], ["esgaroth", 6972.83]] },
     { id: "nazgulhunt", n: "九骑手", c: "#1a1a1a", who: ["witchking", "nazgul"], mode: "ride",
       pts: [["minasmorgul", TA(3018, 6, 20)], [[640, 430], TA(3018, 7, 10)], ["isengard", TA(3018, 9, 18)], [[400, 320], TA(3018, 9, 21)], ["hobbiton", TA(3018, 9, 23)], ["bree", TA(3018, 9, 30)], ["weathertop", TA(3018, 10, 6)], [[498, 252], TA(3018, 10, 20)]] },
-    { id: "ents", n: "树人进军", c: "#5a6a2a", mig: 1, who: ["treebeard"], pts: [[[552, 438], TA(3019, 3, 2)], ["isengard", TA(3019, 3, 3)]] },
+    { id: "ents", n: "树人进军艾森加德", c: "#4e6e28", mig: 1, army: "woodelf", b: "hornburg", who: ["treebeard"], pts: [[[552, 438], TA(3019, 3, 1.5)], [[534, 452], TA(3019, 3, 2.4)], ["isengard", TA(3019, 3, 3.8)]] },
+    /* ——各大战役的大地图行军路线（army: 兵种列阵 + 战旗 + 战术进军箭头）—— */
+    // 第一纪元：泪雨之战 & 愤怒之战
+    { id: "nirnaeth_w", n: "芬巩与特刚西路联军", c: "#2e5c9a", army: "noldor", b: "nirnaeth", who: ["fingon", "turgon", "hurin"],
+      pts: [["eithel", FA(469)], [[-360, 48], FA(471)], [[-305, 28], FA(472.6)]] },
+    { id: "nirnaeth_e", n: "梅斯罗斯与矮人东路军", c: "#8a3a2a", army: "dwarf", b: "nirnaeth", who: ["maedhros", "azaghal"],
+      pts: [["himring", FA(469)], [[-190, 62], FA(471)], [[-275, 32], FA(472.6)]] },
+    { id: "angband_out", n: "格劳龙与安格班大军", c: "#2a1612", army: "orc", b: "nirnaeth", who: ["glaurung", "balrog"],
+      pts: [["angband", FA(470.5)], [[-280, -10], FA(471.6)], [[-292, 22], FA(472.6)]] },
+    { id: "gondolin_siege", n: "魔苟斯炎魔与恶龙大军", c: "#b0341a", army: "orc", who: ["balrog", "glaurung"],
+      pts: [["angband", FA(509.2)], [[-345, 75], FA(509.8)], ["gondolin", FA(510.2)]] },
+    { id: "warofwrath", n: "维拉大军 · 愤怒之战", c: "#3a6ea5", mig: 1, army: "noldor", who: ["earendil"],
+      pts: [[[-520, 260], FA(545)], [[-420, 150], FA(560)], [[-330, 40], FA(575)], ["angband", FA(587)]] },
+    // 第二纪元：最后联盟之战
+    { id: "gondor_alliance", n: "刚铎北上联军", c: "#3a5a7a", army: "gondor", b: "lastalliance", who: ["isildur", "anarion"],
+      pts: [["minastirith", SA(3431)], ["osgiliath", SA(3432)], [[716, 520], SA(3433)], ["dagorlad", SA(3434.2)], ["baraddur", SA(3435)], ["orodruin", SA(3441)]] },
+    { id: "sauron_alliance", n: "索隆魔多主力", c: "#2a1410", army: "orc", b: "lastalliance", who: ["sauron"],
+      pts: [["baraddur", SA(3431.5)], ["morannon", SA(3433)], ["dagorlad", SA(3434.2)]] },
+    // 第三纪元：五军之战
+    { id: "bolg_army", n: "博格的北方奥克大军", c: "#2a1814", army: "orc", b: "fivearmies", who: ["bolg"],
+      pts: [[[566, 108], TA(2941, 11, 5)], [[660, 96], TA(2941, 11, 13)], [[740, 104], TA(2941, 11, 19)], ["erebor", TA(2941, 11, 24)]] },
+    { id: "elfmen_army", n: "瑟兰迪尔与巴德联军", c: "#3e6e48", army: "woodelf", b: "fivearmies", who: ["thranduil", "bard"],
+      pts: [["thranduil", TA(2941, 11, 4)], ["esgaroth", TA(2941, 11, 11)], ["dale", TA(2941, 11, 17)], ["erebor", TA(2941, 11, 24)]] },
+    { id: "dain_army", n: "戴因的铁丘陵矮人军", c: "#7a5230", army: "dwarf", b: "fivearmies", who: ["dain"],
+      pts: [[[885, 116], TA(2941, 11, 10)], [[836, 118], TA(2941, 11, 17)], ["erebor", TA(2941, 11, 24)]] },
+    // 第三纪元：卡扎督姆的炎魔与死战
+    { id: "balrog_moria", n: "炎魔 · 卡扎督姆死战", c: "#d04218", who: ["balrog", "gandalf"],
+      pts: [["moria", TA(3019, 1, 12.5)], [[532, 336], TA(3019, 1, 15)], [[528, 326], TA(3019, 1, 25)]] },
+    // 第三纪元：魔戒大战 · 号角堡之战
+    { id: "saruman_army", n: "萨鲁曼的乌鲁克大军", c: "#2e1a14", army: "uruk", b: "hornburg", who: [],
+      pts: [["isengard", TA(3019, 3, 1.2)], [[520, 484], TA(3019, 3, 2.4)], ["helmsdeep", TA(3019, 3, 4.1)]] },
+    { id: "theoden_helm", n: "希奥顿与洛汗军", c: "#3e6e32", army: "rohan", mode: "ride", b: "hornburg", who: ["theoden", "eomer"],
+      pts: [["edoras", TA(3019, 3, 1.5)], [[552, 498], TA(3019, 3, 2.5)], ["helmsdeep", TA(3019, 3, 4.1)]] },
+    // 第三纪元：魔戒大战 · 帕兰诺平原之战
+    { id: "dead_army", n: "亡灵大军 · 背誓者", c: "#3ab890", army: "dead", b: "pelennor", who: ["kingdead", "aragorn"],
+      pts: [["dunharrow", TA(3019, 3, 7.8)], ["erech", TA(3019, 3, 9)], [[596, 598], TA(3019, 3, 11)], ["pelargir", TA(3019, 3, 13.2)], ["minastirith", TA(3019, 3, 15.6)]] },
+    { id: "mordor_pelennor", n: "巫王与魔多攻城大军", c: "#2a120e", army: "orc", b: "pelennor", who: ["witchking", "gothmog"],
+      pts: [["minasmorgul", TA(3019, 3, 9.5)], ["osgiliath", TA(3019, 3, 11.8)], [[674, 560], TA(3019, 3, 13.6)], ["minastirith", TA(3019, 3, 15.8)]] },
+    { id: "harad_pelennor", n: "哈拉德与南方猛犸军", c: "#8a2818", army: "harad", b: "pelennor", who: [],
+      pts: [[[696, 686], TA(3019, 3, 7)], [[688, 636], TA(3019, 3, 10.5)], [[674, 592], TA(3019, 3, 13.5)], ["minastirith", TA(3019, 3, 15.8)]] },
+    { id: "imrahil_pelennor", n: "多阿姆洛斯与南方诸侯援军", c: "#2a528a", army: "gondor", mode: "ride", b: "pelennor", who: ["imrahil"],
+      pts: [["dolamroth", TA(3019, 3, 5)], [[596, 604], TA(3019, 3, 9)], ["minastirith", TA(3019, 3, 13.2)]] },
+    // 第三纪元：魔戒大战 · 黑门之战与北方战线
+    { id: "mordor_morannon", n: "黑门魔多与东方联军", c: "#2a120e", army: "easterling", b: "morannon", who: ["mouth"],
+      pts: [["baraddur", TA(3019, 3, 18.5)], [[782, 522], TA(3019, 3, 22)], ["morannon", TA(3019, 3, 25.6)]] },
+    { id: "easterling_erebor", n: "东方人围攻河谷与孤山", c: "#7a2418", army: "easterling", who: [],
+      pts: [[[910, 175], TA(3019, 3, 9)], [[840, 150], TA(3019, 3, 13)], ["dale", TA(3019, 3, 15)], ["erebor", TA(3019, 3, 17.5)], ["erebor", TA(3019, 3, 27)]] },
+    { id: "dolguldur_lorien", n: "多古尔都攻罗瑞恩与反击", c: "#3a6a8a", army: "elf", who: ["galadriel"],
+      pts: [["lorien", TA(3019, 3, 11)], [[618, 360], TA(3019, 3, 15)], [[638, 355], TA(3019, 3, 22)], ["dolguldur", TA(3019, 3, 28)]] },
     { id: "westward", n: "西渡", c: "#6a8aa8", who: ["frodo", "sam"], whoAt: [[TA(3021, 9, 25), ["frodo", "sam", "bilbo", "elrond", "galadriel"]], [TA(3021, 9, 29.5), ["frodo", "bilbo", "gandalfw", "elrond", "galadriel"]]],
       pts: [["hobbiton", TA(3021, 9, 22)], [[252, 248], TA(3021, 9, 27)], ["mithlond", TA(3021, 9, 29)], [[-200, 300], TA(3021, 10, 6), "ship"], ["avallone", TA(3021, 10, 12), "ship"]] },
     { id: "samwest", n: "山姆西去", c: "#7a5a3a", who: ["sam"], pts: [["hobbiton", FO(61.7)], ["mithlond", FO(61.75)], ["avallone", FO(62), "ship"]] },
@@ -243,8 +294,8 @@
   set("fingolfin", { who: ["fingolfin"], mig: 1, pts: [[[-930, -30], -7.5], [[-860, -96], -6], [[-760, -100], -4.5], [[-700, -96], -3.5], [[-660, -40], -2], [[-610, 10], FA(1)]] });
   set("elendil", { who: ["elendil"], mode: "ship" });
   set("isildur", { who: ["isildur", "anarion"], mode: "ship" });
-  set("alliance", { who: ["gilgalad", "elendil", "elrond", "isildur"], mig: 1 });
-  set("eorl", { who: ["eorl"], mode: "ride", mig: 1 });
+  set("alliance", { who: ["gilgalad", "elendil", "elrond"], mig: 1, army: "numenor", b: "lastalliance" });
+  set("eorl", { who: ["eorl"], mode: "ride", mig: 1, army: "rohan" });
   set("bilbo", { who: ["bilbo", "thorin", "gandalf"], whoAt: [[TA(2941, 8, 25), ["bilbo", "thorin"]], [TA(2941, 11, 30), ["bilbo", "gandalf"]]] });
   set("frodo", { who: ["frodo", "sam", "merry", "pippin"], whoAt: [
     [TA(3018, 9, 29), ["frodo", "sam", "merry", "pippin", "aragorn"]],
@@ -252,9 +303,12 @@
     [TA(3019, 1, 15), ["frodo", "sam", "aragorn", "legolas", "gimli", "boromir", "merry", "pippin"]],
     [TA(3019, 2, 26), ["frodo", "sam"]], [TA(3019, 2, 29), ["frodo", "sam", "gollum"]], [TA(3019, 3, 13), ["frodo", "sam"]]] });
   J("frodo").pts.forEach((p) => { if (p[1] > TA(3019, 2, 16) && p[1] <= TA(3019, 2, 26)) p[2] = "ship"; });
-  set("aragorn", { who: ["aragorn", "legolas", "gimli"] });
+  set("aragorn", { n: "阿拉贡与西方大军", who: ["aragorn", "legolas", "gimli"], army: "gondor", b: "morannon",
+    pts: [["amonhen", TA(3019, 2, 26)], [[622, 470], TA(3019, 2, 28)], [[560, 440], TA(3019, 3, 1)], ["edoras", TA(3019, 3, 2)], ["helmsdeep", TA(3019, 3, 3)], ["helmsdeep", TA(3019, 3, 4)], ["isengard", TA(3019, 3, 5)], ["dunharrow", TA(3019, 3, 7)], ["erech", TA(3019, 3, 9)], ["pelargir", TA(3019, 3, 13)], ["minastirith", TA(3019, 3, 15)], ["minastirith", TA(3019, 3, 18)], ["osgiliath", TA(3019, 3, 19.5)], [[712, 552], TA(3019, 3, 21.5)], [[724, 524], TA(3019, 3, 23.5)], ["morannon", TA(3019, 3, 25.6)]] });
   J("aragorn").pts.forEach((p) => { if (p[1] > TA(3019, 3, 2) && p[1] <= TA(3019, 3, 13)) p[2] = "ride"; else if (p[1] > TA(3019, 3, 13) && p[1] <= TA(3019, 3, 15)) p[2] = "ship"; else if (p[1] > TA(3019, 3, 18)) p[2] = "ride"; });
-  set("merry", { who: ["merry", "pippin"], whoAt: [[TA(3019, 3, 5.5), ["merry"]], [TA(3019, 3, 9), ["theoden", "eowyn", "merry"]]] });
+  set("merry", { n: "洛汗六千铁骑 · 希奥顿", who: ["merry", "pippin"], army: "rohan", b: "pelennor",
+    whoAt: [[TA(3019, 3, 5.5), ["merry"]], [TA(3019, 3, 8.5), ["theoden", "eomer", "eowyn", "merry"]]],
+    pts: [["amonhen", TA(3019, 2, 26)], [[600, 470], TA(3019, 2, 28)], [[568, 446], TA(3019, 3, 1)], ["isengard", TA(3019, 3, 3)], ["isengard", TA(3019, 3, 5)], ["edoras", TA(3019, 3, 7)], ["dunharrow", TA(3019, 3, 9)], [[612, 528], TA(3019, 3, 11.5)], [[640, 548], TA(3019, 3, 14)], ["minastirith", TA(3019, 3, 15.8)]] });
   J("merry").pts.forEach((p) => { if (p[1] > TA(3019, 3, 5)) p[2] = "ride"; });
   // 甘道夫：灰袍随护戒同盟走到卡扎督姆；这里只画白袍归来之后
   set("gandalf", { n: "白袍甘道夫与捷影", c: "#9a9a9a", who: ["gandalfw"], whoAt: [[TA(3019, 3, 5.5), ["gandalfw", "pippin"]]], mode: "ride", pts: J("gandalf").pts.filter((p) => p[1] >= TA(3019, 3, 1)).map((p, i) => (i ? [p[0], p[1]] : [p[0], p[1]])) });
@@ -298,7 +352,8 @@
     harad: { s: "#a8784a", h: "#151515", hat: "hood", hc: "#7a1a1a", c: "#b03a1a", t: "#e0b040", it: "spear" },
     dunland: { h: "#4a2a1a", hs: "long", b: "long", bc: "#4a2a1a", c: "#6a4a2a", t: "#8a6a4a", it: "axe" },
     troll: { s: "#7a7a6a", h: "#3a3a30", hs: "bald", c: "#4a3a2a", t: "#6a5a4a", it: "axe", ic: "#5a5a5a", wide: 1, sz: 1.5, eye: "#c02010" },
-    wolf: { sp: "wraith" }
+    wolf: { sp: "wraith" },
+    dead: { sp: "dead" }
   };
   /* ——每支部队：s 兵种，lead 带队的具名人物；hero 单位继续用 HEROES—— */
   const TROOPS = {
@@ -306,7 +361,7 @@
     "hornburg.uruk": { s: "uruk" }, "hornburg.dun": { s: "dunland" }, "hornburg.ladders": { s: "uruk" }, "hornburg.rams": { s: "troll" },
     "hornburg.gandalf": { s: "westfold", lead: ["gandalfw", "erkenbrand"] },
     "pelennor.city": { s: "gondor", lead: ["denethor", "faramir"] }, "pelennor.host1": { s: "orc", lead: ["gothmog"] }, "pelennor.host2": { s: "orc" },
-    "pelennor.grond": { s: "troll" }, "pelennor.harad": { s: "harad" }, "pelennor.rohan": { s: "rohan", lead: ["eomer"] }, "pelennor.ships": { lead: ["aragorn", "legolas", "gimli"] },
+    "pelennor.grond": { s: "troll" }, "pelennor.harad": { s: "harad" }, "pelennor.rohan": { s: "rohan", lead: ["eomer"] }, "pelennor.ships": { lead: ["aragorn", "legolas", "gimli"] }, "pelennor.dead": { s: "dead", lead: ["kingdead"] },
     "morannon.west1": { s: "gondor", lead: ["imrahil"] }, "morannon.west2": { s: "rohan", lead: ["eomer"] }, "morannon.mouth": { lead: ["mouth"] },
     "morannon.gatehost": { s: "orc" }, "morannon.flankL": { s: "orc" }, "morannon.flankR": { s: "easterling" }, "morannon.trolls": { s: "troll" }, "morannon.nazgul": { lead: ["nazgul", "nazgul", "nazgul"] },
     "fivearmies.men": { s: "laketown", lead: ["bard"] }, "fivearmies.elves": { s: "woodelf", lead: ["thranduil"] }, "fivearmies.dain": { s: "dwarf", lead: ["dain"] },
@@ -487,6 +542,11 @@ window.CHIBI = (function () {
     wraith: (L, X) => `<path d="M-11.5,0 Q-12.5,-20 -10.5,-34 Q-8,-48 0,-49 Q8,-48 10.5,-34 Q12.5,-20 11.5,0 L7,-3 L3.5,0 L0,-3 L-3.5,0 L-7,-3 Z" fill="${X.cloth("#1a1416")}" stroke="#3a3030" stroke-width=".6"/>` + ln("M-7,-30 Q-8,-14 -7.5,-2 M7,-30 Q8,-14 7.5,-2 M0,-20 L0,-3", "#0a0608", 0.7, 'opacity=".8"') + ln("M-4,-32 Q-4.5,-16 -4,-4", "#4a4044", 0.5, 'opacity=".5"') +
       `<ellipse cx="0" cy="-33" rx="7" ry="8" fill="#000"/><circle cx="-2.7" cy="-33" r="1.3" fill="#ff3a2a" class="glowit"/><circle cx="2.7" cy="-33" r="1.3" fill="#ff3a2a" class="glowit"/>` + `<path d="M9.2,-12 L15.8,-30 L17.2,-29.6 L10.8,-11.4 Z" fill="${X.metal("#9aa0a8")}" stroke="#222" stroke-width=".3"/>` + ln("M7,-13.5 L12.5,-9.5", "#3a3a40", 1.5) +
       (L.crown ? `<path d="M-7,-45 L-7,-52 L-3.5,-47.5 L0,-54 L3.5,-47.5 L7,-52 L7,-45 Z" fill="${X.metal("#8a8a90")}" stroke="#1a1a1a" stroke-width=".5"/>` + ln("M-6,-46 L6,-46", "#d8d8e0", 0.4, 'opacity=".6"') : ""),
+    dead: (L, X) => `<ellipse cx="0" cy="-18" rx="14" ry="20" fill="#4ce6b0" opacity=".22" class="glowit"/><path d="M-11.5,2 Q-12.5,-18 -10,-32 Q-7.5,-46 0,-47 Q7.5,-46 10,-32 Q12.5,-18 11.5,2 L7.5,-2.5 L4,1.5 L0,-3 L-4,1.5 L-7.5,-2.5 Z" fill="#286e58" opacity=".82" stroke="#7effd4" stroke-width=".65"/>` + ln("M-6.5,-28 Q-7.5,-12 -7,0 M6.5,-28 Q7.5,-12 7,0 M0,-22 L0,-2", "#98ffe0", 0.65, 'opacity=".65"') +
+      `<circle cx="0" cy="-32" r="8.2" fill="#b8f4dc" opacity=".88" stroke="#225846" stroke-width=".6"/><path d="M-4,-26.5 L4,-26.5 L3,-23 L-3,-23 Z" fill="#98e4c8" stroke="#225846" stroke-width=".45"/>` + ln("M-2,-26.5 L-2,-23 M0,-26.5 L0,-23 M2,-26.5 L2,-23", "#225846", 0.45) +
+      `<ellipse cx="-3" cy="-32.5" rx="2.1" ry="1.8" fill="#0d261e"/><ellipse cx="3" cy="-32.5" rx="2.1" ry="1.8" fill="#0d261e"/><circle cx="-3" cy="-32.5" r="1.2" fill="#7effd4" class="glowit"/><circle cx="3" cy="-32.5" r="1.2" fill="#7effd4" class="glowit"/>` +
+      `<path d="M9,-11 L16.2,-30 L17.6,-29.4 L10.6,-10.4 Z" fill="#8cf4d0" opacity=".88" stroke="#286e58" stroke-width=".4"/>` + ln("M6.8,-12.5 L12.5,-8.5", "#58c49e", 1.5) +
+      (L.crown ? `<path d="M-7.5,-40 L-7.5,-48 L-3.8,-43 L0,-50.5 L3.8,-43 L7.5,-48 L7.5,-40 Z" fill="#98ffe0" stroke="#225846" stroke-width=".55" class="glowit"/>` : `<path d="M-8,-36 Q0,-44 8,-36 L7,-39 Q0,-47 -7,-39 Z" fill="#58c49e" opacity=".75"/>`),
     eye: (L, X) => `<path d="M-12,0 L-7,-28 L7,-28 L12,0 Z" fill="${X.cloth("#1a1210")}" stroke="#000" stroke-width=".6"/><path d="M-7,-28 L-10,-34 M7,-28 L10,-34" stroke="#1a1210" stroke-width="2.5"/>` + ln("M-4,-2 L-1,-26", "#3a3028", 0.6, 'opacity=".6"') +
       `<ellipse cx="0" cy="-42" rx="18" ry="11" fill="#ff7a1a" opacity=".35" class="glowit"/><path d="M-15,-42 Q0,-55 15,-42 Q0,-29 -15,-42 Z" fill="#ffa030" stroke="#c03a10" stroke-width=".8"/><path d="M-9,-42 Q0,-50 9,-42 Q0,-34 -9,-42 Z" fill="#ffd060"/><ellipse cx="0" cy="-42" rx="2.2" ry="7" fill="#1a0500"/>`,
     dragon: (L, X) => { const c1 = L.c || "#b0342a", c2 = L.c2 || "#e0a040", cd = sh(c1, 0.5); return `<path d="M-4,-17 L-20,-36 L-15,-25 L-23,-27 L-14,-17 Z" fill="${X.cloth(c2)}" stroke="${cd}" stroke-width=".5" opacity="${c1 === "#c9a23a" ? 0 : 1}"/>` + (c1 === "#c9a23a" ? "" : ln("M-6,-19 L-16,-31 M-8,-18 L-18,-25", dk(c2, 0.4), 0.5)) +

@@ -741,6 +741,35 @@ window.ME_MOMENTS = [
 "legend": "ring"
 },
 {
+"id": "paths-of-the-dead",
+"t": 7050.185845,
+"at": "dunharrow",
+"who": [
+"aragorn",
+"kingdead",
+"legolas"
+],
+"mood": "ghost",
+"art": "erech",
+"h": "亡者之路 · 召唤亡灵大军",
+"hEn": "The Paths of the Dead",
+"line": "誓言已经到期，跟我来，履行你们的诺言，然后得享安息！",
+"lineEn": "The hour is come at last. Follow me, fulfill your oath, and have peace!",
+"by": "阿拉贡",
+"byEn": "Aragorn",
+"scene": [
+"黑蛮祠后山矗立着一道漆黑的石缝——亡者之路。三千年前，白山下的先民曾向伊熙尔杜起誓助战，却因惧怕索隆而背弃诺言。伊熙尔杜诅咒他们不得安息，直到的新王再来召唤。",
+"哪怕是洛汗的战马也不敢踏进那道黑门，只有精灵莱戈拉斯眼中没有恐惧，矮人金雳咬着牙跟在后面。地道里寒气刺骨，看不见的幽魂在黑暗中低语，无数苍白发亮的影子像磷火一样聚拢过来。",
+"夜半时分，阿拉贡在埃瑞赫的黑石前高举重铸的安督利尔圣剑，吹响银号。亡灵之王与漫山遍野的幽魂大军显现，锈蚀的长矛在青光中森然林立。他们随阿拉贡如狂风般南下，一夜之间席卷佩拉基尔，夺下了乌姆巴尔的海盗黑帆船队。"
+],
+"sceneEn": [
+"Behind Dunharrow yawned a dark cleft in the mountain: the Paths of the Dead. Three thousand years before, the Men of the Mountains had sworn an oath to Isildur to fight against Sauron, and had broken it out of fear. Isildur cursed them never to rest until an heir of the King should call upon them to fulfill their word.",
+"Even the horses of Rohan reared back in terror at the dark door; only Legolas the Elf looked on the shadows without fear, while Gimli followed with trembling knees. In the freezing tunnels unseen shapes whispered, and pale, glimmering hosts gathered behind them like cold fire.",
+"At midnight by the black Stone of Erech, Aragorn raised the reforged blade Andúril and sounded his silver horns. The King of the Dead and his spectral host answered the summons. Like a grey tide of terror they swept south with Aragorn to Pelargir, driving the Corsairs of Umbar into the river and seizing their black-sailed fleet."
+],
+"legend": "ring"
+},
+{
 "id": "sam-and-shelob",
 "t": 7050.199535,
 "at": "ciritungol",

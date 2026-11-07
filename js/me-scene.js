@@ -17,6 +17,7 @@ window.ME_SCENE = (function () {
     gold:  { sky: ["#2e2008", "#7a5a1c", "#e6bb5a"], fog: "#ffe39a", land: "#2a1c08", p: "mote" },
     blood: { sky: ["#150303", "#4a0d08", "#8c2412"], fog: "#e05030", land: "#140505", p: "ember" },
     ice:   { sky: ["#9fb6c6", "#cfdde6", "#f2f6f8"], fog: "#ffffff", land: "#5b6f7c", p: "snow" },
+    ghost: { sky: ["#030b09", "#0b241e", "#18483b"], fog: "#66f0c2", land: "#06120f", p: "mote" },
   };
   // 每种场景：画法 + 人物站位（地面 y 与 x 范围）
   const ART = {
@@ -127,6 +128,14 @@ window.ME_SCENE = (function () {
        <path d="M430 520Q530 415 585 350T615 265L645 265Q635 315 665 365T790 520Z" fill="${c.fog}" opacity=".38"/>
        <path d="M490 500Q565 420 605 355M550 510Q605 430 630 355" stroke="${c.fog}" stroke-width="2" fill="none" opacity=".55"/>
        <path d="M0 470Q280 446 500 470L720 470Q920 446 1200 470V520H0Z" fill="${c.land}"/>` }),
+    erech: (c) => ({ gy: 458, x0: 220, x1: 980, s:
+      `<path d="M0 320L170 140L360 260L600 95L840 250L1030 130L1200 310V520H0Z" fill="${c.land}" opacity=".45"/>
+       <path d="M555 260L600 155L645 260Z" fill="#020605" stroke="${c.fog}" stroke-opacity=".35" stroke-width="1.5"/>
+       <ellipse cx="600" cy="365" rx="380" ry="95" fill="url(#gFog)" opacity=".55"/>
+       ${Array.from({ length: 34 }, (_, i) => { const x = 90 + i * 31 + (i % 3) * 5, h = 78 + (i % 5) * 16; return `<path d="M${x} 445L${x - 2} ${445 - h}" stroke="${c.fog}" stroke-opacity=".42" stroke-width="2"/><path d="M${x - 5} ${448 - h}L${x - 2} ${432 - h}L${x + 1} ${448 - h}Z" fill="${c.fog}" opacity=".6"/>`; }).join("")}
+       <path d="M0 462Q320 420 600 408Q880 420 1200 462V520H0Z" fill="${c.land}"/>
+       <ellipse cx="600" cy="378" rx="68" ry="62" fill="#050807" stroke="${c.fog}" stroke-opacity=".55" stroke-width="2.2"/>
+       <ellipse cx="580" cy="356" rx="24" ry="14" fill="${c.fog}" opacity=".18" transform="rotate(-25 580 356)"/>` }),
   };
   function col(x, w, h, f, o = 1) {
     const hw = w / 2, y0 = 520 - h;

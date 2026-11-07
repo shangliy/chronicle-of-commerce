@@ -3,7 +3,7 @@
  * 以 <image> 贴在 SVG 里。为不阻塞首屏，按帧逐个生成。
  */
 (function () {
-  const PX = 3; // 每个地图单位的像素数
+  const PX = 2; // 每个地图单位的像素数
   const H32 = (i, j) => { let n = (i * 374761393 + j * 668265263) | 0; n = Math.imul(n ^ (n >>> 13), 1274126177); return ((n ^ (n >>> 16)) >>> 0) / 4294967296; };
   const sm = (t) => t * t * (3 - 2 * t);
   function noise(x, y) {
@@ -109,7 +109,7 @@
     if (!Q.length && !cur) { busy = false; return; }
     busy = true;
     const t0 = performance.now();
-    while (performance.now() - t0 < 14) {
+    while (performance.now() - t0 < 6) {
       if (!cur) { if (!Q.length) break; const q = Q.shift(); cur = { ...q, g: renderG(q.spec, q.bb) }; }
       const r = cur.g.next();
       if (r.done) { const img = cur.img; r.value.toBlob((bl) => { if (bl) img.setAttribute("href", URL.createObjectURL(bl)); }); cur = null; }
